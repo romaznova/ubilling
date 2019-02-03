@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import { Text } from 'react-native-paper';
 import { ModalCard } from '../../containers/Modal';
 import { AddCash } from '../../containers/Modal/AddCash';
@@ -75,11 +75,7 @@ export class SearchResultItem extends React.Component {
         const { element, index, mainUrl, cashTypes } = this.props;
         return (
             <TouchableOpacity onPress={this._toggleModalVisibility.bind(this)} style={{margin: 4, padding: 4}}>
-                <View style={{flex: 1, flexDirection: 'row', backgroundColor: '#fff', shadowColor: '#000',
-                    shadowOffset: { width: 1, height: 3 },
-                    shadowOpacity: 0.8,
-                    shadowRadius: 4,
-                    elevation: 2}}>
+                <View style={styles.card}>
                     <View style={{justifyContent: 'center', alignItems: 'center', width: 30, height: 100, backgroundColor: 'rgba(81, 138, 201, 1)'}}>
                         <Text style={{fontWeight: '500', color: 'rgba(255,255,255,0.9)'}}>{index + 1}</Text>
                     </View>
@@ -98,6 +94,22 @@ export class SearchResultItem extends React.Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+    fullSpace: {
+        flex: 1
+    },
+    card: {
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        shadowColor: '#000',
+        shadowOffset: { width: 1, height: 3 },
+        shadowOpacity: 0.8,
+        shadowRadius: 4,
+        elevation: 2
+    }
+});
 
 SearchResultItem.propTypes = {
     mainUrl: PropTypes.string,

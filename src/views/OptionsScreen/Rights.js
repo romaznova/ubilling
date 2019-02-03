@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import { Text, Title} from 'react-native-paper';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -11,8 +11,8 @@ export class Rights extends React.Component {
         return _.map(rights, (element, index) => {
             if (element.rights) {
                 return (
-                    <View key={index} style={{marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                        <Text style={{fontSize: 15}}>{element.desc}</Text>
+                    <View key={index} style={[styles.additionalSpace, styles.background]}>
+                        <Text style={styles.regularFontSize}>{element.desc}</Text>
                     </View>
                 );
             }
@@ -21,14 +21,26 @@ export class Rights extends React.Component {
 
     render() {
         return (
-            <View style={{marginBottom: 3, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                <Title style={{marginBottom: 2, padding: 5, textAlign: 'center'}}>Ваши права</Title>
+            <View style={[styles.additionalSpace, styles.background]}>
+                <Title style={[styles.additionalSpace, {textAlign: 'center'}]}>Ваши права</Title>
                 {this._renderRights()}
-                <Text style={{marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>Обратитесь к вашему системному администратору для расширения прав</Text>
+                <Text style={[styles.additionalSpace, styles.background]}>Обратитесь к вашему системному администратору для расширения прав</Text>
             </View>
         );
     }
 }
+
+const styles = StyleSheet.create({
+    additionalSpace: {
+        marginBottom: 2, padding: 5
+    },
+    background: {
+        backgroundColor: 'rgba(81, 138, 201, 0.1)'
+    },
+    regularFontSize: {
+        fontSize: 15
+    }
+});
 
 Rights.propTypes = {
     rights: PropTypes.object

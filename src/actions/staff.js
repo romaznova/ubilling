@@ -3,8 +3,9 @@ import axios from 'axios';
 export const GET_ALL_EMPLOYEES = 'GET_ALL_EMPLOYEES';
 export const GET_ALL_ADMINS = 'GET_ALL_ADMINS';
 
+const requestTimeout = 10000;
 export const setEmployees = state => dispatch => {
-    axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=emploees`)
+    return axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=emploees`, {timeout: requestTimeout})
         .then(res => {
             if (res.data && res.data.data) {
                 dispatch({type: GET_ALL_EMPLOYEES, payload: res.data.data});
@@ -14,7 +15,7 @@ export const setEmployees = state => dispatch => {
 };
 
 export const setAdmins = state => dispatch => {
-    axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=admins`)
+    return axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=admins`, {timeout: requestTimeout})
         .then(res => {
             if (res.data && res.data.data) {
                 dispatch({type: GET_ALL_ADMINS, payload: res.data.data});

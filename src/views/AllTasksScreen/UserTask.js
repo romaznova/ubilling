@@ -140,7 +140,7 @@ export class UserTask extends React.Component {
                         jobtypes={jobtypes}
                         getPhoneNumber={this.getPhoneNumber.bind(this)}
                         getStatus={this.getStatus.bind(this)}
-                        _setModalVisibility={this.setModalUpdateVisibility.bind(this)}
+                        setModalVisibility={this.setModalUpdateVisibility.bind(this)}
                         changeTask={element => {changeTask(element); this.setModalUpdateVisibility();}}
                         mainUrl={mainUrl}
                         rightsChangeDate={rightsChangeDate}
@@ -149,7 +149,7 @@ export class UserTask extends React.Component {
                         staff={staff}
                         jobtypes={jobtypes}
                         visible={this.state.isModalStatusOpen}
-                        _setModalVisibility={this.setModalStatusVisibility.bind(this)}
+                        setModalVisibility={this.setModalStatusVisibility.bind(this)}
                         changeTask={data => {changeTaskStatus(data); this.setModalStatusVisibility();}}
                         login={login}
                         rightsChangeTaskStatus={rightsChangeTaskStatus}
@@ -157,7 +157,7 @@ export class UserTask extends React.Component {
                     />
                     <UserTaskModalComments element={element}
                         staff={staff}
-                        _setModalVisibility={this.setModalCommentsVisibility.bind(this)}
+                        setModalVisibility={this.setModalCommentsVisibility.bind(this)}
                         visible={this.state.isModalCommentsOpen}
                         setTaskComment={(id, comment) => {setTaskComment(id, comment); this.setModalCommentsVisibility();}}
                     />

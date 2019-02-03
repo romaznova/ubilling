@@ -22,7 +22,7 @@ export class ModalCardDetailsUser extends React.Component {
 
     _getUserDetails() {
         const { mainUrl, userLogin } = this.props;
-        axios.get(`${mainUrl}/?module=android&action=userprofile&username=${userLogin}`, {timeout: requestTimeout})
+        return axios.get(`${mainUrl}/?module=android&action=userprofile&username=${userLogin}`, {timeout: requestTimeout})
             .then(res => {
                 if (res.data && res.data.data && res.data.data[userLogin]) {
                     this.setState({properties: res.data.data[userLogin], isFetching: false});
@@ -51,7 +51,7 @@ export class ModalCardDetailsUser extends React.Component {
     getPing(userLogin) {
         const { mainUrl } =  this.props;
         this.setState({isFetching: true});
-        axios.get(`${mainUrl}/?module=android&&action=pl_pinger&username=${userLogin}`, {timeout: 5000})
+        return axios.get(`${mainUrl}/?module=android&&action=pl_pinger&username=${userLogin}`, {timeout: 5000})
             .then(res => {
                 this.setState({ping: res.data.data[userLogin].ping, isFetching: false});
             })

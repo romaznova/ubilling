@@ -27,31 +27,13 @@ export class MainScreen extends React.Component {
             <Icon name='user' size={26} color='rgba(81, 138, 201, 1)'/>
         ),
         title: 'МОИ ЗАЯВКИ'
-    }
+    };
 
     state = {
         date: moment().format('YYYY-MM-DD'),
         activeSlideIndex: 0
-    }
+    };
 
-    _getTodayTasks() {
-
-    }
-
-    _getTasksByDate(callback) {
-        const { state, dispatch } = this.props;
-        if (state.userTasks.tasksByDate.length) {
-            _.map(state.userTasks.tasksByDate, elem => {
-                if (elem.date === this.state.date) {
-                    dispatch(setTasks(elem.data));
-                    dispatch(setTasksDate(elem.date));
-                }
-            });
-        }
-        if (callback) {
-            callback();
-        }
-    }
 
     _getAllEmployees() {
         const { state, dispatch } = this.props;
@@ -76,7 +58,7 @@ export class MainScreen extends React.Component {
 
     _getTasks(date) {
         const { state, dispatch } = this.props;
-        this.setState({date: date}, () => this._getTasksByDate(() => dispatch(requestTasks(state, date))));
+        this.setState({date: date}, () => dispatch(requestTasks(state, date)));
     }
 
     _getUndoneTasks() {
@@ -183,8 +165,17 @@ export class MainScreen extends React.Component {
             this._getAllJobTypes();
         }
         this._getTasks(this.state.date, () => {
+            this._getTodayTasks();
             this.sortTasks();
         });
+    }
+
+    _getTodayTasks() {
+        const { state } = this.props;
+        const currentTasks = _.find(state.userTasks.tasksByDate, {date: this.state.date});
+        if (currentTasks && currentTasks.data) {
+            return currentTasks.data;
+        }
     }
 
     render() {
@@ -221,15 +212,12 @@ export class MainScreen extends React.Component {
                                         </View>
                                     </View>
                                     <TouchableOpacity style={{marginRight: 10}} onPress={() => {this._getTasks(this.state.date);}}>
-                                        {state.userTasks.isFetching && (state.userTasks.tasks && state.userTasks.tasks.length)
+                                        {state.userTasks.isFetching && (state.userTasks.todayTasks && state.userTasks.todayTasks.length)
                                             ?
-                                            (
                                                 <ActivityIndicator color='rgba(81, 138, 201, 1)' size={25}/>
-                                            )
                                             :
-                                            (
                                                 <Icon name='refresh' size={25} color='rgba(81, 138, 201, 1)'/>
-                                            )}
+                                        }
                                     </TouchableOpacity>
                                 </View>
                                 <View>
@@ -237,7 +225,7 @@ export class MainScreen extends React.Component {
                                         <Text style={[styles.regularFontSize, {marginLeft: 5}]}>Заявки c </Text>
                                         <View>
                                             <View style={[styles.flexRow, {flexWrap: 'wrap', position: 'relative'}]}>
-                                                <Text style={[styles.regularFontSize, {marginRight: 5, fontSize: 13}]}>{state.userTasks.dateInterval.start ? moment(state.userTasks.dateInterval.start).format('DD.MM.YY') : '__.__.__'}</Text>
+                                                <Text style={[styles.regularFontSize, styles.datePickerText]}>{state.userTasks.dateInterval.start ? moment(state.userTasks.dateInterval.start).format('DD.MM.YY') : '__.__.__'}</Text>
                                                 <DatePicker style={styles.datePicker}
                                                     mode="date"
                                                     date={moment(state.userTasks.dateInterval.start).format('YYYY-MM-DD')}
@@ -252,7 +240,7 @@ export class MainScreen extends React.Component {
                                                         this._getTasksByDateInterval();
                                                     }}
                                                 />
-                                                <Text style={[styles.regularFontSize, {marginRight: 5, fontSize: 13}]}>по {state.userTasks.dateInterval.end ? moment(state.userTasks.dateInterval.end).format('DD.MM.YY') : '__.__.__'}</Text>
+                                                <Text style={[styles.regularFontSize, styles.datePickerText]}>по {state.userTasks.dateInterval.end ? moment(state.userTasks.dateInterval.end).format('DD.MM.YY') : '__.__.__'}</Text>
                                                 <DatePicker style={styles.datePicker}
                                                     mode="date"
                                                     date={moment(state.userTasks.dateInterval.end).format('YYYY-MM-DD')}
@@ -274,18 +262,18 @@ export class MainScreen extends React.Component {
                             </Swiper>
                         </View>
                         <View style={styles.fullSpace}>
-                            {state.userTasks.isFetching && (!(state.userTasks.tasks && state.userTasks.tasks.length) || this.state.activeSlideIndex)
+                            {state.userTasks.isFetching && (!(state.userTasks.todayTasks && state.userTasks.todayTasks.length) || this.state.activeSlideIndex)
                                 ?
                                 (<View style={[styles.fullSpace, styles.backgroundBlur, {justifyContent: 'center'}]}>
                                     <Logo/>
                                     <Preloader text='Идёт поиск заявок'/>
                                 </View>)
                                 :
-                                (<GestureRecognizer style={{flex: 1}}
+                                (<GestureRecognizer style={styles.fullSpace}
                                     onSwipeLeft={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.userTasks.date).add(1, 'days').format('YYYY-MM-DD')) : null}
                                     onSwipeRight={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.userTasks.date).add(-1, 'days').format('YYYY-MM-DD')) : null}
                                 >
-                                    <UserTasksList tasks={this.state.activeSlideIndex === 0 ? state.userTasks.tasks : state.userTasks.tasksByDateInterval}
+                                    <UserTasksList tasks={this.state.activeSlideIndex === 0 ? this._getTodayTasks() : state.userTasks.tasksByDateInterval}
                                         tasksDate={state.userTasks.date}
                                         sort={state.userTasks.sort}
                                         sortTasksByAddress={this.sortTasksByAddress.bind(this)}
@@ -360,6 +348,9 @@ const styles = StyleSheet.create({
     },
     dateIconComponent: {
         width: 30
+    },
+    datePickerText: {
+        marginRight: 5, fontSize: 13
     }
 });
 

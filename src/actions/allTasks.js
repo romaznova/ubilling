@@ -3,8 +3,6 @@ import axios from 'axios';
 import moment from 'moment';
 import _ from 'lodash';
 
-const requestTimeout = 10000;
-
 export const REQUEST_ALL_TASKS = 'REQUEST_ALL_TASKS';
 export const RESPONSE_ALL_TASKS = 'RESPONSE_ALL_TASKS';
 export const SET_ALL_TASKS = 'SET_ALL_TASKS';
@@ -23,6 +21,7 @@ export const setAllTasksDate = createAction(SET_ALL_TASKS_DATE, payload => paylo
 export const setAllTasksSort = createAction(SET_ALL_TASKS_SORT, payload => payload);
 export const setAllTaskByDate = createAction(SET_ALL_TASK_BY_DATE, payload => payload);
 
+const requestTimeout = 10000;
 const checkAllTasksByDate = (state, data) => {
     if (state.allTasks.tasksByDate.length) {
         return _.unionBy(_.map(state.allTasks.tasksByDate, elem => elem), [data], 'date');
@@ -33,7 +32,7 @@ export const requestAllTasks = (state, date, employee) => dispatch => {
     const employeeID = Number(employee) ? `${Number(employee)}` : 'all';
     const currentDate = moment(date || state.allTasks.date).format('YYYY-MM-DD');
     dispatch({type: REQUEST_ALL_TASKS});
-    axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=taskman&date=${currentDate}&emploee=${employeeID}`, {timeout: requestTimeout})
+    return axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=taskman&date=${currentDate}&emploee=${employeeID}`, {timeout: requestTimeout})
         .then(res => {
             dispatch({type: RESPONSE_ALL_TASKS});
             if (res.data && res.data.data) {
@@ -57,7 +56,7 @@ export const requestAllTasks = (state, date, employee) => dispatch => {
 export const requestAllTasksByDateInterval = (state, date, employee) => dispatch => {
     const employeeID = Number(employee) ? `${Number(employee)}` : 'all';
     dispatch({type: REQUEST_ALL_TASKS});
-    axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&startdate=${date.start}&enddate=${date.end}&emploee=${employeeID}`, {timeout: requestTimeout})
+    return axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&startdate=${date.start}&enddate=${date.end}&emploee=${employeeID}`, {timeout: requestTimeout})
         .then(res => {
             dispatch({type: RESPONSE_ALL_TASKS});
             if (res.data && res.data.data) {

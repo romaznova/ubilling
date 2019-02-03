@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, ScrollView, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
+import {View, Image, ScrollView, TouchableOpacity, ImageBackground, Dimensions, StyleSheet} from 'react-native';
 import { Text, List, Button, Title, TextInput, Searchbar, BottomNavigation } from 'react-native-paper';
 import { SearchResultItem } from './SearchResultItem';
 import { Preloader } from '../../containers/Preloader';
@@ -60,58 +60,71 @@ export class SearchScreen extends React.Component {
     }
 
     render() {
-        const { state } = this.props;
         return(
-            <View style={{flex: 1, backgroundColor: '#F5FCFF'}}>
+            <View style={[styles.fullSpace, {backgroundColor: '#F5FCFF'}]}>
                 <Header openDrawer={this.props.navigation.openDrawer}/>
-                <ImageBackground style={{flex: 1, height: Dimensions.get('window').height}}
+                <ImageBackground style={[styles.fullSpace, {height: Dimensions.get('window').height}]}
                     resizeMode='cover'
                     source={require('../../images/searching.jpeg')}>
-                    <View style={{flex: 1, backgroundColor: 'rgba(255,255,255,0.8)'}}>
+                    <View style={[styles.fullSpace, {backgroundColor: 'rgba(255,255,255,0.8)'}]}>
                         <View>
                             <Title style={{textAlign: 'center'}}>Поиск абонента</Title>
-                            <Searchbar style={{margin: 5}} value={this.state.searchParams} label='Введите параметры поиска' onChangeText={text => {this.setState({searchParams: text});}}/>
+                            <Searchbar style={styles.regularMargin} value={this.state.searchParams} label='Введите параметры поиска' onChangeText={text => {this.setState({searchParams: text});}}/>
                             {this.state.searchParams && this.state.searchParams.length >= 3
                                 ?
                                 (
                                     <TouchableOpacity onPress={() => {this._search(this.state.searchParams);}}>
-                                        <Button style={{margin: 5}} loading={this.state.isOnSearching} mode='contained' dark={true}>
+                                        <Button style={styles.regularMargin} loading={this.state.isOnSearching} mode='contained' dark={true}>
                                         Найти
                                         </Button>
                                     </TouchableOpacity>
                                 )
-                                : (<Text style={{fontSize: 15, textAlign: 'center', margin: 5}}>Введите минимум 3 символа для поиска</Text>)}
+                                : (<Text style={[styles.regularFontSize, styles.regularMargin, {textAlign: 'center'}]}>Введите минимум 3 символа для поиска</Text>)}
                         </View>
                         {!!(this.state.searchResults && this.state.searchResults.length) && (
-                            <Text style={{margin: 5}}>
-                                Всего результатов: <Text style={{fontSize: 16, fontWeight: '500', color: 'rgba(81, 138, 201, 1)'}}>{this.state.searchResults.length}</Text>
+                            <Text style={styles.regularMargin}>
+                                Всего результатов: <Text style={styles.accentFont}>{this.state.searchResults.length}</Text>
                             </Text>
                         )}
                         {this.state.isOnSearching
                             ?
-                            (
                                 <View>
                                     <Logo/>
                                     <Preloader text='Идёт поиск ...'/>
                                 </View>
-                            )
                             :
-                            (
-                                <ScrollView style={{flex: 1}} overScrollMode='always'>
+                                <ScrollView style={styles.fullSpace} overScrollMode='always'>
                                     {this._renderSearchResults(this.state.searchResults)}
                                     {this.state.searchResults.length > this.state.renderResults * 20 && (
                                         <TouchableOpacity onPress={() => this.setState({renderResults: this.state.renderResults + 1})}>
-                                            <Button dark={true} mode='contained' style={{margin: 5}}>Показать ещё</Button>
+                                            <Button dark={true} mode='contained' style={styles.regularMargin}>Показать ещё</Button>
                                         </TouchableOpacity>
                                     )}
                                 </ScrollView>
-                            )}
+                        }
                     </View>
                 </ImageBackground>
             </View>
         );
     }
 }
+
+const styles = StyleSheet.create({
+    fullSpace: {
+        flex: 1
+    },
+    regularMargin: {
+        margin: 5
+    },
+    regularFontSize: {
+        fontSize: 15
+    },
+    accentFont: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: 'rgba(81, 138, 201, 1)'
+    }
+});
 
 SearchScreen = connect(
     state => ({state}),

@@ -9,7 +9,7 @@ import { Main } from './src/views/Main';
 import thunk from 'redux-thunk';
 
 let myStore = createStore( store, composeWithDevTools(applyMiddleware(thunk)) );
-let unsubscribe = myStore.subscribe( () => console.log(myStore.getState()) );
+// let unsubscribe = myStore.subscribe( () => console.log(myStore.getState()) );
 const instructions = Platform.select({
     ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
     android:

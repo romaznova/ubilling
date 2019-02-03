@@ -1,4 +1,4 @@
-import {  TouchableOpacity, View } from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import { Button, Card, Portal, Text, Title } from 'react-native-paper';
 import moment from 'moment';
 import React from 'react';
@@ -73,25 +73,25 @@ export class UndoneUserTask extends React.Component {
     render() {
         const { element, jobtypes, mainUrl, login, staff, changeTaskStatus, changeTask, setTaskComment, getUndoneTask, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate } = this.props;
         return (
-            <Card elevation={2} style={{marginLeft: 10, marginRight: 10, marginBottom: 5, marginTop: 5, backgroundColor: '#fff'}}>
+            <Card elevation={2} style={styles.card}>
                 <Card.Content>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Text style={{flex: 1, fontSize: 16, fontWeight: '500', color: 'rgba(255,51,0,0.9)'}}>У Вас не закрыта задача {element.startdate ? `за ${moment(element.startdate).format('D MMMM YYYY')}` : ''}</Text>
-                        <TouchableOpacity onPress={() => {this.setState({isModalCommentsOpen: true});}} style={{margin: 1, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.7)', width: 50, height: 50, alignItems: 'center', justifyContent: 'center', borderRadius: 4}}>
+                    <View style={[styles.fullSpace, {flexDirection: 'row'}]}>
+                        <Text style={[styles.fullSpace, styles.accentFont]}>У Вас не закрыта задача {element.startdate ? `за ${moment(element.startdate).format('D MMMM YYYY')}` : ''}</Text>
+                        <TouchableOpacity onPress={() => {this.setState({isModalCommentsOpen: true});}} style={styles.commentsButton}>
                             <Icon name='comments-o' size={35} color='rgba(255, 255, 255, 1)'/>
                             {!!element.comments.length && (
-                                <Text style={{color: '#fff', fontSize: 10, fontWeight: '500', marginBottom: 2}}>{element.comments.length}</Text>
+                                <Text style={styles.commentsButtonLength}>{element.comments.length}</Text>
                             )}
                         </TouchableOpacity>
                     </View>
-                    {!!element.address && (<Text style={{fontSize: 14, fontWeight: '500'}}><Text style={{fontWeight: '400'}}>Адрес: </Text>{element.address}</Text>)}
-                    {!!element.jobtype && (<Text style={{fontSize: 14}}><Text>Тип: </Text>{jobtypes[element.jobtype]}</Text>)}
-                    {!!element.startdate && (<Text style={{fontSize: 14}}>Закрыть нужно было {moment(element.startdate).fromNow()}</Text>)}
-                    <View style={{flexDirection: 'row', marginTop: 10, marginBottom: 10}}>
-                        <TouchableOpacity style={{flex: 1, marginRight: 2}} onPress={() => {this.setState({isModalUpdateOpen: false, isModalStatusOpen: true});}}>
+                    {!!element.address && (<Text style={[styles.regularFontSize, {fontWeight: '500'}]}><Text style={{fontWeight: '400'}}>Адрес: </Text>{element.address}</Text>)}
+                    {!!element.jobtype && (<Text style={styles.regularFontSize}><Text>Тип: </Text>{jobtypes[element.jobtype]}</Text>)}
+                    {!!element.startdate && (<Text style={styles.regularFontSize}>Закрыть нужно было {moment(element.startdate).fromNow()}</Text>)}
+                    <View style={styles.buttonsContainer}>
+                        <TouchableOpacity style={[styles.fullSpace, {marginRight: 2}]} onPress={() => {this.setState({isModalUpdateOpen: false, isModalStatusOpen: true});}}>
                             <Button mode='contained' dark={true} style={{backgroundColor: '#00a600'}}>Закрыть</Button>
                         </TouchableOpacity>
-                        <TouchableOpacity  style={{flex: 1, marginLeft: 2}} onPress={() => {this.setState({isModalUpdateOpen: true, isModalStatusOpen: false});}}>
+                        <TouchableOpacity  style={[styles.fullSpace, {marginLeft: 2}]} onPress={() => {this.setState({isModalUpdateOpen: true, isModalStatusOpen: false});}}>
                             <Button mode='contained' dark={true} style={{backgroundColor: 'rgba(81, 138, 201, 1)'}}>Редактировать</Button>
                         </TouchableOpacity>
                     </View>
@@ -102,7 +102,7 @@ export class UndoneUserTask extends React.Component {
                             jobtypes={jobtypes}
                             getPhoneNumber={this.getPhoneNumber.bind(this)}
                             getStatus={this.getStatus.bind(this)}
-                            _setModalVisibility={this.setModalUpdateVisibility.bind(this)}
+                            setModalVisibility={this.setModalUpdateVisibility.bind(this)}
                             changeTask={(element, callback) => {getUndoneTask(); changeTask(element, callback); this.setModalUpdateVisibility();}}
                             mainUrl={mainUrl}
                             rightsChangeDate={rightsChangeDate}
@@ -111,7 +111,7 @@ export class UndoneUserTask extends React.Component {
                             staff={staff}
                             jobtypes={jobtypes}
                             visible={this.state.isModalStatusOpen}
-                            _setModalVisibility={this.setModalStatusVisibility.bind(this)}
+                            setModalVisibility={this.setModalStatusVisibility.bind(this)}
                             changeTask={data => {getUndoneTask(); changeTaskStatus(data); this.setModalStatusVisibility();}}
                             login={login}
                             rightsChangeTaskStatus={rightsChangeTaskStatus}
@@ -119,7 +119,7 @@ export class UndoneUserTask extends React.Component {
                         />
                         <UserTaskModalComments element={element}
                             staff={staff}
-                            _setModalVisibility={this.setModalCommentsVisibility.bind(this)}
+                            setModalVisibility={this.setModalCommentsVisibility.bind(this)}
                             visible={this.state.isModalCommentsOpen}
                             setTaskComment={(id, comment) => {getUndoneTask(); setTaskComment(id, comment); this.setModalCommentsVisibility();}}
                         />
@@ -129,6 +129,48 @@ export class UndoneUserTask extends React.Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+    fullSpace: {
+        flex: 1
+    },
+    card: {
+        marginLeft: 10,
+        marginRight: 10,
+        marginBottom: 5,
+        marginTop: 5,
+        backgroundColor: '#fff'
+    },
+    commentsButton: {
+        margin: 1,
+        padding: 5,
+        backgroundColor: 'rgba(81, 138, 201, 0.7)',
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 4
+    },
+    commentsButtonLength: {
+        color: '#fff',
+        fontSize: 10,
+        fontWeight: '500',
+        marginBottom: 2
+    },
+    buttonsContainer: {
+        flexDirection: 'row',
+        marginTop: 10,
+        marginBottom: 10
+    },
+    regularFontSize: {
+        fontSize: 14
+    },
+    accentFont : {
+        fontSize: 16,
+        fontWeight: '500',
+        color: 'rgba(255,51,0,0.9)'
+    }
+});
 
 UndoneUserTask.propTypes = {
     element: PropTypes.object,

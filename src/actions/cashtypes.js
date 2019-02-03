@@ -6,11 +6,12 @@ export const RESPONSE_CASH_TYPES = 'RESPONSE_CASH_TYPES';
 export const SET_CASH_TYPES = 'SET_CASH_TYPES';
 
 export const setCashTypes = createAction(SET_CASH_TYPES, payload => payload);
+
+const requestTimeout = 10000;
 export const requestCashTypes = state => dispatch => {
-    axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=getallcashtypes`, {timeout: 5000})
+    axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=getallcashtypes`, {timeout: requestTimeout})
         .then(res => {
             if (res.data && res.data.data) {
-                console.log({data: res.data.data});
                 dispatch(setCashTypes(res.data.data));
             }
         })

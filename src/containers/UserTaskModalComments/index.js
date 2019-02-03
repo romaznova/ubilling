@@ -40,14 +40,14 @@ export class UserTaskModalComments extends React.Component {
     }
 
     render() {
-        const { element,  _setModalVisibility, visible, setTaskComment } = this.props;
+        const { element,  setModalVisibility, visible, setTaskComment } = this.props;
         return (
-            <Modal style={{flex: 1}} visible={visible} animationType='slide' onRequestClose={() => {_setModalVisibility();}}>
+            <Modal style={{flex: 1}} visible={visible} animationType='slide' onRequestClose={() => {setModalVisibility();}}>
                 <Card style={{flex: 1, padding: 5, position: 'relative', borderRadius: 0}}>
                     <Card.Content style={{flex: 1}}>
                         <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4, marginBottom: 4,  borderBottomWidth: 2, borderBottomColor: 'rgba(81, 138, 201, 1)'}}>
                             <TouchableOpacity
-                                onPress={() => {_setModalVisibility();}}
+                                onPress={() => {setModalVisibility();}}
                                 style={{width: 22}}
                             >
                                 <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
@@ -75,7 +75,7 @@ UserTaskModalComments.propTypes = {
     element: PropTypes.object,
     staff: PropTypes.object,
     visible: PropTypes.bool,
-    _setModalVisibility: PropTypes.func,
+    setModalVisibility: PropTypes.func,
     setTaskComment: PropTypes.func
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, ImageBackground, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {View, ScrollView, ImageBackground, ActivityIndicator, TouchableOpacity, StyleSheet} from 'react-native';
 import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import connect from 'react-redux/es/connect/connect';
@@ -48,7 +48,6 @@ export class MailScreen extends React.Component {
     _renderUndoneTasks() {
         const { state } = this.props;
         return _.map(state.messages.undoneTasks, element => {
-            console.log({id: element.id});
             return (<UndoneUserTask element={element}
                 key={element.id}
                 jobtypes={state.jobTypes}
@@ -79,46 +78,70 @@ export class MailScreen extends React.Component {
     render() {
         const { state } = this.props;
         return(
-            <View style={{flex: 1, backgroundColor: '#F5FCFF'}}>
+            <View style={[styles.fullSpace, styles.background]}>
                 <Header openDrawer={this.props.navigation.openDrawer}/>
-                <View style={{flex: 1}}>
-                    <View style={{flex: 1}}>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(255,255,255,1)', margin: 10, padding: 5, shadowColor: '#000',
-                            shadowOffset: { width: 1, height: 3 },
-                            shadowOpacity: 0.8,
-                            shadowRadius: 4,
-                            elevation: 2}}>
-                            <Text style={{fontSize: 15}}>
-                                Всего оповещений: <Text style={{fontSize: 16, fontWeight: '500', color: 'rgba(81, 138, 201, 1)'}}>{state.messages.undoneTasks.length || 0}</Text>
+                <View style={styles.fullSpace}>
+                    <View style={styles.fullSpace}>
+                        <View style={styles.card}>
+                            <Text style={styles.regularFontSize}>
+                                Всего оповещений: <Text style={styles.accentFont}>{state.messages.undoneTasks.length || 0}</Text>
                             </Text>
                             <TouchableOpacity style={{marginRight: 10}} onPress={() => {this.getUndoneTask();}}>
                                 {state.messages.isFetching && (state.messages.undoneTasks && state.messages.undoneTasks.length)
                                     ?
-                                    (
                                         <ActivityIndicator color='rgba(81, 138, 201, 1)' size={25}/>
-                                    )
                                     :
-                                    (
                                         <Icon name='refresh' size={25} color='rgba(81, 138, 201, 1)'/>
-                                    )}
+                                }
                             </TouchableOpacity>
                         </View>
                         {state.messages.isFetching && !(state.messages.undoneTasks && state.messages.undoneTasks.length)
                             ?
-                            (<View style={{flex: 1, justifyContent: 'center'}}>
-                                <Logo/>
-                                <Preloader text='Идёт поиск заявок'/>
-                            </View>)
+                                <View style={{flex: 1, justifyContent: 'center'}}>
+                                    <Logo/>
+                                    <Preloader text='Идёт поиск заявок'/>
+                                </View>
                             :
-                            (<ScrollView style={{flex: 1}}>
-                                {this._renderUndoneTasks()}
-                            </ScrollView>)}
+                                <ScrollView style={{flex: 1}}>
+                                    {this._renderUndoneTasks()}
+                                </ScrollView>
+                        }
                     </View>
                 </View>
             </View>
         );
     }
 }
+
+const styles = StyleSheet.create({
+    fullSpace: {
+        flex: 1
+    },
+    card: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,1)',
+        margin: 10,
+        padding: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 1, height: 3 },
+        shadowOpacity: 0.8,
+        shadowRadius: 4,
+        elevation: 2
+    },
+    background: {
+        backgroundColor: '#F5FCFF'
+    },
+    regularFontSize: {
+        fontSize: 15
+    },
+    accentFont : {
+        fontSize: 16,
+        fontWeight: '500',
+        color: 'rgba(81, 138, 201, 1)'
+    }
+});
 
 MailScreen = connect(
     state => ({state}),

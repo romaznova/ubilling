@@ -6,9 +6,10 @@ export const REQUEST_UNDONE_TASKS = 'REQUEST_UNDONE_TASKS';
 export const RESPONSE_UNDONE_TASKS = 'RESPONSE_UNDONE_TASKS';
 export const SET_UNDONE_TASKS = 'SET_UNDONE_TASKS';
 
+const requestTimeout = 10000;
 export const setUndoneTasks = state => dispatch => {
     dispatch({type: REQUEST_UNDONE_TASKS});
-    axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=taskmanundone`)
+    return axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=taskmanundone`, {timeout: requestTimeout})
         .then(res => {
             if (res.data && res.data.data) {
                 dispatch(setUndoneTasksForToday(state, res.data.data));
@@ -19,10 +20,10 @@ export const setUndoneTasks = state => dispatch => {
 };
 
 export const setUndoneTasksForToday = (state, array) => dispatch => {
-    axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=taskmanundone&date=${moment().format('YYYY-MM-DD')}`)
+    return axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=taskmanundone&date=${moment().format('YYYY-MM-DD')}`, {timeout: requestTimeout})
         .then(res => {
             if (res.data && res.data.data) {
-                dispatch({type: SET_UNDONE_TASKS, payload: _.concat(res.data.data, array)});
+                dispatch({type: SET_UNDONE_TASKS, payload: _.unionBy(_.map(res.data.data, elem => elem), array, 'id')});
             }
         })
         .catch(err => {console.log({getUndoneTasksError: err});});

@@ -20,10 +20,9 @@ export class AddCash extends React.Component {
     setUserBalance(userLogin) {
         const { mainUrl } =  this.props;
         const data = qs.stringify({newcash: this.state.newcash, cashtype: this.state.cashtype, newpaymentnote: ''});
-        axios.post(`${mainUrl}/?module=android&&action=addcash&username=${userLogin}`, data, {timeout: requestTimeout})
+        return axios.post(`${mainUrl}/?module=android&&action=addcash&username=${userLogin}`, data, {timeout: requestTimeout})
             .then(res => {
                 if (res.data && res.data.success) {
-                    console.log({res});
                     this.setState({snackbarVisible: true});
                 }
             })

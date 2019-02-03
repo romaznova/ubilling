@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, ScrollView, ImageBackground, Dimensions } from 'react-native';
+import {View, Image, ScrollView, ImageBackground, Dimensions, StyleSheet} from 'react-native';
 import { Text, List, Button, Title } from 'react-native-paper';
 import { UrlOptions } from './UrlOptions';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -20,14 +20,14 @@ export class OptionsScreen extends React.Component {
     render() {
         const { state } = this.props;
         return(
-            <View style={{flex: 1, backgroundColor: '#F5FCFF'}}>
+            <View style={[styles.fullSpace, {backgroundColor: '#F5FCFF'}]}>
                 <Header openDrawer={this.props.navigation.openDrawer}/>
-                <ImageBackground style={{flex: 1, height: Dimensions.get('window').height}}
+                <ImageBackground style={[styles.fullSpace, {height: Dimensions.get('window').height}]}
                     resizeMode='cover'
                     source={require('../../images/gears-2.jpeg')}>
-                    <View style={{flex: 1, backgroundColor: 'rgba(255,255,255,0.9)'}}>
-                        <Title style={{textAlign: 'center'}}>Настройки</Title>
-                        <ScrollView style={{flex: 1}}>
+                    <View style={[styles.fullSpace, {backgroundColor: 'rgba(255,255,255,0.9)'}]}>
+                        <Title style={styles.centerText}>Настройки</Title>
+                        <ScrollView style={styles.fullSpace}>
                             <UrlOptions/>
                             {/*<Rights rights={state.rights}/>*/}
                         </ScrollView>
@@ -37,6 +37,16 @@ export class OptionsScreen extends React.Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+    fullSpace: {
+        flex: 1
+    },
+    centerText: {
+        textAlign: 'center'
+    }
+});
+
 
 OptionsScreen = connect(
     state => ({state}),

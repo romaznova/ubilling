@@ -4,7 +4,7 @@ import { AllTasksScreen } from '../AllTasksScreen';
 import { SearchScreen } from '../SearchScreen';
 import { MailScreen } from '../MailScreen';
 import { OptionsScreen } from '../OptionsScreen';
-import { Image, ImageBackground, ScrollView, View } from 'react-native';
+import {Image, ImageBackground, ScrollView, StyleSheet, View} from 'react-native';
 import { ExitButton } from '../../containers/ExitButton';
 import React from 'react';
 import connect from 'react-redux/es/connect/connect';
@@ -28,55 +28,77 @@ export let DrawerNavigator = createDrawerNavigator({
 }, {
     contentComponent: props =>
     {
-        return <View style={{flex: 1}}>
-            <ImageBackground resizeMode='cover'
-                source={require('../../images/drawer-bg.png')}
-                style={{flex: 1}}>
-                <View style={{flex: 1, justifyContent: 'space-between', backgroundColor: 'rgba(255,255,255,0.7)'}}>
-                    <View style={{flex: 1, backgroundColor: 'transparent', position: 'relative'}}>
-                        <View style={{
-                            backgroundColor: 'rgba(255,255,255,0.15)',
-                            height: 170,
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 20}}>
-                                <Image style={{width: 240}} resizeMode='contain' source={require('../../images/Ubilling_logo.png')} />
+        return (
+            <View style={styles.fullSpace}>
+                <ImageBackground resizeMode='cover'
+                    source={require('../../images/drawer-bg.png')}
+                    style={styles.fullSpace}>
+                    <View style={[styles.fullSpace, styles.drawerContainer]}>
+                        <View style={[styles.fullSpace, styles.navigationContainer]}>
+                            <View style={styles.header}>
+                                <View style={styles.logoContainer}>
+                                    <Image style={{width: 240}} resizeMode='contain' source={require('../../images/Ubilling_logo.png')} />
+                                </View>
                             </View>
+                            <ScrollView style={styles.fullSpace}>
+                                <DrawerItems {...props}
+                                    activeTintColor='rgba(81, 138, 201, 1)'
+                                    activeBackgroundColor='rgba(81, 138, 201, 0.4)'
+                                    inactiveTintColor='rgba(81, 138, 201, 0.75)'
+                                    inactiveBackgroundColor='transparent'
+                                    labelStyle={styles.drawerItemLabel}
+                                    itemStyle={styles.drawerItem}
+                                />
+                            </ScrollView>
                         </View>
-                        <ScrollView style={{flex: 1}}>
-                            <DrawerItems {...props}
-                                activeTintColor='rgba(81, 138, 201, 1)'
-                                activeBackgroundColor='rgba(81, 138, 201, 0.4)'
-                                inactiveTintColor='rgba(81, 138, 201, 0.75)'
-                                inactiveBackgroundColor='transparent'
-                                labelStyle={{
-                                    fontSize: 14,
-                                    marginLeft: 0
-                                }}
-                                itemStyle={{
-                                    height: 35,
-                                    margin: 5,
-                                    borderRadius: 0,
-                                    backgroundColor: '#ebedec',
-                                    shadowColor: 'rgba(0,0,0,0.2)',
-                                    shadowOffset: {
-                                        width: 1,
-                                        height: 2,
-                                    },
-                                    shadowRadius: 2,
-                                    elevation: 2,
-                                }}
-                            />
-                        </ScrollView>
+                        <ExitButton/>
                     </View>
-                    <ExitButton/>
-                </View>
-            </ImageBackground>
-        </View>;
+                </ImageBackground>
+            </View>
+        );
     }
 });
+
+const styles = StyleSheet.create({
+    fullSpace: {
+        flex: 1
+    },
+    drawerContainer: {
+        justifyContent: 'space-between',
+        backgroundColor: 'rgba(255,255,255,0.7)'
+    },
+    navigationContainer: {
+        backgroundColor: 'transparent',
+        position: 'relative'
+    },
+    header: {
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        height: 170,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    logoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 20
+    },
+    drawerItem: {
+        height: 35,
+        margin: 5,
+        borderRadius: 0,
+        backgroundColor: '#ebedec',
+        shadowColor: 'rgba(0,0,0,0.2)',
+        shadowOffset: {width: 1, height: 2},
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    drawerItemLabel: {
+        fontSize: 14,
+        marginLeft: 0
+    }
+});
+
 
 DrawerNavigator = connect(
     state => ({state}),

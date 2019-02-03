@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import { Portal, Text } from 'react-native-paper';
 import { UserTaskModalUpdate } from '../../containers/UserTaskModalUpdate';
 import { UserTaskModalStatus } from '../../containers/UserTaskModalStatus';
@@ -38,23 +38,23 @@ export class UserTask extends React.Component {
         switch (status) {
         case 0:
             return (
-                <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', backgroundColor:'#ed6f5b', padding: 5, margin: 4, borderRadius: 4}}>
+                <View style={[styles.status, {backgroundColor:'#ed6f5b'}]}>
                     <Icon name='minus-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={{fontSize: 12, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>Не выполнена</Text>
+                    <Text style={styles.statusFont}>Не выполнена</Text>
                 </View>
             );
         case 1:
             return (
-                <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', backgroundColor:'#00a600', padding: 5, margin: 4, borderRadius: 4}}>
+                <View style={[styles.status, {backgroundColor:'#00a600'}]}>
                     <Icon name='check-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={{fontSize: 12, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>Выполнена</Text>
+                    <Text style={styles.statusFont}>Выполнена</Text>
                 </View>
             );
         default:
             return (
-                <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', backgroundColor:'#ed6f5b', padding: 5, margin: 4, borderRadius: 4}}>
+                <View style={[styles.status, {backgroundColor:'#ed6f5b'}]}>
                     <Icon name='minus-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={{fontSize: 12, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>Не выполнена</Text>
+                    <Text style={styles.statusFont}>Не выполнена</Text>
                 </View>
             );
         }
@@ -75,31 +75,27 @@ export class UserTask extends React.Component {
     render() {
         const { element, index, changeTask, changeTaskStatus, staff, jobtypes, login, tasksDate, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
         return (
-            <TouchableOpacity style={{flexDirection: 'row', alignItems: 'stretch', backgroundColor: 'rgba(255, 255, 255, 1)', margin: 5, padding: 2, shadowColor: '#000',
-                shadowOffset: { width: 1, height: 3 },
-                shadowOpacity: 0.8,
-                shadowRadius: 4,
-                elevation: 2}}
+            <TouchableOpacity style={styles.card}
             onPress={() => {this.setState({isModalUpdateOpen: true});}}
             >
-                <View style={{flex: 1}}>
-                    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                        <View style={{justifyContent: 'center', alignItems: 'center', margin: 1, width: 30, height: 80, backgroundColor: 'rgba(81, 138, 201, 1)'}}>
+                <View style={styles.fullSpace}>
+                    <View style={[styles.fullSpace, styles.row, styles.center, {backgroundColor: 'rgba(81, 138, 201, 0.1)'}]}>
+                        <View style={[styles.center, {margin: 1, width: 30, height: 80, backgroundColor: 'rgba(81, 138, 201, 1)'}]}>
                             <Text style={{fontWeight: '500', color: 'rgba(255,255,255,0.9)'}}>{index + 1}</Text>
                         </View>
-                        <Text style={{flex: 1, fontSize: 14, fontWeight: '500', padding: 5}}>{element.address}</Text>
+                        <Text style={[styles.fullSpace, styles.regularFontSize, {fontWeight: '500', padding: 5}]}>{element.address}</Text>
                     </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                        <View style={{flex: activeSlideIndex === 0 ? 2 : 3, padding: 5, margin: 1, backgroundColor: 'rgba(81, 138, 201, 0.1)', justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{fontSize: 14, textAlign: 'center'}}>{jobtypes[element.jobtype]}</Text>
+                    <View style={[styles.fullSpace, styles.row]}>
+                        <View style={[styles.center, {flex: activeSlideIndex === 0 ? 2 : 3, padding: 5, margin: 1, backgroundColor: 'rgba(81, 138, 201, 0.1)'}]}>
+                            <Text style={[styles.regularFontSize, {textAlign: 'center'}]}>{jobtypes[element.jobtype]}</Text>
                         </View>
                         {activeSlideIndex === 0 && (
-                            <View style={{flex: 1, margin: 1, padding: 5, backgroundColor: tasksDate === moment().format('YYYY-MM-DD') ? (!Number(element.status) &&  moment(element.starttime, 'HH:mm:ss').isBefore(moment())) ? 'rgba(237, 111, 91, 0.1)' : 'rgba(0, 166, 0, 0.1)' : 'rgba(81, 138, 201, 0.1)', justifyContent: 'center', alignItems: 'center'}}>
+                            <View style={[styles.fullSpace, styles.center, {margin: 1, padding: 5, backgroundColor: tasksDate === moment().format('YYYY-MM-DD') ? (!Number(element.status) &&  moment(element.starttime, 'HH:mm:ss').isBefore(moment())) ? 'rgba(237, 111, 91, 0.1)' : 'rgba(0, 166, 0, 0.1)' : 'rgba(81, 138, 201, 0.1)'}]}>
                                 <Image resizeMode='contain'
                                     source={require('../../images/clocks-2.png')}
                                     style={{width: 300, height: 30}}
                                 />
-                                <Text style={{fontSize: 14, fontWeight: '500', textAlign: 'center'}}>{moment(element.starttime, 'HH:mm:ss').format('HH:mm')}</Text>
+                                <Text style={[styles.regularFontSize, {fontWeight: '500', textAlign: 'center'}]}>{moment(element.starttime, 'HH:mm:ss').format('HH:mm')}</Text>
                             </View>
                         )}
                         <TouchableOpacity onPress={() => {this.setState({isModalStatusOpen: true});}} style={{flex: 2, flexDirection: 'row', justifyContent: 'center', alignItems: 'stretch', margin: 1, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
@@ -120,7 +116,7 @@ export class UserTask extends React.Component {
                         </TouchableOpacity>
                         {(!Number(element.status) && tasksDate === moment().format('YYYY-MM-DD') && activeSlideIndex === 0) && (
                             <View style={{flex: 4, padding: 5, margin: 1, backgroundColor: 'rgba(81, 138, 201, 0.1)', alignItems: 'flex-start', justifyContent: 'center'}}>
-                                <Text style={{fontSize: 14}}>Начать нужно {element.starttime ? moment(element.starttime, 'HH:mm:ss').fromNow() : moment(element.startdate).format('DD MMMM')}</Text>
+                                <Text style={styles.regularFontSize}>Начать нужно {element.starttime ? moment(element.starttime, 'HH:mm:ss').fromNow() : moment(element.startdate).format('DD MMMM')}</Text>
                             </View>
                         )}
                     </View>
@@ -132,7 +128,7 @@ export class UserTask extends React.Component {
                         jobtypes={jobtypes}
                         getPhoneNumber={this.getPhoneNumber.bind(this)}
                         getStatus={this.getStatus.bind(this)}
-                        _setModalVisibility={this.setModalUpdateVisibility.bind(this)}
+                        setModalVisibility={this.setModalUpdateVisibility.bind(this)}
                         changeTask={element => {changeTask(element); this.setModalUpdateVisibility();}}
                         mainUrl={mainUrl}
                         rightsChangeDate={rightsChangeDate}
@@ -141,7 +137,7 @@ export class UserTask extends React.Component {
                         staff={staff}
                         jobtypes={jobtypes}
                         visible={this.state.isModalStatusOpen}
-                        _setModalVisibility={this.setModalStatusVisibility.bind(this)}
+                        setModalVisibility={this.setModalStatusVisibility.bind(this)}
                         changeTask={data => {changeTaskStatus(data); this.setModalStatusVisibility();}}
                         login={login}
                         rightsChangeTaskStatus={rightsChangeTaskStatus}
@@ -150,7 +146,7 @@ export class UserTask extends React.Component {
                     <UserTaskModalComments element={element}
                         visible={this.state.isModalCommentsOpen}
                         staff={staff}
-                        _setModalVisibility={this.setModalCommentsVisibility.bind(this)}
+                        setModalVisibility={this.setModalCommentsVisibility.bind(this)}
                         setTaskComment={(id, comment) => {setTaskComment(id, comment); this.setModalCommentsVisibility();}}
                     />
                 </Portal>
@@ -158,6 +154,57 @@ export class UserTask extends React.Component {
         );
     }
 }
+
+const styles = StyleSheet.create({
+    fullSpace: {
+        flex: 1
+    },
+    card: {
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        backgroundColor: 'rgba(255, 255, 255, 1)',
+        margin: 5,
+        padding: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 1, height: 3 },
+        shadowOpacity: 0.8,
+        shadowRadius: 4,
+        elevation: 2
+    },
+    status: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        padding: 5,
+        margin: 4,
+        borderRadius: 4
+    },
+    statusFont: {
+        fontSize: 12,
+        fontWeight: '500',
+        textAlign: 'right',
+        color: 'rgba(255,255,255,0.9)',
+        marginLeft: 10
+    },
+    regularFontSize: {
+        fontSize: 14
+    },
+    center: {
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    row: {
+        flexDirection: 'row'
+    },
+    phoneNumber: {
+        fontSize: 13,
+        fontWeight: '500',
+        marginLeft: 10,
+        color: 'rgba(255, 255, 255, 0.9)'
+    }
+});
 
 UserTask.propTypes = {
     element: PropTypes.object,

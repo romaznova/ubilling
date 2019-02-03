@@ -95,14 +95,14 @@ export class UserTaskModalUpdate extends React.Component {
     }
 
     render() {
-        const { element, visible, staff, getPhoneNumber, getStatus, _setModalVisibility, changeTask, jobtypes, mainUrl, rightsChangeDate} = this.props;
+        const { element, visible, staff, getPhoneNumber, getStatus, setModalVisibility, changeTask, jobtypes, mainUrl, rightsChangeDate} = this.props;
         return (
-            <Modal style={{flex: 1}} visible={visible} animationType='slide' onRequestClose={() => {this._disableEditTask(); _setModalVisibility();}}>
+            <Modal style={{flex: 1}} visible={visible} animationType='slide' onRequestClose={() => {this._disableEditTask(); setModalVisibility();}}>
                 <Card style={{flex: 1, padding: 5, borderRadius: 0}}>
                     <Card.Content style={{flex: 1}}>
                         <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4, marginBottom: 4,  borderBottomWidth: 2, borderBottomColor: 'rgba(81, 138, 201, 1)'}}>
                             <TouchableOpacity style={{width: 22}}
-                                onPress={() => {this._disableEditTask(); _setModalVisibility();}}
+                                onPress={() => {this._disableEditTask(); setModalVisibility();}}
                             >
                                 <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                             </TouchableOpacity>
@@ -277,7 +277,7 @@ export class UserTaskModalUpdate extends React.Component {
                             (<TouchableOpacity>
                                 <View>
                                     <View style={{flexDirection: 'row'}}>
-                                        <TouchableOpacity  style={{flex: 1, marginLeft: 2}} onPress={() => {_setModalVisibility();}}>
+                                        <TouchableOpacity  style={{flex: 1, marginLeft: 2}} onPress={() => {setModalVisibility();}}>
                                             <Button mode='contained' dark={true} style={{backgroundColor: '#ed6f5b'}}>Закрыть</Button>
                                         </TouchableOpacity>
                                     </View>
@@ -304,5 +304,5 @@ UserTaskModalUpdate.propTypes = {
     changeTask: PropTypes.func,
     getPhoneNumber: PropTypes.func,
     getStatus: PropTypes.func,
-    _setModalVisibility: PropTypes.func,
+    setModalVisibility: PropTypes.func,
 };
