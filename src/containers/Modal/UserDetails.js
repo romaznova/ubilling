@@ -95,15 +95,15 @@ export class ModalCardDetailsUser extends React.Component {
     }
 
     render() {
-        const { visible, _closeModal, userLogin, mainUrl} = this.props;
+        const { visible, closeModal, userLogin, mainUrl} = this.props;
         return (
             <Portal>
-                <Modal visible={visible} animationType='slide' onRequestClose={_closeModal} style={{flex: 1}}>
+                <Modal visible={visible} animationType='slide' onRequestClose={closeModal} style={{flex: 1}}>
                     <Card style={{flex: 1, padding: 5, position: 'relative', borderRadius: 0}}>
                         <Card.Content style={{flex: 1}}>
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4, marginBottom: 4,  borderBottomWidth: 2, borderBottomColor: 'rgba(81, 138, 201, 1)'}}>
                                 <TouchableOpacity style={{width: 22}}
-                                    onPress={_closeModal}
+                                    onPress={closeModal}
                                 >
                                     <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                                 </TouchableOpacity>
@@ -141,7 +141,7 @@ export class ModalCardDetailsUser extends React.Component {
                             </List.Section>
                         </Card.Content>
                     </Card>
-                    <AddCash _closeModal={() => this.setState({isModalCashVisible: false})} visible={this.state.isModalCashVisible} mainUrl={mainUrl} userLogin={userLogin}/>
+                    <AddCash closeModal={() => this.setState({isModalCashVisible: false})} visible={this.state.isModalCashVisible} mainUrl={mainUrl} userLogin={userLogin}/>
                 </Modal>
             </Portal>
         );
@@ -153,5 +153,5 @@ ModalCardDetailsUser.propTypes = {
     mainUrl: PropTypes.string,
     userLogin: PropTypes.string,
     visible: PropTypes.bool,
-    _closeModal: PropTypes.func
+    closeModal: PropTypes.func
 };

@@ -88,8 +88,8 @@ export class SearchResultItem extends React.Component {
                         <Icon name='money' size={35} color='rgba(81, 138, 201, 1)'/>
                     </TouchableOpacity>
                 </View>
-                <ModalCard visible={this.state.isModalVisible} dhcpLogs={this.state.dhcpLogs} ping={this.state.ping} getPing={this.getPing.bind(this)} getDhcpLogs={this.getDhcpLogs.bind(this)} getPhoneNumber={this.getPhoneNumber.bind(this)} properties={element} _closeModal={this._toggleModalVisibility.bind(this)}/>
-                <AddCash mainUrl={mainUrl} cashTypes={cashTypes} visible={this.state.isModalCashVisible} userLogin={element.login} realname={element.realname} cash={element.Cash} _closeModal={this._toggleModalCashVisibility.bind(this)}/>
+                <ModalCard visible={this.state.isModalVisible} dhcpLogs={this.state.dhcpLogs} ping={this.state.ping} getPing={this.getPing.bind(this)} getDhcpLogs={this.getDhcpLogs.bind(this)} getPhoneNumber={this.getPhoneNumber.bind(this)} properties={element} closeModal={this._toggleModalVisibility.bind(this)}/>
+                <AddCash mainUrl={mainUrl} cashTypes={cashTypes} visible={this.state.isModalCashVisible} userLogin={element.login} realname={element.realname} cash={element.Cash} closeModal={this._toggleModalCashVisibility.bind(this)}/>
             </TouchableOpacity>
         );
     }

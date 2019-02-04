@@ -287,7 +287,7 @@ export class UserTaskModalUpdate extends React.Component {
                     </Card.Content>
                 </Card>
                 {!!element.login && (
-                    <ModalCardDetailsUser visible={this.state.showUserDetails} _closeModal={this._closeUserDetails.bind(this)} mainUrl={mainUrl} userLogin={element.login}/>
+                    <ModalCardDetailsUser visible={this.state.showUserDetails} closeModal={this._closeUserDetails.bind(this)} mainUrl={mainUrl} userLogin={element.login}/>
                 )}
             </Modal>
         );

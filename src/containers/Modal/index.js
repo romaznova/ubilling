@@ -25,15 +25,15 @@ export class ModalCard extends React.Component {
     }
 
     render() {
-        const { visible, _closeModal, dhcpLogs, ping, getPing, getDhcpLogs, properties } = this.props;
+        const { visible, closeModal, dhcpLogs, ping, getPing, getDhcpLogs, properties } = this.props;
         return (
             <Portal>
-                <Modal visible={visible} animationType='slide' onRequestClose={_closeModal} style={{flex: 1}}>
+                <Modal visible={visible} animationType='slide' onRequestClose={closeModal} style={{flex: 1}}>
                     <Card style={{flex: 1, padding: 5, position: 'relative', borderRadius: 0}}>
                         <Card.Content style={{flex: 1}}>
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4, marginBottom: 4,  borderBottomWidth: 2, borderBottomColor: 'rgba(81, 138, 201, 1)'}}>
                                 <TouchableOpacity style={{width: 22}}
-                                    onPress={_closeModal}
+                                    onPress={closeModal}
                                 >
                                     <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                                 </TouchableOpacity>
@@ -78,7 +78,7 @@ ModalCard.propTypes = {
     ping: PropTypes.string,
     properties: PropTypes.object,
     visible: PropTypes.bool,
-    _closeModal: PropTypes.func,
+    closeModal: PropTypes.func,
     getDhcpLogs: PropTypes.func,
     getPhoneNumber: PropTypes.func,
     getPing: PropTypes.func

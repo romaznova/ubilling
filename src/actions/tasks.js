@@ -43,7 +43,7 @@ export const requestTasks = (state, date) => dispatch => {
         .then(res => {
             dispatch({type: RESPONSE_TASKS});
             if (res.data && res.data.data) {
-                // dispatch(setTasks(sortedTasks(res.data.data)));
+                dispatch(setTasks(res.data.data));
                 dispatch(setTaskByDate(checkTasksByDate(state, {date: moment(date || state.userTasks.date).format('YYYY-MM-DD'), data: sortedTasks(res.data.data)})));
                 if (date) {
                     dispatch(setTasksDate(moment(date).format('YYYY-MM-DD')));

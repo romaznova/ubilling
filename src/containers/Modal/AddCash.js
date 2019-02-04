@@ -35,19 +35,19 @@ export class AddCash extends React.Component {
         _.forIn(cashTypes, (value, index) => {
             array.push({index, value});
         });
-        return _.map(_.sortBy(array, e => e.value), (element) => (<Picker.Item key={element.index} label={element.value} value={element.index} />));
+        return _.map(_.sortBy(array, e => e.value), (element) => {console.log({element, value: element.value}); return <Picker.Item key={element.index} label={element.value} value={element.index} />});
     }
 
     render() {
-        const { visible, _closeModal, userLogin, cash, realname } = this.props;
+        const { visible, closeModal, userLogin, cash, realname } = this.props;
         return (
             <Portal>
-                <Modal visible={visible} animationType='slide' onRequestClose={_closeModal} style={{flex: 1}}>
+                <Modal visible={visible} animationType='slide' onRequestClose={closeModal} style={{flex: 1}}>
                     <Card style={{flex: 1, padding: 5, position: 'relative', borderRadius: 0}}>
                         <Card.Content style={{flex: 1}}>
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4, marginBottom: 4,  borderBottomWidth: 2, borderBottomColor: 'rgba(81, 138, 201, 1)'}}>
                                 <TouchableOpacity style={{width: 22}}
-                                    onPress={_closeModal}
+                                    onPress={closeModal}
                                 >
                                     <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                                 </TouchableOpacity>
@@ -92,6 +92,6 @@ AddCash.propTypes = {
     realname: PropTypes.string,
     cashTypes: PropTypes.object,
     visible: PropTypes.bool,
-    _closeModal: PropTypes.func,
+    closeModal: PropTypes.func,
     userLogin: PropTypes.string
 };

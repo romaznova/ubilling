@@ -273,7 +273,7 @@ export class MainScreen extends React.Component {
                                     onSwipeLeft={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.userTasks.date).add(1, 'days').format('YYYY-MM-DD')) : null}
                                     onSwipeRight={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.userTasks.date).add(-1, 'days').format('YYYY-MM-DD')) : null}
                                 >
-                                    <UserTasksList tasks={this.state.activeSlideIndex === 0 ? this._getTodayTasks() : state.userTasks.tasksByDateInterval}
+                                    <UserTasksList tasks={this.state.activeSlideIndex === 0 ? state.userTasks.tasks : state.userTasks.tasksByDateInterval}
                                         tasksDate={state.userTasks.date}
                                         sort={state.userTasks.sort}
                                         sortTasksByAddress={this.sortTasksByAddress.bind(this)}
