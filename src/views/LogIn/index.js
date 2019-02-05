@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, AsyncStorage } from 'react-native';
+import {View, Text, Image, AsyncStorage, StyleSheet} from 'react-native';
 import { connect } from 'react-redux';
 import {setUserName, setLogInName, finishAutoLoading, confirmLogInUrl, setUrlMethod} from '../../actions/login';
 import { loggedIn } from '../../actions/fetchLoggedIn';
@@ -13,6 +13,7 @@ import qs from 'qs';
 import PropTypes from 'prop-types';
 
 const storage = '@MyAppStorage2';
+const requestTimeout = 10000;
 
 export class UserLogInForm extends React.Component {
 
@@ -38,7 +39,7 @@ export class UserLogInForm extends React.Component {
 
     sendLogInUrl(url) {
         const { state, dispatch } = this.props;
-        axios.get(`${state.user.urlMethod}${state.user.url || url}/?module=android`, {timeout: 5000})
+        axios.get(`${state.user.urlMethod}${state.user.url || url}/?module=android`, {timeout: requestTimeout})
             .then(res => {
                 AsyncStorage.setItem(storage, JSON.stringify({url: state.user.url}));
                 if (res.data && res.data.logged_in) {
@@ -64,7 +65,7 @@ export class UserLogInForm extends React.Component {
         const { state, dispatch } = this.props;
         const root = state.user;
         const data = _.assign({}, {login_form: 1, username: root.login, password: root.password, debug: root.debugMode});
-        axios.post(`${state.user.urlMethod}${root.url}/?module=android`, qs.stringify(data), {timeout: 5000})
+        axios.post(`${state.user.urlMethod}${root.url}/?module=android`, qs.stringify(data), {timeout: requestTimeout})
             .then(res => {
                 if (res.data && res.data.logged_in) {
                     dispatch(setUserName(res.data.admin_name));
@@ -89,14 +90,27 @@ export class UserLogInForm extends React.Component {
         } else LogIn = <AutoLoading sendLogInUrl={this.sendLogInUrl.bind(this)} storage={storage}/>;
 
         return (
-            <View style={{flex: 1, backgroundColor: '#F5FCFF'}}>
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <View style={[styles.fullSpace, styles.background]}>
+                <View style={[styles.fullSpace, styles.center]}>
                     {LogIn}
                 </View>
             </View>
         );
     }
 }
+
+const styles = StyleSheet.create({
+    fullSpace: {
+        flex: 1
+    },
+    center: {
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    background: {
+        backgroundColor: '#F5FCFF'
+    }
+});
 
 UserLogInForm = connect(
     state => ({ state }),

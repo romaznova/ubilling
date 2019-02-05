@@ -2531,10 +2531,11 @@ public final class R {
     public static final int src_images_clocks2=0x7f060065;
     public static final int src_images_drawerbg=0x7f060066;
     public static final int src_images_gears2=0x7f060067;
-    public static final int src_images_searching=0x7f060068;
-    public static final int src_images_ubilling_logo=0x7f060069;
-    public static final int tooltip_frame_dark=0x7f06006a;
-    public static final int tooltip_frame_light=0x7f06006b;
+    public static final int src_images_headerimgunicorn=0x7f060068;
+    public static final int src_images_searching=0x7f060069;
+    public static final int src_images_ubilling_logo=0x7f06006a;
+    public static final int tooltip_frame_dark=0x7f06006b;
+    public static final int tooltip_frame_light=0x7f06006c;
   }
   public static final class id {
     public static final int ALT=0x7f070000;
