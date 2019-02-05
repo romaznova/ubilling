@@ -1,11 +1,11 @@
-import { Text, View, TouchableOpacity } from 'react-native';
+import {Text, View, TouchableOpacity, StyleSheet} from 'react-native';
 import { Logo } from '../../containers/Logo';
 import { Button, Switch, TextInput } from 'react-native-paper';
 import React from 'react';
 import connect from 'react-redux/es/connect/connect';
 import { toggleDebugMode, setLogInName, setLogInPassword } from '../../actions/login';
 
-export class LogInForm extends React.Component{
+export class LogInForm extends React.Component {
 
     state = {
         isFetching: false
@@ -14,21 +14,21 @@ export class LogInForm extends React.Component{
     render() {
         const { state, dispatch, sendLogIn } = this.props;
         return (
-            <View style={{width: 280}}>
+            <View style={styles.container}>
                 <Logo/>
                 <View>
                     <TextInput label='ВВЕДИТЕ ЛОГИН'
                         mode='outlined'
                         value={state.user.login}
                         onChangeText={e => { dispatch(setLogInName(e)); }}
-                        style={{marginBottom: 10, backgroundColor: '#F5FCFF'}}
+                        style={[styles.input, styles.background]}
                     />
                     <TextInput label='ВВЕДИТЕ ПАРОЛЬ'
                         mode='outlined'
                         value={state.user.password}
                         secureTextEntry={true}
                         onChangeText={e => { dispatch(setLogInPassword(e)); }}
-                        style={{marginBottom: 10, backgroundColor: '#F5FCFF'}}
+                        style={[styles.input, styles.background]}
                     />
                     <TouchableOpacity onPress={() => { sendLogIn(); }} >
                         <Button mode='contained'
@@ -38,7 +38,7 @@ export class LogInForm extends React.Component{
                             ВОЙТИ
                         </Button>
                     </TouchableOpacity>
-                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 30}}>
+                    <View style={styles.debug}>
                         <Text>РЕЖИМ ОТЛАДКИ</Text>
                         <Switch value={state.user.debugMode}
                             onValueChange={() => { dispatch(toggleDebugMode(!state.payload)); }}
@@ -50,6 +50,27 @@ export class LogInForm extends React.Component{
         );
     }
 }
+
+const styles = StyleSheet.create({
+    fullSpace: {
+        flex: 1
+    },
+    input: {
+        marginBottom: 10
+    },
+    background: {
+        backgroundColor: '#F5FCFF'
+    },
+    debug: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 30
+    },
+    container: {
+        width: 280
+    }
+});
 
 LogInForm = connect(
     state => ({state}),
