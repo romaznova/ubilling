@@ -37,7 +37,7 @@ export let DrawerNavigator = createDrawerNavigator({
                         <View style={[styles.fullSpace, styles.navigationContainer]}>
                             <View style={styles.header}>
                                 <View style={styles.logoContainer}>
-                                    <Image style={{width: 240}} resizeMode='contain' source={require('../../images/Ubilling_logo.png')} />
+                                    <Image style={{width: 240, height: 160}} resizeMode='contain' source={require('../../images/header-img-unicorn.png')} />
                                 </View>
                             </View>
                             <ScrollView style={styles.fullSpace}>
