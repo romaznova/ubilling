@@ -22,17 +22,15 @@ export class OptionsScreen extends React.Component {
         return(
             <View style={[styles.fullSpace, {backgroundColor: '#F5FCFF'}]}>
                 <Header openDrawer={this.props.navigation.openDrawer}/>
-                <ImageBackground style={[styles.fullSpace, {height: Dimensions.get('window').height}]}
-                    resizeMode='cover'
-                    source={require('../../images/gears-2.jpeg')}>
-                    <View style={[styles.fullSpace, {backgroundColor: 'rgba(255,255,255,0.9)'}]}>
+                <View style={[styles.fullSpace]}>
+                    <View style={[styles.fullSpace]}>
                         <Title style={styles.centerText}>Настройки</Title>
                         <ScrollView style={styles.fullSpace}>
                             <UrlOptions/>
                             {/*<Rights rights={state.rights}/>*/}
                         </ScrollView>
                     </View>
-                </ImageBackground>
+                </View>
             </View>
         );
     }

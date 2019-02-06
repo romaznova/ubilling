@@ -3,7 +3,8 @@ import { Logo } from '../../containers/Logo';
 import { Button, Switch, TextInput } from 'react-native-paper';
 import React from 'react';
 import connect from 'react-redux/es/connect/connect';
-import { toggleDebugMode, setLogInName, setLogInPassword } from '../../actions/login';
+import {toggleDebugMode, setLogInName, setLogInPassword, confirmLogInUrl} from '../../actions/login';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export class LogInForm extends React.Component {
 
@@ -30,13 +31,18 @@ export class LogInForm extends React.Component {
                         onChangeText={e => { dispatch(setLogInPassword(e)); }}
                         style={[styles.input, styles.background]}
                     />
-                    <TouchableOpacity onPress={() => { sendLogIn(); }} >
+                    <TouchableOpacity onPress={() => { sendLogIn(); }}
+                                      style={styles.input}
+                    >
                         <Button mode='contained'
-                            dark={true}
+                            dark
                             disabled={!(!!state.user.login && !!state.user.password)}
                         >
                             ВОЙТИ
                         </Button>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { dispatch(confirmLogInUrl(false)); }}>
+                        <Button mode='contained' dark>Назад</Button>
                     </TouchableOpacity>
                     <View style={styles.debug}>
                         <Text>РЕЖИМ ОТЛАДКИ</Text>
@@ -65,7 +71,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginTop: 30
+        marginTop: 10
     },
     container: {
         width: 280
