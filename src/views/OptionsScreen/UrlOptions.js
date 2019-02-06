@@ -1,5 +1,5 @@
 import React from 'react';
-import {AsyncStorage, StyleSheet, View} from 'react-native';
+import {AsyncStorage, StyleSheet, View, Picker} from 'react-native';
 import { Switch, Text, TextInput } from 'react-native-paper';
 import connect from 'react-redux/es/connect/connect';
 import { setLogInUrl, toggleDebugMode, setUrlMethod } from '../../actions/login';
@@ -39,10 +39,17 @@ export class UrlOptions extends React.Component {
                         <View style={styles.spaceBetween}>
                             <View style={[styles.fullSpace, styles.center]}>
                                 <Icon name='unlock' color='rgba(81, 138, 201, 1)' size={34} style={styles.regularMargin} />
-                                <TextInput disabled={!this.state.changeUrlMethod}
-                                    onChangeText={e => {this._setUrlMethod(e);}}
-                                    value={state.user.urlMethod}
-                                    style={[styles.fullSpace, styles.regularMargin]}/>
+                                <Picker selectedValue={state.user.urlMethod}
+                                        onValueChange={itemValue =>
+                                            this._setUrlMethod(itemValue)
+                                        }
+                                        mode='dropdown'
+                                        enabled={this.state.changeUrlMethod}
+                                        style={[styles.fullSpace, styles.regularMargin]}
+                                >
+                                    <Picker.Item label='http://' value='http://' />
+                                    <Picker.Item label='https://' value='https://' />
+                                </Picker>
                             </View>
                             <Switch theme={{colors: {accent: '#518AC9'}}}
                                 value={this.state.changeUrlMethod}

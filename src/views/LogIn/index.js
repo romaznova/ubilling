@@ -72,7 +72,7 @@ export class UserLogInForm extends React.Component {
                     dispatch(setLogInName(res.data.admin));
                     dispatch(loggedIn(res.data.logged_in));
                     dispatch(addRights(res.data.rights));
-                } else alert('Вы не правильно введи логин или пароль!');
+                } else alert('Вы не правильно ввели логин или пароль!');
             })
             .catch(err => {
                 console.error(err);

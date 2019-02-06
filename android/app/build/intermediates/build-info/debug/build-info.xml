@@ -6,28 +6,28 @@
     density="420dpi"
     format="10"
     plugin-version="3.1.4"
-    timestamp="1549361887851"
+    timestamp="1549452855859"
     token="5329191222578282382"
     verifier="FULL_BUILD_REQUESTED" >
 
     <task
         name="javac"
-        duration="0" />
+        duration="132" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="0" />
+        duration="85" />
     <task
         name="verifier"
-        duration="0" />
+        duration="10" />
 
     <artifact
-        location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
+        location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
         type="SPLIT" />
     <artifact
-        location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
+        location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
         type="SPLIT" />
     <artifact
         location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/dep/dependencies.apk"
@@ -65,13 +65,13 @@
 
     <build
         build-mode="FULL"
-        timestamp="1549361887851"
+        timestamp="1549452855859"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
-            location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
+            location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
             type="SPLIT" />
         <artifact
-            location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
+            location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/slices/slice_9.apk"
             type="SPLIT" />
         <artifact
             location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/dep/dependencies.apk"

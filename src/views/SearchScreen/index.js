@@ -63,10 +63,8 @@ export class SearchScreen extends React.Component {
         return(
             <View style={[styles.fullSpace, {backgroundColor: '#F5FCFF'}]}>
                 <Header openDrawer={this.props.navigation.openDrawer}/>
-                <ImageBackground style={[styles.fullSpace, {height: Dimensions.get('window').height}]}
-                    resizeMode='cover'
-                    source={require('../../images/searching.jpeg')}>
-                    <View style={[styles.fullSpace, {backgroundColor: 'rgba(255,255,255,0.8)'}]}>
+                <View style={[styles.fullSpace]}>
+                    <View style={[styles.fullSpace]}>
                         <View>
                             <Title style={{textAlign: 'center'}}>Поиск абонента</Title>
                             <Searchbar style={styles.regularMargin} value={this.state.searchParams} label='Введите параметры поиска' onChangeText={text => {this.setState({searchParams: text});}}/>
@@ -103,7 +101,7 @@ export class SearchScreen extends React.Component {
                                 </ScrollView>
                         }
                     </View>
-                </ImageBackground>
+                </View>
             </View>
         );
     }
