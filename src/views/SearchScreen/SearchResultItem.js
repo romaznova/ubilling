@@ -20,7 +20,8 @@ export class SearchResultItem extends React.Component {
         cashtype: '0',
         newcash: '',
         newpaymentnote: '',
-        snackbarVisible: false
+        snackbarVisible: false,
+        addCashMessage: 'Счёт успешно пополнен'
     };
 
     _toggleModalVisibility() {
@@ -79,15 +80,17 @@ export class SearchResultItem extends React.Component {
     }
 
     setUserBalance(userLogin) {
-        const { mainUrl } =  this.props;
+        const { mainUrl, search } =  this.props;
         const data = qs.stringify({newcash: this.state.newcash, cashtype: this.state.cashtype, newpaymentnote: ''});
         return axios.post(`${mainUrl}/?module=android&&action=addcash&username=${userLogin}`, data, {timeout: requestTimeout})
             .then(res => {
                 if (res.data && res.data.success) {
-                    this.setState({snackbarVisible: true});
-                }
+                    this.setState({snackbarVisible: true, newcash: ''}, search);
+                } else if (res.data && res.data.message) {
+                    this.setState({snackbarVisible: true, addCashMessage: res.data.message, newcash: ''}, search);
+                } else this.setState({snackbarVisible: true, addCashMessage: 'Не удалось пополнить счёт', newcash: ''});
             })
-            .catch(cashErr => {console.log({cashErr});});
+            .catch(() => {this.setState({snackbarVisible: true, addCashMessage: 'Ошибка сети', newcash: ''});});
     }
 
     componentDidMount() {
@@ -134,8 +137,16 @@ export class SearchResultItem extends React.Component {
                             >
                                 <Button mode='contained' disabled={!~~this.state.newcash} dark={true}>ПОПОЛНИТЬ</Button>
                             </TouchableOpacity>
-                            <Snackbar visible={this.state.snackbarVisible} onDismiss={() => this.setState({snackbarVisible: false})}>
-                                Счёт успешно пополнен
+                            <Snackbar visible={this.state.snackbarVisible}
+                                      onDismiss={() => this.setState({snackbarVisible: false})}
+                                      action={{
+                                          label: 'OK',
+                                          onPress: () => {
+                                              this.setState({snackbarVisible: false})
+                                          },
+                                      }}
+                            >
+                                {this.state.addCashMessage}
                             </Snackbar>
                         </Card.Content>
                     </Card>

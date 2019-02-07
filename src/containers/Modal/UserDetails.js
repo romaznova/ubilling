@@ -2,7 +2,6 @@ import React from 'react';
 import { View, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { Portal, Text, Card, Title, List, Button } from 'react-native-paper';
 import { Preloader } from '../Preloader';
-import { AddCash } from './AddCash';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
@@ -141,7 +140,6 @@ export class ModalCardDetailsUser extends React.Component {
                             </List.Section>
                         </Card.Content>
                     </Card>
-                    <AddCash closeModal={() => this.setState({isModalCashVisible: false})} visible={this.state.isModalCashVisible} mainUrl={mainUrl} userLogin={userLogin}/>
                 </Modal>
             </Portal>
         );
