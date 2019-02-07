@@ -264,7 +264,7 @@ export class MainScreen extends React.Component {
                         <View style={styles.fullSpace}>
                             {state.userTasks.isFetching && (!(state.userTasks.todayTasks && state.userTasks.todayTasks.length) || this.state.activeSlideIndex)
                                 ?
-                                (<View style={[styles.fullSpace, styles.backgroundBlur, {justifyContent: 'center'}]}>
+                                (<View style={[styles.fullSpace, {justifyContent: 'center'}]}>
                                     <Logo/>
                                     <Preloader text='Идёт поиск заявок'/>
                                 </View>)
