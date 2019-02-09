@@ -70,6 +70,7 @@ export class UserLogInForm extends React.Component {
         const { state, dispatch } = this.props;
         const root = state.user;
         const data = _.assign({}, {login_form: 1, username: root.login, password: root.password, debug: root.debugMode});
+        this.setState({isFetching: true});
         axios.post(`${state.user.urlMethod}${root.url}/?module=android`, qs.stringify(data), {timeout: requestTimeout})
             .then(res => {
                 if (res.data && res.data.logged_in) {
@@ -78,9 +79,11 @@ export class UserLogInForm extends React.Component {
                     dispatch(loggedIn(res.data.logged_in));
                     dispatch(addRights(res.data.rights));
                 } else alert(res.data.message || 'Вы не правильно ввели логин или пароль!');
+                this.setState({isFetching: true});
             })
             .catch(err => {
                 console.error(err);
+                this.setState({isFetching: true});
                 alert('Ууупс, что-то пошло не так! Проверьте подключение к интернету');
             });
     }
