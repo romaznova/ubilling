@@ -7,7 +7,7 @@ import connect from 'react-redux/es/connect/connect';
 
 export class UrlForm extends React.Component {
     render() {
-        const { state, dispatch, sendLogInUrl, setUrlMethod } = this.props;
+        const { state, dispatch, sendLogInUrl, setUrlMethod, isFetching } = this.props;
         return (
             <View style={styles.container}>
                 <Logo/>
@@ -32,11 +32,12 @@ export class UrlForm extends React.Component {
                         style={[styles.input, styles.background]}
                     />
                     <TouchableOpacity onPress={ () => { sendLogInUrl(); }}>
-                        <Button disabled={!state.user.url}
+                        <Button disabled={!state.user.url || isFetching}
                             mode='contained'
                             dark={true}
+                            loading={isFetching}
                         >
-                            ПОДТВЕРДИТЬ
+                            {!isFetching && 'ПОДТВЕРДИТЬ'}
                         </Button>
                     </TouchableOpacity>
                 </View>
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
         height: 44
     },
     container: {
-        width: 280
+        width: 300
     }
 });
 
