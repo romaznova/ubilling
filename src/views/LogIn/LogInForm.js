@@ -36,7 +36,7 @@ export class LogInForm extends React.Component {
                     >
                         <Button mode='contained'
                             dark
-                            disabled={!(!!state.user.login && !!state.user.password || isFetching)}
+                            disabled={!(!!state.user.login && !!state.user.password) || isFetching}
                             loading={isFetching}
                         >
                             {!isFetching && 'ВОЙТИ'}

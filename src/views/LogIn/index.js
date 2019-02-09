@@ -79,11 +79,11 @@ export class UserLogInForm extends React.Component {
                     dispatch(loggedIn(res.data.logged_in));
                     dispatch(addRights(res.data.rights));
                 } else alert(res.data.message || 'Вы не правильно ввели логин или пароль!');
-                this.setState({isFetching: true});
+                this.setState({isFetching: false});
             })
             .catch(err => {
                 console.error(err);
-                this.setState({isFetching: true});
+                this.setState({isFetching: false});
                 alert('Ууупс, что-то пошло не так! Проверьте подключение к интернету');
             });
     }
