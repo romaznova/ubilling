@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, TouchableOpacity, Image, ImageBackground, StyleSheet, ActivityIndicator} from 'react-native';
+import {View, TouchableOpacity, Image, PanResponder, StyleSheet, ActivityIndicator, Animated} from 'react-native';
 import {Checkbox, Text} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import connect from 'react-redux/es/connect/connect';
@@ -15,7 +15,6 @@ import { Logo } from '../../containers/Logo';
 import _ from 'lodash';
 import moment from 'moment';
 import Swiper from 'react-native-swiper';
-import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import { Header } from '../../components/Header';
 import { Sort } from '../../containers/Sort';
 import PropTypes from 'prop-types';
@@ -33,6 +32,8 @@ export class MainScreen extends React.Component {
         date: moment().format('YYYY-MM-DD'),
         activeSlideIndex: 0
     };
+
+    position = new Animated.ValueXY();
 
 
     _getAllEmployees() {
@@ -152,6 +153,41 @@ export class MainScreen extends React.Component {
         }
     }
 
+    _getTodayTasks() {
+        const { state } = this.props;
+        const currentTasks = _.find(state.userTasks.tasksByDate, {date: this.state.date});
+        if (currentTasks && currentTasks.data) {
+            return currentTasks.data;
+        }
+    }
+
+    _panResponder = PanResponder.create({
+        onMoveShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponderCapture: () => true,
+        onPanResponderMove: (ev, gestureState) => {
+            this.position.setValue({x: gestureState.dx, y: 0})
+        },
+        onPanResponderRelease: (evt, gestureState) => {
+            if (gestureState.dx > 150) {
+                this._getPrevDayTasks();
+            }
+            if (gestureState.dx < -150) {
+                this._getNextDayTasks();
+            }
+            this.position.setValue({x: 0, y: 0})
+        }
+    });
+
+    _getNextDayTasks() {
+        const { state } = this.props;
+        this._getTasks(moment(state.userTasks.date).add(1, 'days').format('YYYY-MM-DD'));
+    }
+
+    _getPrevDayTasks() {
+        const { state } = this.props;
+        this._getTasks(moment(state.userTasks.date).add(-1, 'days').format('YYYY-MM-DD'));
+    }
+
     componentDidMount() {
         const { state } = this.props;
         this._getUndoneTasks();
@@ -164,17 +200,11 @@ export class MainScreen extends React.Component {
         if (!(state.jobTypes && state.jobTypes.length)) {
             this._getAllJobTypes();
         }
-        this._getTasks(this.state.date, () => {
-            this._getTodayTasks();
-            this.sortTasks();
-        });
-    }
-
-    _getTodayTasks() {
-        const { state } = this.props;
-        const currentTasks = _.find(state.userTasks.tasksByDate, {date: this.state.date});
-        if (currentTasks && currentTasks.data) {
-            return currentTasks.data;
+        if (!(state.userTasks.tasks && state.userTasks.tasks.length)) {
+            this._getTasks(this.state.date, () => {
+                this._getTodayTasks();
+                this.sortTasks();
+            });
         }
     }
 
@@ -269,9 +299,8 @@ export class MainScreen extends React.Component {
                                     <Preloader text='Идёт поиск заявок'/>
                                 </View>)
                                 :
-                                (<GestureRecognizer style={styles.fullSpace}
-                                    onSwipeLeft={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.userTasks.date).add(1, 'days').format('YYYY-MM-DD')) : null}
-                                    onSwipeRight={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.userTasks.date).add(-1, 'days').format('YYYY-MM-DD')) : null}
+                                (<Animated.View style={[styles.fullSpace, {transform: this.position.getTranslateTransform()}]}
+                                                {...this._panResponder.panHandlers}
                                 >
                                     <UserTasksList tasks={this.state.activeSlideIndex === 0 ? state.userTasks.tasks : state.userTasks.tasksByDateInterval}
                                         tasksDate={state.userTasks.date}
@@ -293,7 +322,7 @@ export class MainScreen extends React.Component {
                                         rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
                                         activeSlideIndex={this.state.activeSlideIndex}
                                     />
-                                </GestureRecognizer>)
+                                </Animated.View>)
                             }
                             {!!(state.userTasks.tasks && state.userTasks.tasks.length && this.state.activeSlideIndex === 0) && (
                                 <Sort sort={state.userTasks.sort}

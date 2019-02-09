@@ -1,5 +1,13 @@
 import React from 'react';
-import {View, TouchableOpacity, Picker, Image, ImageBackground, ActivityIndicator, StyleSheet} from 'react-native';
+import {
+    View,
+    TouchableOpacity,
+    Picker,
+    Image,
+    ActivityIndicator,
+    StyleSheet,
+    Animated, PanResponder
+} from 'react-native';
 import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import connect from 'react-redux/es/connect/connect';
@@ -14,7 +22,6 @@ import { Logo } from '../../containers/Logo';
 import _ from 'lodash';
 import moment from 'moment';
 import Swiper from 'react-native-swiper';
-import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import { Header } from '../../components/Header';
 import { setUndoneTasks } from '../../actions/messages';
 import PropTypes from 'prop-types';
@@ -36,6 +43,8 @@ export class AllTasksScreen extends React.Component {
         activeSlideIndex: 0,
         renderResults: 1
     }
+
+    position = new Animated.ValueXY();
 
     _changeEmployee(employee) {
         this.setState({employee: employee});
@@ -176,6 +185,33 @@ export class AllTasksScreen extends React.Component {
         }
     }
 
+    _panResponder = PanResponder.create({
+        onMoveShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponderCapture: () => true,
+        onPanResponderMove: (ev, gestureState) => {
+            this.position.setValue({x: gestureState.dx, y: 0})
+        },
+        onPanResponderRelease: (evt, gestureState) => {
+            if (gestureState.dx > 150) {
+                this._getPrevDayTasks();
+            }
+            if (gestureState.dx < -150) {
+                this._getNextDayTasks();
+            }
+            this.position.setValue({x: 0, y: 0})
+        }
+    });
+
+    _getNextDayTasks() {
+        const { state } = this.props;
+        this._getTasks(moment(state.allTasks.date).add(1, 'days').format('YYYY-MM-DD'), this.state.employee);
+    }
+
+    _getPrevDayTasks() {
+        const { state } = this.props;
+        this._getTasks(moment(state.allTasks.date).add(-1, 'days').format('YYYY-MM-DD'), this.state.employee);
+    }
+
     componentDidMount() {
         const { state } = this.props;
         this._getUndoneTasks();
@@ -188,9 +224,11 @@ export class AllTasksScreen extends React.Component {
         if (!(state.jobTypes && state.jobTypes.length)) {
             this._getAllJobTypes();
         }
-        this._getTasks(this.state.date, this.state.employee, () => {
-            this.sortTasks();
-        });
+        if (!(state.allTasks.tasks && state.allTasks.tasks.length)) {
+            this._getTasks(this.state.date, this.state.employee, () => {
+                this.sortTasks();
+            });
+        }
     }
 
     render() {
@@ -301,9 +339,8 @@ export class AllTasksScreen extends React.Component {
                                     <Preloader text='Идёт поиск заявок'/>
                                 </View>)
                                 :
-                                (<GestureRecognizer style={{flex: 2}}
-                                    onSwipeLeft={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.allTasks.date).add(1, 'days').format('YYYY-MM-DD'), this.state.employee) : null}
-                                    onSwipeRight={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.allTasks.date).add(-1, 'days').format('YYYY-MM-DD'), this.state.employee) : null}
+                                (<Animated.View style={[{flex: 2}, {transform: this.position.getTranslateTransform()}]}
+                                                {...this._panResponder.panHandlers}
                                 >
                                     <UserTasksList tasks={this.state.activeSlideIndex === 0 ? state.allTasks.tasks : state.allTasks.tasksByDateInterval}
                                         sort={state.allTasks.sort}
@@ -326,7 +363,7 @@ export class AllTasksScreen extends React.Component {
                                         rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
                                         activeSlideIndex={this.state.activeSlideIndex}
                                     />
-                                </GestureRecognizer>)
+                                </Animated.View>)
                             }
                             {!!(state.allTasks.tasks && state.allTasks.tasks.length && this.state.activeSlideIndex === 0) && (
                                 <Sort sort={state.allTasks.sort}
