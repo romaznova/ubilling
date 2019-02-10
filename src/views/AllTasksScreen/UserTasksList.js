@@ -8,10 +8,15 @@ import PropTypes from 'prop-types';
 
 export class UserTasksList extends React.Component {
     _renderItems() {
-        const { tasks, tasksDate, changeTask, changeTaskStatus, renderResults, staff, jobtypes, login, employee, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
+        const { tasks, sort, tasksDate, changeTask, changeTaskStatus, renderResults, staff, jobtypes, login, employee, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
         const renderLength = 20;
         if (tasks && tasks.length) {
-            return _.map(tasks.slice(0, renderLength * renderResults), (element, index) => {
+            const sortedTasks = _.sortBy(tasks, [
+                sort.status && 'status',
+                sort.time && 'starttime',
+                sort.address && 'address'
+            ]);
+            return _.map(sortedTasks.slice(0, renderLength * renderResults), (element, index) => {
                 return (
                     <UserTask key={element.id}
                         element={element}

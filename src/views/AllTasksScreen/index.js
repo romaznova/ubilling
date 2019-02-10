@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-    View,
-    TouchableOpacity,
-    Picker,
-    Image,
-    ActivityIndicator,
-    StyleSheet,
-    Animated, PanResponder
-} from 'react-native';
+import { View, TouchableOpacity, Picker, Image, ActivityIndicator, StyleSheet, Animated, PanResponder } from 'react-native';
 import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import connect from 'react-redux/es/connect/connect';
@@ -26,7 +18,7 @@ import { Header } from '../../components/Header';
 import { setUndoneTasks } from '../../actions/messages';
 import PropTypes from 'prop-types';
 import {modifyTask, modifyTaskStatus, setTaskComment} from '../../actions/tasks';
-import {Sort} from '../../containers/Sort';
+import { Sort } from '../../containers/Sort';
 
 export class AllTasksScreen extends React.Component {
 
@@ -48,21 +40,6 @@ export class AllTasksScreen extends React.Component {
 
     _changeEmployee(employee) {
         this.setState({employee: employee});
-    }
-
-    _getTasksByDate(callback) {
-        const { state, dispatch } = this.props;
-        if (state.allTasks.tasksByDate.length) {
-            _.map(state.allTasks.tasksByDate, elem => {
-                if (elem.date === this.state.date) {
-                    dispatch(setAllTasks(elem.data));
-                    dispatch(setAllTasksDate(elem.date));
-                }
-            });
-        }
-        if (callback) {
-            callback();
-        }
     }
 
     _getAllEmployees() {
@@ -90,22 +67,18 @@ export class AllTasksScreen extends React.Component {
         const { state, dispatch } = this.props;
         const data = qs.stringify({taskid: e.id, modifystarttime: e.starttime, modifystartdate: e.startdate, modifytaskaddress: e.address, modifytaskphone: e.phone || e.mobile, modifytaskjobtype: e.jobtype, modifytaskemployee: e.employee, modifytaskjobnote: e.jobnote});
         dispatch(modifyTask(state, data));
-        this._getTasks(this.state.date, this.state.employee, () => {
-            this.sortTasks();
-        });
+        this._getTasks(this.state.date, this.state.employee);
     }
 
     changeTaskStatus(data) {
         const { state, dispatch } = this.props;
         dispatch(modifyTaskStatus(state, qs.stringify(data)));
-        this._getTasks(this.state.date, this.state.employee, () => {
-            this.sortTasks();
-        });
+        this._getTasks(this.state.date, this.state.employee);
     }
 
     _getTasks(date, employee) {
         const { state, dispatch } = this.props;
-        this.setState({date: date, employee: employee, renderResults: 1}, () => this._getTasksByDate(() => dispatch(requestAllTasks(state, date, employee))));
+        this.setState({date: date, employee: employee, renderResults: 1}, () => dispatch(requestAllTasks(state, date, employee)));
     }
 
     _getTasksByDateInterval(employee) {
@@ -125,9 +98,7 @@ export class AllTasksScreen extends React.Component {
         const { state, dispatch } = this.props;
         const data = qs.stringify({taskid: id, newcommentstext: comment});
         dispatch(setTaskComment(state, data));
-        this._getTasks(this.state.date, this.state.employee, () => {
-            this.sortTasks();
-        });
+        this._getTasks(this.state.date, this.state.employee);
     }
 
     _setDateIntervalStart(date) {
@@ -140,34 +111,34 @@ export class AllTasksScreen extends React.Component {
         dispatch(setAllDateIntervalEnd(_.assign({}, state.allTasks.dateInterval, {end: date})));
     }
 
-    sortTasks(sort) {
-        const { state, dispatch } = this.props;
-        dispatch(setAllTasks(_.sortBy(state.allTasks.tasks, [
-            sort.status && 'status',
-            sort.time && 'starttime',
-            sort.address && 'address'
-        ])));
-    }
+    // sortTasks(sort) {
+    //     const { state, dispatch } = this.props;
+    //     dispatch(setAllTasks(_.sortBy(state.allTasks.tasks, [
+    //         sort.status && 'status',
+    //         sort.time && 'starttime',
+    //         sort.address && 'address'
+    //     ])));
+    // }
 
     sortTasksByStatus() {
         const { state, dispatch } = this.props;
         const status = _.assign({}, state.allTasks.sort, {status: !state.allTasks.sort.status});
         dispatch(setAllTasksSort(status));
-        this.sortTasks(status);
+        // this.sortTasks(status);
     }
 
     sortTasksByTime() {
         const { state, dispatch } = this.props;
         const status = _.assign({}, state.allTasks.sort, {time: !state.allTasks.sort.time});
         dispatch(setAllTasksSort(status));
-        this.sortTasks(status);
+        // this.sortTasks(status);
     }
 
     sortTasksByAddress() {
         const { state, dispatch } = this.props;
         const status = _.assign({}, state.allTasks.sort, {address: !state.allTasks.sort.address});
         dispatch(setAllTasksSort(status));
-        this.sortTasks(status);
+        // this.sortTasks(status);
     }
 
     _renderEmployeesList() {
@@ -204,12 +175,14 @@ export class AllTasksScreen extends React.Component {
 
     _getNextDayTasks() {
         const { state } = this.props;
-        this._getTasks(moment(state.allTasks.date).add(1, 'days').format('YYYY-MM-DD'), this.state.employee);
+        const initialDate = moment(state.allTasks.date).add(1, 'days').format('YYYY-MM-DD');
+        this._getTasks(initialDate, this.state.employee);
     }
 
     _getPrevDayTasks() {
         const { state } = this.props;
-        this._getTasks(moment(state.allTasks.date).add(-1, 'days').format('YYYY-MM-DD'), this.state.employee);
+        const initialDate = moment(state.allTasks.date).add(-1, 'days').format('YYYY-MM-DD');
+        this._getTasks(initialDate, this.state.employee);
     }
 
     componentDidMount() {
@@ -225,14 +198,13 @@ export class AllTasksScreen extends React.Component {
             this._getAllJobTypes();
         }
         if (!(state.allTasks.tasks && state.allTasks.tasks.length)) {
-            this._getTasks(this.state.date, this.state.employee, () => {
-                this.sortTasks();
-            });
+            this._getTasks(this.state.date, this.state.employee);
         }
     }
 
     render() {
         const { state } = this.props;
+        const allTasks = _.find(state.allTasks.tasksByDate, {date: state.allTasks.date});
         return(
             <View style={{flex: 1, backgroundColor: '#F5FCFF'}}>
                 <Header openDrawer={this.props.navigation.openDrawer}/>
@@ -265,15 +237,12 @@ export class AllTasksScreen extends React.Component {
                                         </View>
                                     </View>
                                     <TouchableOpacity style={{marginRight: 10}} onPress={() => {this._getTasks(this.state.date, this.state.employee);}}>
-                                        {state.allTasks.isFetching && (state.allTasks.tasks && state.allTasks.tasks.length)
+                                        {state.allTasks.isFetching && (allTasks && allTasks.data && allTasks.data.length)
                                             ?
-                                            (
                                                 <ActivityIndicator color='rgba(81, 138, 201, 1)' size={25}/>
-                                            )
                                             :
-                                            (
                                                 <Icon name='refresh' size={25} color='rgba(81, 138, 201, 1)'/>
-                                            )}
+                                        }
                                     </TouchableOpacity>
                                 </View>
                                 <View>
@@ -332,40 +301,40 @@ export class AllTasksScreen extends React.Component {
                             </Picker>
                         </View>
                         <View style={{flex: 1}}>
-                            {state.allTasks.isFetching && (!(state.allTasks.tasks && state.allTasks.tasks.length) || this.state.activeSlideIndex)
+                            {state.allTasks.isFetching && (!(allTasks && allTasks.data && allTasks.data.length) || this.state.activeSlideIndex)
                                 ?
-                                (<View style={{flex: 1, justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.9)'}}>
-                                    <Logo/>
-                                    <Preloader text='Идёт поиск заявок'/>
-                                </View>)
+                                    <View style={{flex: 1, justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.9)'}}>
+                                        <Logo/>
+                                        <Preloader text='Идёт поиск заявок'/>
+                                    </View>
                                 :
-                                (<Animated.View style={[{flex: 2}, {transform: this.position.getTranslateTransform()}]}
-                                                {...this._panResponder.panHandlers}
-                                >
-                                    <UserTasksList tasks={this.state.activeSlideIndex === 0 ? state.allTasks.tasks : state.allTasks.tasksByDateInterval}
-                                        sort={state.allTasks.sort}
-                                        tasksDate={state.allTasks.date}
-                                        sortTasksByAddress={this.sortTasksByAddress.bind(this)}
-                                        sortTasksByTime={this.sortTasksByTime.bind(this)}
-                                        sortTasksByStatus={this.sortTasksByStatus.bind(this)}
-                                        changeTask={this.changeTask.bind(this)}
-                                        changeTaskStatus={this.changeTaskStatus.bind(this)}
-                                        setTaskComment={this.setTaskComment.bind(this)}
-                                        setRenderCounter={() => {this.setState({renderResults: this.state.renderResults + 1});}}
-                                        renderResults={this.state.renderResults}
-                                        employee={this.state.employee}
-                                        staff={state.staff}
-                                        jobtypes={state.jobTypes}
-                                        login={state.user.login}
-                                        mainUrl={`${state.user.urlMethod}${state.user.url}`}
-                                        rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
-                                        rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
-                                        rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
-                                        activeSlideIndex={this.state.activeSlideIndex}
-                                    />
-                                </Animated.View>)
+                                    <Animated.View style={[{flex: 2}, {transform: this.position.getTranslateTransform()}]}
+                                                    {...this._panResponder.panHandlers}
+                                    >
+                                        <UserTasksList tasks={this.state.activeSlideIndex === 0 ? allTasks && allTasks.data ? allTasks.data : [] : state.allTasks.tasksByDateInterval}
+                                            sort={state.allTasks.sort}
+                                            tasksDate={state.allTasks.date}
+                                            sortTasksByAddress={this.sortTasksByAddress.bind(this)}
+                                            sortTasksByTime={this.sortTasksByTime.bind(this)}
+                                            sortTasksByStatus={this.sortTasksByStatus.bind(this)}
+                                            changeTask={this.changeTask.bind(this)}
+                                            changeTaskStatus={this.changeTaskStatus.bind(this)}
+                                            setTaskComment={this.setTaskComment.bind(this)}
+                                            setRenderCounter={() => {this.setState({renderResults: this.state.renderResults + 1});}}
+                                            renderResults={this.state.renderResults}
+                                            employee={this.state.employee}
+                                            staff={state.staff}
+                                            jobtypes={state.jobTypes}
+                                            login={state.user.login}
+                                            mainUrl={`${state.user.urlMethod}${state.user.url}`}
+                                            rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
+                                            rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
+                                            rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
+                                            activeSlideIndex={this.state.activeSlideIndex}
+                                        />
+                                    </Animated.View>
                             }
-                            {!!(state.allTasks.tasks && state.allTasks.tasks.length && this.state.activeSlideIndex === 0) && (
+                            {!!(allTasks && allTasks.data && allTasks.data.length && this.state.activeSlideIndex === 0) && (
                                 <Sort sort={state.allTasks.sort}
                                     sortTasksByAddress={this.sortTasksByAddress.bind(this)}
                                     sortTasksByTime={this.sortTasksByTime.bind(this)}

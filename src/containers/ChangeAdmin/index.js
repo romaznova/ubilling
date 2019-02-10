@@ -3,6 +3,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Logo} from '../Logo';
 
 export class ChangeAdmin extends React.Component {
 
@@ -20,6 +21,7 @@ export class ChangeAdmin extends React.Component {
                     <Modal visible={this.state.isModalOpen} onDismiss={() => {this.setState({isModalOpen: false});}}>
                         <Card style={{margin: 10}}>
                             <Card.Content>
+                                <Logo/>
                                 <Title style={{textAlign: 'center', marginBottom: 20}}>Вы уверены что хотите сменить пользователя?</Title>
                                 <View style={{flexDirection: 'row'}}>
                                     <TouchableOpacity style={{flex: 1, marginRight: 2}} onPress={() => {_logOut();}}>
