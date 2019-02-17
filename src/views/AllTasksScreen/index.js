@@ -6,7 +6,7 @@ import connect from 'react-redux/es/connect/connect';
 import DatePicker from 'react-native-datepicker';
 import { UserTasksList } from './UserTasksList';
 import qs from 'qs';
-import { setAllTasks, setAllTasksDate, setAllTasksSort, requestAllTasks, requestAllTasksByDateInterval, setAllDateIntervalStart, setAllDateIntervalEnd } from '../../actions/allTasks';
+import { setAllTasks, setAllTaskByDate, setAllTasksDate, setAllTasksSort, requestAllTasks, requestAllTasksByDateInterval, setAllDateIntervalStart, setAllDateIntervalEnd } from '../../actions/allTasks';
 import { setEmployees, setAdmins } from '../../actions/staff';
 import { setAllJobTypes } from '../../actions/jobtypes';
 import { Preloader } from '../../containers/Preloader';
@@ -19,6 +19,12 @@ import { setUndoneTasks } from '../../actions/messages';
 import PropTypes from 'prop-types';
 import {modifyTask, modifyTaskStatus, setTaskComment} from '../../actions/tasks';
 import { Sort } from '../../containers/Sort';
+import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+
+const gestureConfig = {
+    velocityThreshold: 0.3,
+    directionalOffsetThreshold: 80
+};
 
 export class AllTasksScreen extends React.Component {
 
@@ -67,16 +73,29 @@ export class AllTasksScreen extends React.Component {
         const { state, dispatch } = this.props;
         const data = qs.stringify({taskid: e.id, modifystarttime: e.starttime, modifystartdate: e.startdate, modifytaskaddress: e.address, modifytaskphone: e.phone || e.mobile, modifytaskjobtype: e.jobtype, modifytaskemployee: e.employee, modifytaskjobnote: e.jobnote});
         dispatch(modifyTask(state, data));
-        this._getTasks(this.state.date, this.state.employee);
+        this._requestTasks(this.state.date, this.state.employee);
     }
 
     changeTaskStatus(data) {
         const { state, dispatch } = this.props;
         dispatch(modifyTaskStatus(state, qs.stringify(data)));
-        this._getTasks(this.state.date, this.state.employee);
+        this._requestTasks(this.state.date, this.state.employee);
     }
 
     _getTasks(date, employee) {
+        const { state, dispatch } = this.props;
+        this.setState({date: date, employee: employee, renderResults: 1}, () => {
+            const currentTasks = _.find(state.allTasks.tasksByDate, {date: date});
+            if (!(currentTasks && currentTasks.data && currentTasks.data.length)) {
+                dispatch(requestAllTasks(state, date, employee))
+            } else {
+                dispatch(setAllTasksDate(moment(date).format('YYYY-MM-DD')));
+                this._requestTasks(date, employee);
+            }
+        });
+    }
+
+    _requestTasks(date, employee) {
         const { state, dispatch } = this.props;
         this.setState({date: date, employee: employee, renderResults: 1}, () => dispatch(requestAllTasks(state, date, employee)));
     }
@@ -98,7 +117,7 @@ export class AllTasksScreen extends React.Component {
         const { state, dispatch } = this.props;
         const data = qs.stringify({taskid: id, newcommentstext: comment});
         dispatch(setTaskComment(state, data));
-        this._getTasks(this.state.date, this.state.employee);
+        this._requestTasks(this.state.date, this.state.employee);
     }
 
     _setDateIntervalStart(date) {
@@ -111,34 +130,22 @@ export class AllTasksScreen extends React.Component {
         dispatch(setAllDateIntervalEnd(_.assign({}, state.allTasks.dateInterval, {end: date})));
     }
 
-    // sortTasks(sort) {
-    //     const { state, dispatch } = this.props;
-    //     dispatch(setAllTasks(_.sortBy(state.allTasks.tasks, [
-    //         sort.status && 'status',
-    //         sort.time && 'starttime',
-    //         sort.address && 'address'
-    //     ])));
-    // }
-
     sortTasksByStatus() {
         const { state, dispatch } = this.props;
         const status = _.assign({}, state.allTasks.sort, {status: !state.allTasks.sort.status});
         dispatch(setAllTasksSort(status));
-        // this.sortTasks(status);
     }
 
     sortTasksByTime() {
         const { state, dispatch } = this.props;
         const status = _.assign({}, state.allTasks.sort, {time: !state.allTasks.sort.time});
         dispatch(setAllTasksSort(status));
-        // this.sortTasks(status);
     }
 
     sortTasksByAddress() {
         const { state, dispatch } = this.props;
         const status = _.assign({}, state.allTasks.sort, {address: !state.allTasks.sort.address});
         dispatch(setAllTasksSort(status));
-        // this.sortTasks(status);
     }
 
     _renderEmployeesList() {
@@ -157,8 +164,12 @@ export class AllTasksScreen extends React.Component {
     }
 
     _panResponder = PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponderCapture: () => true,
+        onStartShouldSetPanResponderCapture: () => false,
+        onMoveShouldSetPanResponderCapture: () => false,
+        onPanResponderTerminationRequest: () => true,
+        onShouldBlockNativeResponder: () => false,
         onPanResponderMove: (ev, gestureState) => {
             this.position.setValue({x: gestureState.dx, y: 0})
         },
@@ -224,7 +235,7 @@ export class AllTasksScreen extends React.Component {
                                             </View>
                                         </View>
                                     </View>
-                                    <TouchableOpacity style={{marginRight: 10}} onPress={() => {this._getTasks(this.state.date, this.state.employee);}}>
+                                    <TouchableOpacity style={{marginRight: 10}} onPress={() => {this._requestTasks(this.state.date, this.state.employee);}}>
                                         {state.allTasks.isFetching && (allTasks && allTasks.data && allTasks.data.length)
                                             ?
                                                 <ActivityIndicator color='rgba(81, 138, 201, 1)' size={25}/>
@@ -296,8 +307,10 @@ export class AllTasksScreen extends React.Component {
                                         <Preloader text='Идёт поиск заявок'/>
                                     </View>
                                 :
-                                    <Animated.View style={[{flex: 2}, {transform: this.position.getTranslateTransform()}]}
-                                                    {...this._panResponder.panHandlers}
+                                    <GestureRecognizer style={[{flex: 2}]}
+                                                       onSwipeLeft={this._getNextDayTasks.bind(this)}
+                                                       onSwipeRight={this._getPrevDayTasks.bind(this)}
+                                                       config={gestureConfig}
                                     >
                                         <UserTasksList tasks={this.state.activeSlideIndex === 0 ? allTasks && allTasks.data ? allTasks.data : [] : state.allTasks.tasksByDateInterval}
                                             sort={state.allTasks.sort}
@@ -320,7 +333,7 @@ export class AllTasksScreen extends React.Component {
                                             rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
                                             activeSlideIndex={this.state.activeSlideIndex}
                                         />
-                                    </Animated.View>
+                                    </GestureRecognizer>
                             }
                             {!!(allTasks && allTasks.data && allTasks.data.length && this.state.activeSlideIndex === 0) && (
                                 <Sort sort={state.allTasks.sort}

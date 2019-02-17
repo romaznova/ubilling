@@ -24,10 +24,6 @@ export const setAllTaskByDate = createAction(SET_ALL_TASK_BY_DATE, payload => pa
 const requestTimeout = 10000;
 const checkAllTasksByDate = (state, data) => {
     if (state.allTasks.tasksByDate.length) {
-        const currentTasks = _.takeWhile(state.allTasks.tasksByDate, {date: state.allTasks.date});
-        // console.log({currentTasks, data});
-        const diff = _.differenceWith(currentTasks.data, data.data);
-        console.log({diff});
         const removedItems = _.pullAllBy(state.allTasks.tasksByDate, [data], 'date');
         return _.unionBy(_.map(removedItems, elem => elem), [data], 'date');
     } else return [data];
@@ -41,7 +37,7 @@ export const requestAllTasks = (state, date, employee) => dispatch => {
         .then(res => {
             dispatch({type: RESPONSE_ALL_TASKS});
             if (res.data && res.data.data) {
-                if (date) {
+                if (date && date !== state.allTasks.date) {
                     dispatch(setAllTasksDate(moment(date).format('YYYY-MM-DD')));
                 }
                 dispatch(setAllTaskByDate(checkAllTasksByDate(state, {date: currentDate, data: res.data.data})));

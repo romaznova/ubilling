@@ -10,8 +10,10 @@ export class UserTasksList extends React.Component {
     _renderItems() {
         const { tasks, sort, tasksDate, changeTask, changeTaskStatus, renderResults, staff, jobtypes, login, employee, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
         const renderLength = 20;
-        if (tasks && tasks.length) {
-            const sortedTasks = _.sortBy(tasks, [
+        const employeesCurrentTasks = _.find(tasks, {employee});
+        const employeesTasks = !employee ? tasks : !employeesCurrentTasks ? employeesCurrentTasks : [];
+        if (employeesTasks && employeesTasks.length) {
+            const sortedTasks = _.sortBy(employeesTasks, [
                 sort.status && 'status',
                 sort.time && 'starttime',
                 sort.address && 'address'
@@ -19,21 +21,21 @@ export class UserTasksList extends React.Component {
             return _.map(sortedTasks.slice(0, renderLength * renderResults), (element, index) => {
                 return (
                     <UserTask key={element.id}
-                        element={element}
-                        index={index}
-                        changeTask={changeTask}
-                        changeTaskStatus={changeTaskStatus}
-                        setTaskComment={setTaskComment}
-                        staff={staff}
-                        jobtypes={jobtypes}
-                        login={login}
-                        tasksDate={tasksDate}
-                        employee={employee}
-                        mainUrl={mainUrl}
-                        rightsChangeDate={rightsChangeDate}
-                        rightsChangeTaskStatus={rightsChangeTaskStatus}
-                        rightsChangeTaskStatusDoneDate={rightsChangeTaskStatusDoneDate}
-                        activeSlideIndex={activeSlideIndex}
+                              element={element}
+                              index={index}
+                              changeTask={changeTask}
+                              changeTaskStatus={changeTaskStatus}
+                              setTaskComment={setTaskComment}
+                              staff={staff}
+                              jobtypes={jobtypes}
+                              login={login}
+                              tasksDate={tasksDate}
+                              employee={employee}
+                              mainUrl={mainUrl}
+                              rightsChangeDate={rightsChangeDate}
+                              rightsChangeTaskStatus={rightsChangeTaskStatus}
+                              rightsChangeTaskStatusDoneDate={rightsChangeTaskStatusDoneDate}
+                              activeSlideIndex={activeSlideIndex}
                     />
                 );
             });
@@ -46,7 +48,8 @@ export class UserTasksList extends React.Component {
     }
 
     render () {
-        const { tasks, renderResults, setRenderCounter } =  this.props;
+        const { tasks, employee, renderResults, setRenderCounter } =  this.props;
+        const employeesTasks = !employee ? tasks : [_.find(tasks, {employee})];
         return (
             <View style={{flex: 1}}>
                 {(!!tasks && !!tasks.length) && (
@@ -65,7 +68,7 @@ export class UserTasksList extends React.Component {
                 )}
                 <ScrollView style={{flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.9)'}} overScrollMode='always'>
                     {this._renderItems()}
-                    {!!(tasks && tasks.length && tasks.length > renderResults * 20) && (
+                    {!!(employeesTasks && employeesTasks.length && employeesTasks.length > renderResults * 20) && (
                         <TouchableOpacity onPress={setRenderCounter}>
                             <Button dark={true} mode='contained' style={{margin: 5}}>Показать ещё</Button>
                         </TouchableOpacity>

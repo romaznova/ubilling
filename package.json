@@ -19,6 +19,7 @@
     "react-native-paper": "^2.1.2",
     "react-native-phone-call": "^1.0.9",
     "react-native-sound": "^0.10.9",
+    "react-native-swipe-gestures": "^1.0.3",
     "react-native-swiper": "^1.5.14",
     "react-native-vector-icons": "^6.0.2",
     "react-navigation": "^2.18.0",

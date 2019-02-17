@@ -20,9 +20,8 @@ export class EditUserDetails extends React.Component {
     }
 
     _setUserDetails() {
-        const { mainUrl, search } = this.props;
+        const { mainUrl, search, properties } = this.props;
         const data = _.assign({}, {
-            username: this.state.properties.login || '',
             newpassword: this.state.properties.Password || '',
             newrealname: this.state.properties.realname || '',
             newphone: this.state.properties.phone || '',
@@ -35,13 +34,13 @@ export class EditUserDetails extends React.Component {
             editcondet: this.state.properties.editcondet || ''
         });
 
-        return axios.post(`${mainUrl}/?module=android&action=useredit`, qs.stringify(data), {timeout: requestTimeout})
+        return axios.post(`${mainUrl}/?module=android&action=useredit&username=${this.state.properties.login}`, qs.stringify(data), {timeout: requestTimeout})
             .then(res => {
                 if (res.data && res.data.success) {
                     this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Изменения сохранены'}, search);
-                } else this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, search);
+                } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, search);
             })
-            .catch(() => {this.setState({snackbarVisible: true, responseMessage: 'Ошибка сети'}, search);});
+            .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'}, search);});
     }
 
     _renderProperties() {
@@ -153,11 +152,6 @@ export class EditUserDetails extends React.Component {
     }
 
     componentDidMount() {
-        const { properties } = this.props;
-        this.setState({properties});
-    }
-
-    componentWillReceiveProps() {
         const { properties } = this.props;
         this.setState({properties});
     }
