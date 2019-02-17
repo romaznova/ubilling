@@ -30,7 +30,7 @@ const checkAllTasksByDate = (state, data) => {
 };
 
 export const requestAllTasks = (state, date, employee) => dispatch => {
-    const employeeID = Number(employee) ? `${Number(employee)}` : 'all';
+    const employeeID = 'all';
     const currentDate = moment(date || state.allTasks.date).format('YYYY-MM-DD');
     dispatch({type: REQUEST_ALL_TASKS});
     return axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=taskman&date=${currentDate}&emploee=${employeeID}`, {timeout: requestTimeout})
