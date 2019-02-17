@@ -60,7 +60,10 @@ export class UserTaskModalComments extends React.Component {
                         </ScrollView>
                         <View>
                             <TextInput value={this.state.comment} onChangeText={text => {this.setState({comment: text});}} style={{marginBottom: 5}}/>
-                            <TouchableOpacity onPress={() => setTaskComment(element.id, this.state.comment)}>
+                            <TouchableOpacity onPress={() => {
+                                setTaskComment(element.id, this.state.comment);
+                                this.setState({comment: ''});
+                            }}>
                                 <Button mode='contained' dark={true}>Отправить</Button>
                             </TouchableOpacity>
                         </View>

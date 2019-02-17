@@ -24,7 +24,8 @@ export const setAllTaskByDate = createAction(SET_ALL_TASK_BY_DATE, payload => pa
 const requestTimeout = 10000;
 const checkAllTasksByDate = (state, data) => {
     if (state.allTasks.tasksByDate.length) {
-        return _.unionBy(_.map(state.allTasks.tasksByDate, elem => elem), [data], 'date');
+        const removedItems = _.pullAllBy(state.allTasks.tasksByDate, [data], 'date');
+        return _.unionBy(_.map(removedItems, elem => elem), [data], 'date');
     } else return [data];
 };
 
@@ -36,16 +37,10 @@ export const requestAllTasks = (state, date, employee) => dispatch => {
         .then(res => {
             dispatch({type: RESPONSE_ALL_TASKS});
             if (res.data && res.data.data) {
-                dispatch(setAllTasks(_.sortBy(res.data.data, [
-                    state.allTasks.sort.status && 'status',
-                    state.allTasks.sort.time && 'starttime',
-                    state.allTasks.sort.address && 'address'
-                ])));
-                dispatch(setAllTaskByDate(checkAllTasksByDate(state, {date: currentDate, data: res.data.data})));
-
-                if (date) {
+                if (date && date !== state.allTasks.date) {
                     dispatch(setAllTasksDate(moment(date).format('YYYY-MM-DD')));
                 }
+                dispatch(setAllTaskByDate(checkAllTasksByDate(state, {date: currentDate, data: res.data.data})));
             }
         })
         .catch(() => {
@@ -60,11 +55,7 @@ export const requestAllTasksByDateInterval = (state, date, employee) => dispatch
         .then(res => {
             dispatch({type: RESPONSE_ALL_TASKS});
             if (res.data && res.data.data) {
-                dispatch(setAllTasksByDateInterval(_.sortBy(res.data.data, [
-                    state.allTasks.sort.status && 'status',
-                    state.allTasks.sort.time && 'starttime',
-                    state.allTasks.sort.address && 'address'
-                ])));
+                dispatch(setAllTasksByDateInterval(res.data.data));
             }
         })
         .catch((err) => {

@@ -607,12 +607,9 @@ int drawable src_images_calendar 0x7f060063
 int drawable src_images_clocks 0x7f060064
 int drawable src_images_clocks2 0x7f060065
 int drawable src_images_drawerbg 0x7f060066
-int drawable src_images_gears2 0x7f060067
-int drawable src_images_headerimgunicorn 0x7f060068
-int drawable src_images_searching 0x7f060069
-int drawable src_images_ubilling_logo 0x7f06006a
-int drawable tooltip_frame_dark 0x7f06006b
-int drawable tooltip_frame_light 0x7f06006c
+int drawable src_images_headerimgunicorn 0x7f060067
+int drawable tooltip_frame_dark 0x7f060068
+int drawable tooltip_frame_light 0x7f060069
 int id ALT 0x7f070000
 int id CTRL 0x7f070001
 int id FUNCTION 0x7f070002

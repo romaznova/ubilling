@@ -26,31 +26,21 @@ export const setTaskByDate = createAction(SET_TASK_BY_DATE, payload => payload);
 const requestTimeout = 10000;
 const checkTasksByDate = (state, data) => {
     if (state.userTasks.tasksByDate.length) {
-        return _.unionBy(_.map(state.userTasks.tasksByDate, elem => elem), [data], 'date');
+        const removedItems = _.pullAllBy(state.userTasks.tasksByDate, [data], 'date');
+        return _.unionBy(_.map(removedItems, elem => elem), [data], 'date');
     } else return [data];
 };
 
 export const requestTasks = (state, date) => dispatch => {
-    const sortedTasks = tasks => _.sortBy(tasks, [
-        state.userTasks.sort.status && 'status',
-        state.userTasks.sort.time && 'starttime',
-        state.userTasks.sort.address && 'address'
-    ]);
-
     dispatch({type: REQUEST_TASKS});
-
     return axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&action=taskman&date=${moment(date || state.userTasks.date).format('YYYY-MM-DD')}`, {timeout: requestTimeout})
         .then(res => {
             dispatch({type: RESPONSE_TASKS});
             if (res.data && res.data.data) {
-                dispatch(setTasks(res.data.data));
-                dispatch(setTaskByDate(checkTasksByDate(state, {date: moment(date || state.userTasks.date).format('YYYY-MM-DD'), data: sortedTasks(res.data.data)})));
-                if (date) {
+                if (date && date !== state.userTasks.date) {
                     dispatch(setTasksDate(moment(date).format('YYYY-MM-DD')));
                 }
-                if ((date === moment().format('YYYY-MM-DD'))) {
-                    dispatch(setTasksToday(sortedTasks(res.data.data)));
-                }
+                dispatch(setTaskByDate(checkTasksByDate(state, {date: moment(date || state.userTasks.date).format('YYYY-MM-DD'), data: res.data.data})));
             }
         })
         .catch(() => {
@@ -60,16 +50,11 @@ export const requestTasks = (state, date) => dispatch => {
 
 export const requestAllTasksByDateInterval = (state, date) => dispatch => {
     dispatch({type: REQUEST_TASKS});
-    const sortedTasks = tasks => _.sortBy(tasks, [
-        state.userTasks.sort.status && 'status',
-        state.userTasks.sort.time && 'starttime',
-        state.userTasks.sort.address && 'address'
-    ]);
     return axios.get(`${state.user.urlMethod}${state.user.url}/?module=android&startdate=${date.start}&enddate=${date.end}`, {timeout: requestTimeout})
         .then(res => {
             dispatch({type: RESPONSE_TASKS});
             if (res.data && res.data.data) {
-                dispatch(setTasksByDateInterval(sortedTasks(res.data.data)));
+                dispatch(setTasksByDateInterval(res.data.data));
             }
         })
         .catch(() => {

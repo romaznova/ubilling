@@ -1,12 +1,24 @@
 import React from 'react';
-import {View, TouchableOpacity, Image, ImageBackground, StyleSheet, ActivityIndicator} from 'react-native';
-import {Checkbox, Text} from 'react-native-paper';
+import { View, TouchableOpacity, Image, PanResponder, StyleSheet, ActivityIndicator, Animated } from 'react-native';
+import { Checkbox, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import connect from 'react-redux/es/connect/connect';
 import DatePicker from 'react-native-datepicker';
 import { UserTasksList } from './UserTasksList';
 import qs from 'qs';
-import { requestTasks, setTasks, setTasksDate, setTasksSort, requestAllTasksByDateInterval, setDateIntervalStart, setDateIntervalEnd, modifyTask, modifyTaskStatus, setTaskComment } from '../../actions/tasks';
+import {
+    requestTasks,
+    setTasks,
+    setTaskByDate,
+    setTasksSort,
+    requestAllTasksByDateInterval,
+    setDateIntervalStart,
+    setDateIntervalEnd,
+    modifyTask,
+    modifyTaskStatus,
+    setTaskComment,
+    setTasksDate
+} from '../../actions/tasks';
 import { setEmployees, setAdmins } from '../../actions/staff';
 import { setAllJobTypes } from '../../actions/jobtypes';
 import { setUndoneTasks } from '../../actions/messages';
@@ -15,10 +27,15 @@ import { Logo } from '../../containers/Logo';
 import _ from 'lodash';
 import moment from 'moment';
 import Swiper from 'react-native-swiper';
-import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import { Header } from '../../components/Header';
 import { Sort } from '../../containers/Sort';
+import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import PropTypes from 'prop-types';
+
+const gestureConfig = {
+    velocityThreshold: 0.3,
+    directionalOffsetThreshold: 80
+};
 
 export class MainScreen extends React.Component {
 
@@ -33,7 +50,6 @@ export class MainScreen extends React.Component {
         date: moment().format('YYYY-MM-DD'),
         activeSlideIndex: 0
     };
-
 
     _getAllEmployees() {
         const { state, dispatch } = this.props;
@@ -58,6 +74,19 @@ export class MainScreen extends React.Component {
 
     _getTasks(date) {
         const { state, dispatch } = this.props;
+        this.setState({date: date}, () => {
+            const currentTasks = _.find(state.userTasks.tasksByDate, {date: date});
+            if (!(currentTasks && currentTasks.data && currentTasks.data.length)) {
+                dispatch(requestTasks(state, date));
+            } else {
+                dispatch(setTasksDate(moment(date).format('YYYY-MM-DD')));
+                this._requestTasks(date);
+            }
+        });
+    }
+
+    _requestTasks(date) {
+        const { state, dispatch } = this.props;
         this.setState({date: date}, () => dispatch(requestTasks(state, date)));
     }
 
@@ -77,6 +106,7 @@ export class MainScreen extends React.Component {
         const { state, dispatch } = this.props;
         const data = qs.stringify({taskid: id, newcommentstext: comment});
         dispatch(setTaskComment(state, data));
+        this._requestTasks(this.state.date);
         if (callback) {
             callback();
         }
@@ -106,30 +136,25 @@ export class MainScreen extends React.Component {
         const { state, dispatch } = this.props;
         const status = _.assign({}, state.userTasks.sort, {status: !state.userTasks.sort.status});
         dispatch(setTasksSort(status));
-        this.sortTasks(status);
     }
 
     sortTasksByTime() {
         const { state, dispatch } = this.props;
         const status = _.assign({}, state.userTasks.sort, {time: !state.userTasks.sort.time});
         dispatch(setTasksSort(status));
-        this.sortTasks(status);
     }
 
     sortTasksByAddress() {
         const { state, dispatch } = this.props;
         const status = _.assign({}, state.userTasks.sort, {address: !state.userTasks.sort.address});
         dispatch(setTasksSort(status));
-        this.sortTasks(status);
     }
 
     changeTask(e, callback) {
         const { state, dispatch } = this.props;
         const data = qs.stringify({taskid: e.id, modifystarttime: e.starttime, modifystartdate: e.startdate, modifytaskaddress: e.address, modifytaskphone: e.phone || e.mobile, modifytaskjobtype: e.jobtype, modifytaskemployee: e.employee, modifytaskjobnote: e.jobnote});
         dispatch(modifyTask(state, data));
-        this._getTasks(this.state.date, () => {
-            this.sortTasks();
-        });
+        this._requestTasks(this.state.date);
         if (callback) {
             callback();
         }
@@ -138,7 +163,7 @@ export class MainScreen extends React.Component {
     changeTaskStatus(data, callback) {
         const { state, dispatch } = this.props;
         dispatch(modifyTaskStatus(state, qs.stringify(data)));
-        this._getTasks(this.state.date, () => {
+        this._requestTasks(this.state.date, () => {
             this.sortTasks();
         });
         if (callback) {
@@ -150,6 +175,26 @@ export class MainScreen extends React.Component {
         if (this.state.activeSlideIndex !== index) {
             this.setState({activeSlideIndex: index});
         }
+    }
+
+    _getTodayTasks() {
+        const { state } = this.props;
+        const currentTasks = _.find(state.userTasks.tasksByDate, {date: this.state.date});
+        if (currentTasks && currentTasks.data) {
+            return currentTasks.data;
+        }
+    }
+
+    _getNextDayTasks() {
+        const { state } = this.props;
+        const initialDate = moment(state.userTasks.date).add(1, 'days').format('YYYY-MM-DD');
+        this._getTasks(initialDate);
+    }
+
+    _getPrevDayTasks() {
+        const { state } = this.props;
+        const initialDate = moment(state.userTasks.date).add(-1, 'days').format('YYYY-MM-DD');
+        this._getTasks(initialDate);
     }
 
     componentDidMount() {
@@ -164,22 +209,12 @@ export class MainScreen extends React.Component {
         if (!(state.jobTypes && state.jobTypes.length)) {
             this._getAllJobTypes();
         }
-        this._getTasks(this.state.date, () => {
-            this._getTodayTasks();
-            this.sortTasks();
-        });
-    }
-
-    _getTodayTasks() {
-        const { state } = this.props;
-        const currentTasks = _.find(state.userTasks.tasksByDate, {date: this.state.date});
-        if (currentTasks && currentTasks.data) {
-            return currentTasks.data;
-        }
+        this._getTasks(this.state.date);
     }
 
     render() {
         const { state } = this.props;
+        const userTasks = _.find(state.userTasks.tasksByDate, {date: state.userTasks.date});
         return(
             <View style={[styles.fullSpace, {backgroundColor: '#F5FCFF'}]}>
                 <Header openDrawer={this.props.navigation.openDrawer}/>
@@ -211,8 +246,8 @@ export class MainScreen extends React.Component {
                                             </View>
                                         </View>
                                     </View>
-                                    <TouchableOpacity style={{marginRight: 10}} onPress={() => {this._getTasks(this.state.date);}}>
-                                        {state.userTasks.isFetching && (state.userTasks.todayTasks && state.userTasks.todayTasks.length)
+                                    <TouchableOpacity style={{marginRight: 10}} onPress={() => {this._requestTasks(this.state.date);}}>
+                                        {state.userTasks.isFetching && (userTasks &&  userTasks.data && userTasks.data.length)
                                             ?
                                                 <ActivityIndicator color='rgba(81, 138, 201, 1)' size={25}/>
                                             :
@@ -262,40 +297,41 @@ export class MainScreen extends React.Component {
                             </Swiper>
                         </View>
                         <View style={styles.fullSpace}>
-                            {state.userTasks.isFetching && (!(state.userTasks.todayTasks && state.userTasks.todayTasks.length) || this.state.activeSlideIndex)
+                            {state.userTasks.isFetching && (!(userTasks &&  userTasks.data && userTasks.data.length) || this.state.activeSlideIndex)
                                 ?
-                                (<View style={[styles.fullSpace, styles.backgroundBlur, {justifyContent: 'center'}]}>
-                                    <Logo/>
-                                    <Preloader text='Идёт поиск заявок'/>
-                                </View>)
+                                    <View style={[styles.fullSpace, {justifyContent: 'center'}]}>
+                                        <Logo/>
+                                        <Preloader text='Идёт поиск заявок'/>
+                                    </View>
                                 :
-                                (<GestureRecognizer style={styles.fullSpace}
-                                    onSwipeLeft={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.userTasks.date).add(1, 'days').format('YYYY-MM-DD')) : null}
-                                    onSwipeRight={() => this.state.activeSlideIndex === 0 ? this._getTasks(moment(state.userTasks.date).add(-1, 'days').format('YYYY-MM-DD')) : null}
-                                >
-                                    <UserTasksList tasks={this.state.activeSlideIndex === 0 ? state.userTasks.tasks : state.userTasks.tasksByDateInterval}
-                                        tasksDate={state.userTasks.date}
-                                        sort={state.userTasks.sort}
-                                        sortTasksByAddress={this.sortTasksByAddress.bind(this)}
-                                        sortTasksByTime={this.sortTasksByTime.bind(this)}
-                                        sortTasksByStatus={this.sortTasksByStatus.bind(this)}
-                                        changeTask={this.changeTask.bind(this)}
-                                        changeTaskStatus={this.changeTaskStatus.bind(this)}
-                                        setTaskComment={this.setTaskComment.bind(this)}
-                                        searchresults={this.state.searchresults}
-                                        staff={state.staff}
-                                        jobtypes={state.jobTypes}
-                                        login={state.user.login}
-                                        mainUrl={`${state.user.urlMethod}${state.user.url}`}
-                                        rights={state.rights.TASKMAN && state.rights.TASKMAN.rights}
-                                        rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
-                                        rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
-                                        rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
-                                        activeSlideIndex={this.state.activeSlideIndex}
-                                    />
-                                </GestureRecognizer>)
+                                    <GestureRecognizer style={[styles.fullSpace]}
+                                                       onSwipeLeft={this._getNextDayTasks.bind(this)}
+                                                       onSwipeRight={this._getPrevDayTasks.bind(this)}
+                                                       config={gestureConfig}
+                                    >
+                                        <UserTasksList tasks={this.state.activeSlideIndex === 0 ? userTasks && userTasks.data ? userTasks.data : [] : state.userTasks.tasksByDateInterval}
+                                            tasksDate={state.userTasks.date}
+                                            sort={state.userTasks.sort}
+                                            sortTasksByAddress={this.sortTasksByAddress.bind(this)}
+                                            sortTasksByTime={this.sortTasksByTime.bind(this)}
+                                            sortTasksByStatus={this.sortTasksByStatus.bind(this)}
+                                            changeTask={this.changeTask.bind(this)}
+                                            changeTaskStatus={this.changeTaskStatus.bind(this)}
+                                            setTaskComment={this.setTaskComment.bind(this)}
+                                            searchresults={this.state.searchresults}
+                                            staff={state.staff}
+                                            jobtypes={state.jobTypes}
+                                            login={state.user.login}
+                                            mainUrl={`${state.user.urlMethod}${state.user.url}`}
+                                            rights={state.rights.TASKMAN && state.rights.TASKMAN.rights}
+                                            rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
+                                            rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
+                                            rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
+                                            activeSlideIndex={this.state.activeSlideIndex}
+                                        />
+                                    </GestureRecognizer>
                             }
-                            {!!(state.userTasks.tasks && state.userTasks.tasks.length && this.state.activeSlideIndex === 0) && (
+                            {!!(userTasks && userTasks.data && userTasks.data.length && this.state.activeSlideIndex === 0) && (
                                 <Sort sort={state.userTasks.sort}
                                     sortTasksByAddress={this.sortTasksByAddress.bind(this)}
                                     sortTasksByTime={this.sortTasksByTime.bind(this)}

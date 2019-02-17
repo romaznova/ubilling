@@ -35,7 +35,7 @@ export class SearchScreen extends React.Component {
         return _.map(array, (element, index) => {
             const { state } = this.props;
             return (
-                <SearchResultItem key={element.login} element={element} index={index} mainUrl={`${state.user.urlMethod}${state.user.url}`} cashTypes={state.cashTypes}/>
+                <SearchResultItem key={element.login} search={() => {this._search(this.state.searchParams)}} element={element} index={index} mainUrl={`${state.user.urlMethod}${state.user.url}`} cashTypes={state.cashTypes}/>
             );
         });
     }
@@ -72,8 +72,8 @@ export class SearchScreen extends React.Component {
                                 ?
                                 (
                                     <TouchableOpacity onPress={() => {this._search(this.state.searchParams);}}>
-                                        <Button style={styles.regularMargin} loading={this.state.isOnSearching} mode='contained' dark={true}>
-                                        Найти
+                                        <Button style={styles.regularMargin} disabled={this.state.isOnSearching} loading={this.state.isOnSearching} mode='contained' dark={true}>
+                                            {!this.state.isOnSearching && 'Найти'}
                                         </Button>
                                     </TouchableOpacity>
                                 )
@@ -84,7 +84,7 @@ export class SearchScreen extends React.Component {
                                 Всего результатов: <Text style={styles.accentFont}>{this.state.searchResults.length}</Text>
                             </Text>
                         )}
-                        {this.state.isOnSearching
+                        {(this.state.isOnSearching && !this.state.searchResults.length)
                             ?
                                 <View>
                                     <Logo/>

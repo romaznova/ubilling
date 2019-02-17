@@ -133,35 +133,33 @@ export class UserTask extends React.Component {
                         )}
                     </View>
                 </View>
-                <Portal>
-                    <UserTaskModalUpdate element={element}
-                        visible={this.state.isModalUpdateOpen}
-                        staff={staff}
-                        jobtypes={jobtypes}
-                        getPhoneNumber={this.getPhoneNumber.bind(this)}
-                        getStatus={this.getStatus.bind(this)}
-                        setModalVisibility={this.setModalUpdateVisibility.bind(this)}
-                        changeTask={element => {changeTask(element); this.setModalUpdateVisibility();}}
-                        mainUrl={mainUrl}
-                        rightsChangeDate={rightsChangeDate}
-                    />
-                    <UserTaskModalStatus element={element}
-                        staff={staff}
-                        jobtypes={jobtypes}
-                        visible={this.state.isModalStatusOpen}
-                        setModalVisibility={this.setModalStatusVisibility.bind(this)}
-                        changeTask={data => {changeTaskStatus(data); this.setModalStatusVisibility();}}
-                        login={login}
-                        rightsChangeTaskStatus={rightsChangeTaskStatus}
-                        rightsChangeTaskStatusDoneDate={rightsChangeTaskStatusDoneDate}
-                    />
-                    <UserTaskModalComments element={element}
-                        staff={staff}
-                        setModalVisibility={this.setModalCommentsVisibility.bind(this)}
-                        visible={this.state.isModalCommentsOpen}
-                        setTaskComment={(id, comment) => {setTaskComment(id, comment); this.setModalCommentsVisibility();}}
-                    />
-                </Portal>
+                <UserTaskModalUpdate element={element}
+                                     visible={this.state.isModalUpdateOpen}
+                                     staff={staff}
+                                     jobtypes={jobtypes}
+                                     getPhoneNumber={this.getPhoneNumber.bind(this)}
+                                     getStatus={this.getStatus.bind(this)}
+                                     setModalVisibility={this.setModalUpdateVisibility.bind(this)}
+                                     changeTask={element => {changeTask(element); this.setModalUpdateVisibility();}}
+                                     mainUrl={mainUrl}
+                                     rightsChangeDate={rightsChangeDate}
+                />
+                <UserTaskModalStatus element={element}
+                                     staff={staff}
+                                     jobtypes={jobtypes}
+                                     visible={this.state.isModalStatusOpen}
+                                     setModalVisibility={this.setModalStatusVisibility.bind(this)}
+                                     changeTask={data => {changeTaskStatus(data); this.setModalStatusVisibility();}}
+                                     login={login}
+                                     rightsChangeTaskStatus={rightsChangeTaskStatus}
+                                     rightsChangeTaskStatusDoneDate={rightsChangeTaskStatusDoneDate}
+                />
+                <UserTaskModalComments element={element}
+                                       staff={staff}
+                                       setModalVisibility={this.setModalCommentsVisibility.bind(this)}
+                                       visible={this.state.isModalCommentsOpen}
+                                       setTaskComment={(id, comment) => {setTaskComment(id, comment); this.setModalCommentsVisibility();}}
+                />
             </TouchableOpacity>
         );
     }

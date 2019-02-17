@@ -9,9 +9,14 @@ import PropTypes from 'prop-types';
 export class UserTasksList extends React.Component {
 
     _renderItems(tasks) {
-        const { tasksDate, changeTask, changeTaskStatus, staff, jobtypes, login, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
+        const { tasksDate, sort, changeTask, changeTaskStatus, staff, jobtypes, login, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
         if (tasks && tasks.length) {
-            return _.map(tasks, (element, index) => {
+            const sortedTasks = _.sortBy(tasks, [
+                sort.status && 'status',
+                sort.time && 'starttime',
+                sort.address && 'address'
+            ]);
+            return _.map(sortedTasks, (element, index) => {
                 return (
                     <UserTask key={element.id}
                         element={element}

@@ -13,7 +13,7 @@ export class LogInForm extends React.Component {
     }
 
     render() {
-        const { state, dispatch, sendLogIn } = this.props;
+        const { state, dispatch, sendLogIn, isFetching } = this.props;
         return (
             <View style={styles.container}>
                 <Logo/>
@@ -36,9 +36,10 @@ export class LogInForm extends React.Component {
                     >
                         <Button mode='contained'
                             dark
-                            disabled={!(!!state.user.login && !!state.user.password)}
+                            disabled={!(!!state.user.login && !!state.user.password) || isFetching}
+                            loading={isFetching}
                         >
-                            ВОЙТИ
+                            {!isFetching && 'ВОЙТИ'}
                         </Button>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { dispatch(confirmLogInUrl(false)); }}>
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     container: {
-        width: 280
+        width: 300
     }
 });
 
