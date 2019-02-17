@@ -29,7 +29,7 @@ export class ModalCardDetailsUser extends React.Component {
                     this.getPing(userLogin);
                 } else this.setState({properties: {'Ошибка':'Не удалось загрузить данные'}, isFetching: false});
             })
-            .catch((err) => {this.setState({properties: {'Ошибка':'Не удалось загрузить данные'}, isFetching: false});console.log({pingError: err});});
+            .catch((err) => {this.setState({properties: {'Ошибка':'Ошибка сети'}, isFetching: false});console.log({pingError: err});});
     }
 
     getDhcpLogs(userLogin) {
@@ -39,11 +39,11 @@ export class ModalCardDetailsUser extends React.Component {
             .then(res => {
                 if (res.data.data && res.data.data[userLogin] && res.data.data[userLogin].dhcp) {
                     this.setState({dhcpLogs: res.data.data[userLogin].dhcp, isFetching: false});
-                } else  this.setState({dhcpLogs: 'Логов нет'});
+                } else this.setState({dhcpLogs: 'Логов нет'});
             })
             .catch(dhcpError => {
                 console.log({dhcpError});
-                this.setState({dhcpLogs: 'Не удалось посмотреть логи'});
+                this.setState({dhcpLogs: 'Ошибка при загрузке данных ....'});
             });
     }
 
@@ -52,9 +52,11 @@ export class ModalCardDetailsUser extends React.Component {
         this.setState({isFetching: true});
         return axios.get(`${mainUrl}/?module=android&&action=pl_pinger&username=${userLogin}`, {timeout: 5000})
             .then(res => {
-                this.setState({ping: res.data.data[userLogin].ping, isFetching: false});
+                if (res.data.data && res.data.data[userLogin] && res.data.data[userLogin].ping) {
+                    this.setState({ping: res.data.data[userLogin].ping, isFetching: false});
+                } this.setState({ping: 'Не удалось получить данные'});
             })
-            .catch(pingErr => {console.log({pingErr});this.setState({dhcpLogs: 'Не удалось получить данные ...',isFetching: false});});
+            .catch(pingErr => {console.log({pingErr});this.setState({dhcpLogs: 'Ошибка при загрузке данных ...',isFetching: false});});
     }
 
     getPhoneNumber(number) {
@@ -94,54 +96,52 @@ export class ModalCardDetailsUser extends React.Component {
     }
 
     render() {
-        const { visible, closeModal, userLogin, mainUrl} = this.props;
+        const { visible, closeModal, userLogin } = this.props;
         return (
-            <Portal>
-                <Modal visible={visible} animationType='slide' onRequestClose={closeModal} style={{flex: 1}}>
-                    <Card style={{flex: 1, padding: 5, position: 'relative', borderRadius: 0}}>
-                        <Card.Content style={{flex: 1}}>
-                            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4, marginBottom: 4,  borderBottomWidth: 2, borderBottomColor: 'rgba(81, 138, 201, 1)'}}>
-                                <TouchableOpacity style={{width: 22}}
-                                    onPress={closeModal}
-                                >
-                                    <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
-                                </TouchableOpacity>
-                                <Title style={{color: 'rgba(81, 138, 201, 1)'}}>Карточка абонента</Title>
-                                <TouchableOpacity onPress={() => this.setState({isModalCashVisible: true})}>
-                                    <Icon name='user' size={35} color='rgba(81, 138, 201, 1)'/>
-                                </TouchableOpacity>
-                            </View>
-                            {this.state.isFetching && !this.state.properties
-                                ? (<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><Preloader/></View>)
-                                : (<ScrollView style={{flex: 1}}>
-                                    {this._renderAllProperties()}
-                                </ScrollView>)}
-                            <List.Section>
-                                {this.state.dhcpLogs && (
-                                    <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть DHCP логи'>
-                                        <TouchableOpacity style={{margin: 5}} onPress={() => this.getDhcpLogs(userLogin)}>
-                                            <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && 'Запрос'}</Button>
-                                        </TouchableOpacity>
-                                        <ScrollView style={{height: 170}}>
-                                            <Text selectable>{this.state.dhcpLogs}</Text>
-                                        </ScrollView>
-                                    </List.Accordion>
-                                )}
-                                {this.state.ping && (
-                                    <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть пинг'>
-                                        <TouchableOpacity style={{margin: 5}} onPress={() => this.getPing(userLogin)}>
-                                            <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && 'Запрос'}</Button>
-                                        </TouchableOpacity>
-                                        <ScrollView style={{height: 170}}>
-                                            <Text selectable>{this.state.ping}</Text>
-                                        </ScrollView>
-                                    </List.Accordion>
-                                )}
-                            </List.Section>
-                        </Card.Content>
-                    </Card>
-                </Modal>
-            </Portal>
+            <Modal visible={visible} animationType='slide' onRequestClose={closeModal} style={{flex: 1}}>
+                <Card style={{flex: 1, padding: 5, position: 'relative', borderRadius: 0}}>
+                    <Card.Content style={{flex: 1}}>
+                        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 4, marginBottom: 4,  borderBottomWidth: 2, borderBottomColor: 'rgba(81, 138, 201, 1)'}}>
+                            <TouchableOpacity style={{width: 22}}
+                                              onPress={closeModal}
+                            >
+                                <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
+                            </TouchableOpacity>
+                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>Карточка абонента</Title>
+                            <TouchableOpacity onPress={() => this.setState({isModalCashVisible: true})}>
+                                <Icon name='user' size={35} color='rgba(81, 138, 201, 1)'/>
+                            </TouchableOpacity>
+                        </View>
+                        {this.state.isFetching && !this.state.properties
+                            ? (<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><Preloader/></View>)
+                            : (<ScrollView style={{flex: 1}}>
+                                {this._renderAllProperties()}
+                            </ScrollView>)}
+                        <List.Section>
+                            {this.state.dhcpLogs && (
+                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть DHCP логи'>
+                                    <TouchableOpacity style={{margin: 5}} onPress={() => this.getDhcpLogs(userLogin)}>
+                                        <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && 'Запрос'}</Button>
+                                    </TouchableOpacity>
+                                    <ScrollView style={{height: 170}}>
+                                        <Text selectable>{this.state.dhcpLogs}</Text>
+                                    </ScrollView>
+                                </List.Accordion>
+                            )}
+                            {this.state.ping && (
+                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть пинг'>
+                                    <TouchableOpacity style={{margin: 5}} onPress={() => this.getPing(userLogin)}>
+                                        <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && 'Запрос'}</Button>
+                                    </TouchableOpacity>
+                                    <ScrollView style={{height: 170}}>
+                                        <Text selectable>{this.state.ping}</Text>
+                                    </ScrollView>
+                                </List.Accordion>
+                            )}
+                        </List.Section>
+                    </Card.Content>
+                </Card>
+            </Modal>
         );
     }
 }

@@ -186,20 +186,8 @@ export class AllTasksScreen extends React.Component {
     }
 
     componentDidMount() {
-        const { state } = this.props;
         this._getUndoneTasks();
-        if (!(state.staff && state.staff.employees && state.staff.employees.length)) {
-            this._getAllEmployees();
-        }
-        if (!(state.staff && state.staff.admins && state.staff.admins.length)) {
-            this._getAllAdmins();
-        }
-        if (!(state.jobTypes && state.jobTypes.length)) {
-            this._getAllJobTypes();
-        }
-        if (!(state.allTasks.tasks && state.allTasks.tasks.length)) {
-            this._getTasks(this.state.date, this.state.employee);
-        }
+        this._getTasks(this.state.date, this.state.employee);
     }
 
     render() {

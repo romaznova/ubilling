@@ -9,7 +9,8 @@ import PropTypes from 'prop-types';
 export class UrlOptions extends React.Component {
     state = {
         changeUrlMethod: false,
-        changeUrl: false
+        changeUrl: false,
+        url: ''
     };
 
     _setUrlMethod(url) {
@@ -28,6 +29,18 @@ export class UrlOptions extends React.Component {
                 dispatch(setLogInUrl(url));
             }
         });
+    }
+
+    _changeUrl() {
+        if (this.state.changeUrl) {
+            this._setUrl(this.state.url);
+        }
+        this.setState({changeUrl: !this.state.changeUrl});
+    }
+
+    componentDidMount() {
+        const { state } = this.props;
+        this.setState({url: state.user.url});
     }
 
     render() {
@@ -67,13 +80,13 @@ export class UrlOptions extends React.Component {
                             <View style={[styles.fullSpace, styles.center]}>
                                 <Icon name='globe' color='rgba(81, 138, 201, 1)' size={34} style={styles.regularMargin} />
                                 <TextInput disabled={!this.state.changeUrl}
-                                    onChangeText={e => this._setUrl(e)}
-                                    value={state.user.url}
+                                    onChangeText={e => this.setState({url: e})}
+                                    value={this.state.url}
                                     style={[styles.fullSpace, styles.regularMargin]}/>
                             </View>
                             <Switch theme={{colors: {accent: '#518AC9'}}}
                                 value={this.state.changeUrl}
-                                onValueChange={() => {this.setState({changeUrl: !this.state.changeUrl});}}/>
+                                onValueChange={this._changeUrl.bind(this)}/>
                         </View>
                         {this.state.changeUrl && (
                             <View style={styles.center}>

@@ -15,26 +15,24 @@ export class ExitButton extends React.Component {
                 onPress={() => {this.setState({isModalOpen: true});}}>
                 <Icon name='power-off' size={25} color='rgba(255, 255, 255, 0.9)'/>
                 <Text style={{fontSize: 16, color: 'rgba(255, 255, 255, 0.9)', margin: 5}}>ВЫЙТИ</Text>
-                <Portal>
-                    <Modal visible={this.state.isModalOpen} onDismiss={() => {this.setState({isModalOpen: false});}}>
-                        <Card style={{margin: 5, alignItems: 'center'}}>
-                            <Card.Content>
-                                <Logo/>
-                                <Title style={{textAlign: 'center'}}>Вы уверены что хотите закрыть приложение</Title>
-                                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                                    <TouchableOpacity style={{width: 150, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', margin: 5, padding: 10, backgroundColor: 'rgba(81, 138, 201, 1)'}} onPress={() => {BackAndroid.exitApp();}}>
-                                        <Icon name='check-circle' size={25} color='rgba(255, 255, 255, 0.9)'/>
-                                        <Text style={{fontSize: 16, color: 'rgba(255, 255, 255, 0.9)', marginLeft: 10}}>ОК</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={{width: 150, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', margin: 5, padding: 10, backgroundColor: '#ed6f5b'}} onPress={() => {this.setState({isModalOpen: false});}}>
-                                        <Icon name='times-circle' size={25} color='rgba(255, 255, 255, 0.9)'/>
-                                        <Text style={{fontSize: 16, color: 'rgba(255, 255, 255, 0.9)', marginLeft: 10}}>ОТМЕНА</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </Card.Content>
-                        </Card>
-                    </Modal>
-                </Portal>
+                <Modal visible={this.state.isModalOpen} onDismiss={() => {this.setState({isModalOpen: false});}}>
+                    <Card style={{margin: 5, alignItems: 'center'}}>
+                        <Card.Content>
+                            <Logo/>
+                            <Title style={{textAlign: 'center'}}>Вы уверены что хотите закрыть приложение</Title>
+                            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                                <TouchableOpacity style={{width: 150, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', margin: 5, padding: 10, backgroundColor: 'rgba(81, 138, 201, 1)'}} onPress={() => {BackAndroid.exitApp();}}>
+                                    <Icon name='check-circle' size={25} color='rgba(255, 255, 255, 0.9)'/>
+                                    <Text style={{fontSize: 16, color: 'rgba(255, 255, 255, 0.9)', marginLeft: 10}}>ОК</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{width: 150, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', margin: 5, padding: 10, backgroundColor: '#ed6f5b'}} onPress={() => {this.setState({isModalOpen: false});}}>
+                                    <Icon name='times-circle' size={25} color='rgba(255, 255, 255, 0.9)'/>
+                                    <Text style={{fontSize: 16, color: 'rgba(255, 255, 255, 0.9)', marginLeft: 10}}>ОТМЕНА</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Card.Content>
+                    </Card>
+                </Modal>
             </TouchableOpacity>
         );
     }

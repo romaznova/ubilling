@@ -197,9 +197,7 @@ export class MainScreen extends React.Component {
         if (!(state.jobTypes && state.jobTypes.length)) {
             this._getAllJobTypes();
         }
-        if (!(state.userTasks.tasks && state.userTasks.tasks.length)) {
-            this._getTasks(this.state.date);
-        }
+        this._getTasks(this.state.date);
     }
 
     render() {

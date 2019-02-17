@@ -2,6 +2,7 @@ import React from 'react';
 import {Picker, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Button, Card, Snackbar, Text, TextInput, Title} from 'react-native-paper';
 import { ModalCard } from '../../containers/Modal';
+import {EditUserDetails} from '../../containers/Modal/EditUserDetails';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import _ from 'lodash';
 import call from 'react-native-phone-call';
@@ -15,6 +16,7 @@ export class SearchResultItem extends React.Component {
     state = {
         isModalVisible: false,
         isModalCashVisible: false,
+        isModalEditUserVisible: false,
         dhcpLogs: 'Логи пока не загрузились...',
         ping: 'Нет данных',
         cashtype: '0',
@@ -30,6 +32,10 @@ export class SearchResultItem extends React.Component {
 
     _toggleModalCashVisibility() {
         this.setState({isModalCashVisible: !this.state.isModalCashVisible});
+    }
+
+    _toggleModalEditUserVisibility() {
+        this.setState({isModalEditUserVisible: !this.state.isModalEditUserVisible});
     }
 
     getPhoneNumber(number) {
@@ -100,7 +106,7 @@ export class SearchResultItem extends React.Component {
     }
 
     render () {
-        const { element, index, userLogin } = this.props;
+        const { element, index, userLogin, mainUrl, search } = this.props;
         return (
             <View style={{margin: 4}}>
                 <TouchableOpacity onPress={this._toggleModalVisibility.bind(this)}>
@@ -113,9 +119,14 @@ export class SearchResultItem extends React.Component {
                             <Text style={{paddingBottom: 5, fontSize: 14}}>{element.realname}</Text>
                             <Text style={{paddingBottom: 5, fontSize: 14}}>Баланс: ₴ {parseInt(element.Cash)}</Text>
                         </View>
-                        <TouchableOpacity onPress={this._toggleModalCashVisibility.bind(this)} style={{padding: 5}}>
-                            <Icon name='money' size={35} color='rgba(81, 138, 201, 1)'/>
-                        </TouchableOpacity>
+                        <View>
+                            <TouchableOpacity onPress={this._toggleModalEditUserVisibility.bind(this)} style={{margin: 5, alignItems: 'center'}}>
+                                <Icon name='edit' size={35} color='rgba(81, 138, 201, 1)'/>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this._toggleModalCashVisibility.bind(this)} style={{padding: 5}}>
+                                <Icon name='money' size={35} color='rgba(81, 138, 201, 1)'/>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                     <ModalCard visible={this.state.isModalVisible} dhcpLogs={this.state.dhcpLogs} ping={this.state.ping} getPing={this.getPing.bind(this)} getDhcpLogs={this.getDhcpLogs.bind(this)} getPhoneNumber={this.getPhoneNumber.bind(this)} properties={element} closeModal={this._toggleModalVisibility.bind(this)}/>
                 </TouchableOpacity>
@@ -151,6 +162,7 @@ export class SearchResultItem extends React.Component {
                         </Card.Content>
                     </Card>
                 }
+                <EditUserDetails mainUrl={mainUrl} visible={this.state.isModalEditUserVisible} search={search} properties={element} closeModal={this._toggleModalEditUserVisibility.bind(this)}/>
             </View>
         );
     }
