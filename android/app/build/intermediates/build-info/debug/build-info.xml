@@ -6,7 +6,7 @@
     density="420dpi"
     format="10"
     plugin-version="3.1.4"
-    timestamp="1550432226085"
+    timestamp="1550436198295"
     token="5329191222578282382"
     verifier="FULL_BUILD_REQUESTED" >
 
@@ -65,7 +65,7 @@
 
     <build
         build-mode="FULL"
-        timestamp="1550432226085"
+        timestamp="1550436198295"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
             location="/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/split-apk/debug/slices/slice_4.apk"
