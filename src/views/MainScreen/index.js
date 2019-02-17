@@ -78,10 +78,7 @@ export class MainScreen extends React.Component {
             const currentTasks = _.find(state.userTasks.tasksByDate, {date: date});
             if (!(currentTasks && currentTasks.data && currentTasks.data.length)) {
                 dispatch(requestTasks(state, date));
-            } else {
-                dispatch(setTasksDate(moment(date).format('YYYY-MM-DD')));
-                this._requestTasks(date);
-            }
+            } else dispatch(setTasksDate(moment(date).format('YYYY-MM-DD')));
         });
     }
 

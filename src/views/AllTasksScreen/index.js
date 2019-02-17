@@ -42,8 +42,6 @@ export class AllTasksScreen extends React.Component {
         renderResults: 1
     }
 
-    position = new Animated.ValueXY();
-
     _changeEmployee(employee) {
         this.setState({employee: employee});
     }
@@ -88,10 +86,7 @@ export class AllTasksScreen extends React.Component {
             const currentTasks = _.find(state.allTasks.tasksByDate, {date: date});
             if (!(currentTasks && currentTasks.data && currentTasks.data.length)) {
                 dispatch(requestAllTasks(state, date, employee))
-            } else {
-                dispatch(setAllTasksDate(moment(date).format('YYYY-MM-DD')));
-                this._requestTasks(date, employee);
-            }
+            } else dispatch(setAllTasksDate(moment(date).format('YYYY-MM-DD')));
         });
     }
 
@@ -162,27 +157,6 @@ export class AllTasksScreen extends React.Component {
             this.setState({activeSlideIndex: index});
         }
     }
-
-    _panResponder = PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
-        onStartShouldSetPanResponderCapture: () => false,
-        onMoveShouldSetPanResponderCapture: () => false,
-        onPanResponderTerminationRequest: () => true,
-        onShouldBlockNativeResponder: () => false,
-        onPanResponderMove: (ev, gestureState) => {
-            this.position.setValue({x: gestureState.dx, y: 0})
-        },
-        onPanResponderRelease: (evt, gestureState) => {
-            if (gestureState.dx > 150) {
-                this._getPrevDayTasks();
-            }
-            if (gestureState.dx < -150) {
-                this._getNextDayTasks();
-            }
-            this.position.setValue({x: 0, y: 0})
-        }
-    });
 
     _getNextDayTasks() {
         const { state } = this.props;
@@ -293,7 +267,9 @@ export class AllTasksScreen extends React.Component {
                                 onValueChange={(itemValue) => {
                                     this.state.activeSlideIndex === 0
                                         ? this._getTasks(state.allTasks.date, itemValue)
-                                        : this.setState({employee: itemValue}, () => {this._getTasksByDateInterval(this.state.employee);this._getTasks(state.allTasks.date, itemValue);}) ;
+                                        : this.setState({employee: itemValue}, () => {
+                                            this._getTasksByDateInterval(this.state.employee);
+                                        });
                                 }}>
                                 <Picker.Item label='Все заявки' value={0} />
                                 {this._renderEmployeesList()}
@@ -335,7 +311,8 @@ export class AllTasksScreen extends React.Component {
                                         />
                                     </GestureRecognizer>
                             }
-                            {!!(allTasks && allTasks.data && allTasks.data.length && this.state.activeSlideIndex === 0) && (
+                            {(!!(allTasks && allTasks.data && allTasks.data.length && this.state.activeSlideIndex === 0)
+                                || !!(state.allTasks.tasksByDateInterval && state.allTasks.tasksByDateInterval.length && this.state.activeSlideIndex === 1)) && (
                                 <Sort sort={state.allTasks.sort}
                                     sortTasksByAddress={this.sortTasksByAddress.bind(this)}
                                     sortTasksByTime={this.sortTasksByTime.bind(this)}

@@ -1,4 +1,4 @@
-#Sun Feb 17 21:53:39 EET 2019
+#Sun Feb 17 23:11:37 EET 2019
 base.0=/Users/znova.roman/Desktop/sandbox/Ubilling/android/app/build/intermediates/transforms/dexMerger/release/0
 path.0=classes.dex
 renamed.0=classes.dex

@@ -10,8 +10,12 @@ export class UserTasksList extends React.Component {
     _renderItems() {
         const { tasks, sort, tasksDate, changeTask, changeTaskStatus, renderResults, staff, jobtypes, login, employee, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
         const renderLength = 20;
-        const employeesCurrentTasks = _.find(tasks, {employee});
-        const employeesTasks = !employee ? tasks : !employeesCurrentTasks ? employeesCurrentTasks : [];
+        const employeesCurrentTasks = _.filter(tasks, _.matches({employee}));
+        let employeesTasks;
+        if (!!activeSlideIndex) {
+            employeesTasks = tasks;
+        } else employeesTasks = !employee ? tasks : !!employeesCurrentTasks ? employeesCurrentTasks : [];
+        console.log({employeesTasks});
         if (employeesTasks && employeesTasks.length) {
             const sortedTasks = _.sortBy(employeesTasks, [
                 sort.status && 'status',
@@ -48,8 +52,8 @@ export class UserTasksList extends React.Component {
     }
 
     render () {
-        const { tasks, employee, renderResults, setRenderCounter } =  this.props;
-        const employeesTasks = !employee ? tasks : [_.find(tasks, {employee})];
+        const { tasks, employee, renderResults, setRenderCounter, activeSlideIndex } =  this.props;
+        const employeesTasks = !employee ? tasks : _.filter(tasks, _.matches({employee}));
         return (
             <View style={{flex: 1}}>
                 {(!!tasks && !!tasks.length) && (
@@ -61,14 +65,15 @@ export class UserTasksList extends React.Component {
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 5}}>
                             <View style={{flexDirection: 'row'}}>
                                 <Text style={{fontSize: 14}}>Всего заявок: </Text>
-                                <Text style={{fontSize: 16, fontWeight: '500', color: 'rgba(81, 138, 201, 1)'}}>{tasks.length}</Text>
+                                <Text style={{fontSize: 16, fontWeight: '500', color: 'rgba(81, 138, 201, 1)'}}>{employeesTasks.length}</Text>
                             </View>
                         </View>
                     </View>
                 )}
                 <ScrollView style={{flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.9)'}} overScrollMode='always'>
                     {this._renderItems()}
-                    {!!(employeesTasks && employeesTasks.length && employeesTasks.length > renderResults * 20) && (
+                    {(!!(employeesTasks && employeesTasks.length && employeesTasks.length > renderResults * 20)
+                        || (!!activeSlideIndex && tasks.length > renderResults * 20)) && (
                         <TouchableOpacity onPress={setRenderCounter}>
                             <Button dark={true} mode='contained' style={{margin: 5}}>Показать ещё</Button>
                         </TouchableOpacity>
