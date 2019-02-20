@@ -1,14 +1,11 @@
 import React from 'react';
-import {View, ScrollView, TouchableOpacity, Modal, StyleSheet} from 'react-native';
+import { View, ScrollView, TouchableOpacity, Modal, StyleSheet, Picker } from 'react-native';
 import { Portal, Text, Card, Title, Snackbar, Button, TextInput } from 'react-native-paper';
-import { Preloader } from '../Preloader';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
-import call from 'react-native-phone-call';
 import PropTypes from 'prop-types';
 import qs from 'qs';
-import {AllTasksScreen} from '../../views/AllTasksScreen';
 
 const requestTimeout = 10000;
 
@@ -16,85 +13,182 @@ export class EditUserDetails extends React.Component {
     state = {
         snackbarVisible: false,
         responseMessage: '',
-        properties: {}
+        properties: {
+            editcondet: {
+                newseal: '',
+                newlength: '',
+                newprice: ''
+            }
+        }
+    }
+
+    _difference(object, base) {
+        const changes = (object, base) => {
+            return _.transform(object, function(result, value, key) {
+                if (!_.isEqual(value, base[key])) {
+                    result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
+                }
+            });
+        }
+
+        return changes(object, base);
+    }
+
+    _checkEditCondet(object) {
+        if (_.isObject(object.editcondet)) {
+            _.forIn(object.editcondet, (value) => {
+                if (!value) {
+                    delete object.editcondet;
+                }
+            });
+        }
+
+        return object;
     }
 
     _setUserDetails() {
         const { mainUrl, search, properties } = this.props;
-        const data = _.assign({}, {
-            newpassword: this.state.properties.Password || '',
-            newrealname: this.state.properties.realname || '',
-            newphone: this.state.properties.phone || '',
-            newmobile: this.state.properties.mobile || '',
-            newmail: this.state.properties.email || '',
-            newdown: this.state.properties.Down || '',
-            newpassive: this.state.properties.Passive || '',
-            newnotes: this.state.properties.newnotes || '',
-            reset: this.state.properties.reset || '',
-            editcondet: this.state.properties.editcondet || ''
+        const difference = this._difference(this.state.properties, properties);
+        const data = this._checkEditCondet(difference);
+        const apiData = {};
+
+        _.forIn(data, (value, prop) => {
+            switch ((prop || '').toLowerCase()) {
+                case 'realname':
+                    _.assign(apiData, {newrealname: this.state.properties.realname});
+                    break;
+                case 'passive':
+                    _.assign(apiData, {newpassive: this.state.properties.Passive});
+                    break;
+                case 'down':
+                    _.assign(apiData, {newdown: this.state.properties.Down});
+                    break;
+                case 'password':
+                    _.assign(apiData, {newpassword: this.state.properties.Password});
+                    break;
+                case 'phone':
+                    _.assign(apiData, {newphone: this.state.properties.phone});
+                    break;
+                case 'mobile':
+                    _.assign(apiData, {newmobile: this.state.properties.mobile});
+                    break;
+                case 'email':
+                    _.assign(apiData, {newmail: this.state.properties.email});
+                    break;
+                case 'notes':
+                    _.assign(apiData, {newnotes: this.state.properties.notes});
+                    break;
+                case 'reset':
+                    _.assign(apiData, {reset: this.state.properties.reset});
+                    break;
+                case 'editcondet':
+                    _.assign(apiData, {editcondet: this.state.properties.editcondet});
+                    break;
+                default:
+                    break;
+            }
         });
 
-        return axios.post(`${mainUrl}/?module=android&action=useredit&username=${this.state.properties.login}`, qs.stringify(data), {timeout: requestTimeout})
-            .then(res => {
-                if (res.data && res.data.success) {
-                    this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Изменения сохранены'}, search);
-                } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, search);
-            })
-            .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'}, search);});
+        if (qs.stringify(apiData) && qs.stringify(apiData).length) {
+            return axios.post(`${mainUrl}/?module=android&action=useredit&username=${this.state.properties.login}`, qs.stringify(apiData), {timeout: requestTimeout})
+                .then(res => {
+                    if (res.data && res.data.success) {
+                        this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Изменения сохранены'}, search);
+                    } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, search);
+                })
+                .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'}, search);});
+        } else this.setState({snackbarVisible: true, responseMessage: 'Вы не сделали никаких изменений'});
     }
 
     _renderProperties() {
+        const { rights } = this.props;
         let index = 0;
         return _.map(this.state.properties, (value, prop) => {
             switch ((prop || '').toLowerCase()) {
                 case 'login':
                     index = ++index;
-                    return <View key={index} style={styles.editableArea}>
-                        <Text>{prop.toUpperCase()}:</Text>
-                        <Text>{this.state.properties.login}</Text>
-                    </View>;
+                    return (
+                        <View key={index} style={styles.editableArea}>
+                            <Text>{prop.toUpperCase()}:</Text>
+                            <Text style={{fontWeight: '500'}}>{this.state.properties.login}</Text>
+                        </View>
+                    );
                 case 'realname':
-                    index = ++index;
-                    return <View key={index} style={styles.editableArea}>
-                        <Text>{prop.toUpperCase()}:</Text>
-                        <TextInput value={this.state.properties.realname} onChangeText={(newrealname) => this._changeRealName(newrealname)}/>
-                    </View>;
+                    if (rights.REALNAME && rights.REALNAME.rights) {
+                        index = ++index;
+                        return (
+                            <View key={index} style={styles.editableArea}>
+                                <Text>{prop.toUpperCase()}:</Text>
+                                <TextInput value={this.state.properties.realname} onChangeText={newrealname => this._changeRealName(newrealname)}/>
+                            </View>
+                        );
+                    } else return;
                 case 'passive':
-                    index = ++index;
-                    return <View key={index} style={styles.editableArea}>
-                        <Text>{prop.toUpperCase()}:</Text>
-                        <TextInput value={this.state.properties.Passive} onChangeText={(newpassive) => this._changePassiveStatus(newpassive)}/>
-                    </View>;
+                    if (rights.PASSIVE && rights.PASSIVE.rights) {
+                        index = ++index;
+                        return (
+                            <View key={index} style={styles.editableArea}>
+                                <Text>{prop.toUpperCase()}:</Text>
+                                <Picker selectedValue={this.state.properties.Passive} onValueChange={newpassive => this._changePassiveStatus(newpassive)}>
+                                    <Picker.Item label='НЕТ' value="0"/>
+                                    <Picker.Item label='ДА' value="1"/>
+                                </Picker>
+                            </View>
+                        );
+                    } else return;
                 case 'down':
-                    index = ++index;
-                    return <View key={index} style={styles.editableArea}>
-                        <Text>{prop.toUpperCase()}:</Text>
-                        <TextInput value={this.state.properties.Down} onChangeText={(newdown) => this._changeDownStatus(newdown)}/>
-                    </View>;
+                    if (rights.DOWN && rights.DOWN.rights) {
+                        index = ++index;
+                        return (
+                            <View key={index} style={styles.editableArea}>
+                                <Text>{prop.toUpperCase()}:</Text>
+                                <Picker selectedValue={this.state.properties.Down} onValueChange={newdown => this._changeDownStatus(newdown)}>
+                                    <Picker.Item label='НЕТ' value="0"/>
+                                    <Picker.Item label='ДА' value="1"/>
+                                </Picker>
+                            </View>
+                        );
+                    } else return;
                 case 'password':
-                    index = ++index;
-                    return <View key={index} style={styles.editableArea}>
-                        <Text>{prop.toUpperCase()}:</Text>
-                        <TextInput value={this.state.properties.Password} onChangeText={(newpassword) => this._changePassword(newpassword)}/>
-                    </View>;
+                    if (rights.PASSWORD && rights.PASSWORD.rights) {
+                        index = ++index;
+                        return (
+                            <View key={index} style={styles.editableArea}>
+                                <Text>{prop.toUpperCase()}:</Text>
+                                <TextInput value={this.state.properties.Password} onChangeText={newpassword => this._changePassword(newpassword)}/>
+                            </View>
+                        );
+                    } else return;
                 case 'phone':
-                    index = ++index;
-                    return <View key={index} style={styles.editableArea}>
-                        <Text>{prop.toUpperCase()}:</Text>
-                        <TextInput value={this.state.properties.phone} onChangeText={(newphone) => this._changePhoneNumber(newphone)}/>
-                    </View>;
+                    if (rights.PHONE && rights.PHONE.rights) {
+                        index = ++index;
+                        return (
+                            <View key={index} style={styles.editableArea}>
+                                <Text>{prop.toUpperCase()}:</Text>
+                                <TextInput value={this.state.properties.phone} onChangeText={newphone => this._changePhoneNumber(newphone)}/>
+                            </View>
+                        );
+                    } else return;
                 case 'mobile':
-                    index = ++index;
-                    return <View key={index} style={styles.editableArea}>
-                        <Text>{prop.toUpperCase()}:</Text>
-                        <TextInput value={this.state.properties.mobile} onChangeText={(newmobile) =>  this._changeMobileNumber(newmobile)}/>
-                    </View>;
+                    if (rights.MOBILE && rights.MOBILE.rights) {
+                        index = ++index;
+                        return (
+                            <View key={index} style={styles.editableArea}>
+                                <Text>{prop.toUpperCase()}:</Text>
+                                <TextInput value={this.state.properties.mobile} onChangeText={newmobile =>  this._changeMobileNumber(newmobile)}/>
+                            </View>
+                        );
+                    } else return;
                 case 'email':
-                    index = ++index;
-                    return <View key={index} style={styles.editableArea}>
-                        <Text>{prop.toUpperCase()}:</Text>
-                        <TextInput value={this.state.properties.email} onChangeText={(newmail) => this._changeMail(newmail)}/>
-                    </View>;
+                    if (rights.EMAIL && rights.EMAIL.rights) {
+                        index = ++index;
+                        return (
+                            <View key={index} style={styles.editableArea}>
+                                <Text>{prop.toUpperCase()}:</Text>
+                                <TextInput value={this.state.properties.email} onChangeText={newmail => this._changeMail(newmail)}/>
+                            </View>
+                        );
+                    } else return;
                 default:
                 return;
             }
@@ -136,8 +230,8 @@ export class EditUserDetails extends React.Component {
         this.setState({properties: newProperties});
     }
 
-    _changeNotes(newnotes) {
-        const newProperties = _.assign({}, this.state.properties, {newnotes});
+    _changeNotes(notes) {
+        const newProperties = _.assign({}, this.state.properties, {notes});
         this.setState({properties: newProperties});
     }
 
@@ -153,11 +247,13 @@ export class EditUserDetails extends React.Component {
 
     componentDidMount() {
         const { properties } = this.props;
-        this.setState({properties});
+        const newProperties = _.assign({}, this.state.properties, properties);
+        this.setState({properties: newProperties});
     }
 
     render() {
-        const {visible, closeModal} = this.props;
+        const { visible, closeModal, rights } = this.props;
+
         return (
             <Modal visible={visible} animationType='slide' onRequestClose={closeModal} style={styles.fullSpace}>
                 <Card style={styles.fullSpace}>
@@ -171,21 +267,34 @@ export class EditUserDetails extends React.Component {
                         </View>
                         <ScrollView style={[styles.fullSpace, {marginBottom: 5}]}>
                             {this._renderProperties()}
-                            <View style={styles.editableArea}>
-                                <Text>NEWNOTES:</Text>
-                                <TextInput value={this.state.properties.newnotes} onChangeText={(newnotes) => this._changeNotes(newnotes)}/>
-                            </View>
-                            <View style={styles.editableArea}>
-                                <Text>RESET:</Text>
-                                <TextInput value={this.state.properties.reset} onChangeText={(reset) => this._changeReset(reset)}/>
-                            </View>
-                            <View style={styles.editableArea}>
-                                <Text>EDITCONDET:</Text>
-                                <TextInput value={this.state.properties.editcondet} onChangeText={(editcondet) => this._changeEditCondet(editcondet)}/>
-                            </View>
+                            {(rights.NOTES && rights.NOTES.rights) && (
+                                <View style={styles.editableArea}>
+                                    <Text>NEWNOTES:</Text>
+                                    <TextInput value={this.state.properties.newnotes} onChangeText={newnotes => this._changeNotes(newnotes)}/>
+                                </View>
+                            )}
+                            {(rights.RESET && rights.RESET.rights) && (
+                                <View style={styles.editableArea}>
+                                    <Text>RESET:</Text>
+                                    <Picker selectedValue={this.state.properties.reset} onValueChange={reset => this._changeReset(reset)}>
+                                        <Picker.Item label='НЕТ' value="0"/>
+                                        <Picker.Item label='ДА' value="1"/>
+                                    </Picker>
+                                </View>
+                            )}
+                            {(rights.CONDET && rights.CONDET.rights) && (
+                                <View style={styles.editableArea}>
+                                    <Text>EDITCONDET:</Text>
+                                    <TextInput label='Метка кабеля' value={this.state.properties.editcondet.newseal} onChangeText={newseal => this._changeEditCondet({newseal, newlength: this.state.properties.editcondet.newlength, newprice: this.state.properties.editcondet.newprice})}/>
+                                    <View style={{flexDirection: 'row', marginTop: 5}}>
+                                        <TextInput style={{flex: 1, marginRight: 2}} label='Длина кабеля (м)' value={this.state.properties.editcondet.newlength} onChangeText={newlength => this._changeEditCondet({newseal: this.state.properties.editcondet.newseal, newlength, newprice: this.state.properties.editcondet.newprice})}/>
+                                        <TextInput style={{flex: 1, marginLeft: 2}} label='Стоимость подключения' value={this.state.properties.editcondet.newprice} onChangeText={newprice => this._changeEditCondet({newseal: this.state.properties.editcondet.newseal, newlength: this.state.properties.editcondet.newlength, newprice})}/>
+                                    </View>
+                                </View>
+                            )}
                         </ScrollView>
-                        <TouchableOpacity onPress={this._setUserDetails.bind(this)}>
-                            <Button dark mode='contained'>Сохранить</Button>
+                        <TouchableOpacity>
+                            <Button dark onPress={this._setUserDetails.bind(this)} mode='contained'>Сохранить</Button>
                         </TouchableOpacity>
                     </Card.Content>
                 </Card>
@@ -229,5 +338,6 @@ EditUserDetails.propTypes = {
     mainUrl: PropTypes.string,
     visible: PropTypes.bool,
     closeModal: PropTypes.func,
-    properties: PropTypes.object
+    properties: PropTypes.object,
+    rights: PropTypes.object
 };

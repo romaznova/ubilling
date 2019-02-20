@@ -30,12 +30,13 @@ export class SearchScreen extends React.Component {
     }
 
     _renderSearchResults(result) {
+        const { state } = this.props;
         const renderLength = 20;
         const array = result.slice(0, renderLength * this.state.renderResults);
         return _.map(array, (element, index) => {
             const { state } = this.props;
             return (
-                <SearchResultItem key={element.login} search={() => {this._search(this.state.searchParams)}} element={element} index={index} mainUrl={`${state.user.urlMethod}${state.user.url}`} cashTypes={state.cashTypes}/>
+                <SearchResultItem key={element.login} rights={state.rights} search={() => {this._search(this.state.searchParams)}} element={element} index={index} mainUrl={`${state.user.urlMethod}${state.user.url}`} cashTypes={state.cashTypes}/>
             );
         });
     }
@@ -71,8 +72,8 @@ export class SearchScreen extends React.Component {
                             {this.state.searchParams && this.state.searchParams.length >= 3
                                 ?
                                 (
-                                    <TouchableOpacity onPress={() => {this._search(this.state.searchParams);}}>
-                                        <Button style={styles.regularMargin} disabled={this.state.isOnSearching} loading={this.state.isOnSearching} mode='contained' dark={true}>
+                                    <TouchableOpacity>
+                                        <Button style={styles.regularMargin} onPress={() => {this._search(this.state.searchParams);}} disabled={this.state.isOnSearching} loading={this.state.isOnSearching} mode='contained' dark={true}>
                                             {!this.state.isOnSearching && 'Найти'}
                                         </Button>
                                     </TouchableOpacity>
@@ -94,8 +95,11 @@ export class SearchScreen extends React.Component {
                                 <ScrollView style={styles.fullSpace} overScrollMode='always'>
                                     {this._renderSearchResults(this.state.searchResults)}
                                     {this.state.searchResults.length > this.state.renderResults * 20 && (
-                                        <TouchableOpacity onPress={() => this.setState({renderResults: this.state.renderResults + 1})}>
-                                            <Button dark={true} mode='contained' style={styles.regularMargin}>Показать ещё</Button>
+                                        <TouchableOpacity>
+                                            <Button dark={true}
+                                                    onPress={() => this.setState({renderResults: this.state.renderResults + 1})}
+                                                    mode='contained'
+                                                    style={styles.regularMargin}>Показать ещё</Button>
                                         </TouchableOpacity>
                                     )}
                                 </ScrollView>
