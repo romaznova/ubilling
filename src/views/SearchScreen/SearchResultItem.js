@@ -88,6 +88,7 @@ export class SearchResultItem extends React.Component {
     setUserBalance(userLogin) {
         const { mainUrl, search } =  this.props;
         const data = qs.stringify({newcash: this.state.newcash, cashtype: this.state.cashtype, newpaymentnote: ''});
+        console.log({userLogin});
         return axios.post(`${mainUrl}/?module=android&&action=addcash&username=${userLogin}`, data, {timeout: requestTimeout})
             .then(res => {
                 if (res.data && res.data.success) {
@@ -106,7 +107,8 @@ export class SearchResultItem extends React.Component {
     }
 
     render () {
-        const { element, index, userLogin, mainUrl, search } = this.props;
+        const { element, index, mainUrl, search, rights } = this.props;
+        const editableProperties = _.pick(element, ['login', 'Password', 'realname', 'phone', 'mobile', 'email', 'Down', 'Passive', 'notes', 'reset', 'editcondet']);
         return (
             <View style={{margin: 4}}>
                 <TouchableOpacity onPress={this._toggleModalVisibility.bind(this)}>
@@ -120,12 +122,16 @@ export class SearchResultItem extends React.Component {
                             <Text style={{paddingBottom: 5, fontSize: 14}}>Баланс: ₴ {parseInt(element.Cash)}</Text>
                         </View>
                         <View>
-                            <TouchableOpacity onPress={this._toggleModalEditUserVisibility.bind(this)} style={{margin: 5, alignItems: 'center'}}>
-                                <Icon name='edit' size={35} color='rgba(81, 138, 201, 1)'/>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={this._toggleModalCashVisibility.bind(this)} style={{padding: 5}}>
-                                <Icon name='money' size={35} color='rgba(81, 138, 201, 1)'/>
-                            </TouchableOpacity>
+                            {(rights && rights.USEREDIT && rights.USEREDIT.rights) &&
+                                <TouchableOpacity onPress={this._toggleModalEditUserVisibility.bind(this)} style={{margin: 5, alignItems: 'center'}}>
+                                    <Icon name='edit' size={35} color='rgba(81, 138, 201, 1)'/>
+                                </TouchableOpacity>
+                            }
+                            {(rights && rights.CASH && rights.CASH.rights) &&
+                                <TouchableOpacity onPress={this._toggleModalCashVisibility.bind(this)} style={{padding: 5}}>
+                                    <Icon name='money' size={35} color='rgba(81, 138, 201, 1)'/>
+                                </TouchableOpacity>
+                            }
                         </View>
                     </View>
                     <ModalCard visible={this.state.isModalVisible} dhcpLogs={this.state.dhcpLogs} ping={this.state.ping} getPing={this.getPing.bind(this)} getDhcpLogs={this.getDhcpLogs.bind(this)} getPhoneNumber={this.getPhoneNumber.bind(this)} properties={element} closeModal={this._toggleModalVisibility.bind(this)}/>
@@ -138,15 +144,14 @@ export class SearchResultItem extends React.Component {
                                 mode='dropdown'
                                 enabled={true}
                                 onValueChange={(itemValue) => {
-                                    this.setState({cashtype: itemValue});
+                                    this.setState({cashtype: itemValue}, search);
                                 }}>
                                 {this._renderCashTypesList()}
                             </Picker>
                             <TextInput style={styles.input} placeholder='Введите сумму' value={this.state.newcash} onChangeText={value => this.setState({newcash: value.replace(/\D/g, '')})}/>
                             <TextInput style={styles.input} placeholder='Введите комментарий' value={this.state.newpaymentnote} onChangeText={value => this.setState({newpaymentnote: value})}/>
-                            <TouchableOpacity onPress={() => this.setUserBalance(userLogin)}
-                            >
-                                <Button mode='contained' disabled={!~~this.state.newcash} dark={true}>ПОПОЛНИТЬ</Button>
+                            <TouchableOpacity>
+                                <Button mode='contained' onPress={() => this.setUserBalance(element.login)} disabled={!~~this.state.newcash} dark={true}>ПОПОЛНИТЬ</Button>
                             </TouchableOpacity>
                             <Snackbar visible={this.state.snackbarVisible}
                                       onDismiss={() => this.setState({snackbarVisible: false})}
@@ -162,7 +167,7 @@ export class SearchResultItem extends React.Component {
                         </Card.Content>
                     </Card>
                 }
-                <EditUserDetails mainUrl={mainUrl} visible={this.state.isModalEditUserVisible} search={search} properties={element} closeModal={this._toggleModalEditUserVisibility.bind(this)}/>
+                <EditUserDetails mainUrl={mainUrl} rights={rights} visible={this.state.isModalEditUserVisible} search={search} properties={editableProperties} closeModal={this._toggleModalEditUserVisibility.bind(this)}/>
             </View>
         );
     }
@@ -190,5 +195,6 @@ SearchResultItem.propTypes = {
     mainUrl: PropTypes.string,
     element: PropTypes.object,
     cashTypes: PropTypes.object,
-    index: PropTypes.number
+    index: PropTypes.number,
+    rights: PropTypes.object
 };

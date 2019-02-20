@@ -15,7 +15,6 @@ export class UserTasksList extends React.Component {
         if (!!activeSlideIndex) {
             employeesTasks = tasks;
         } else employeesTasks = !employee ? tasks : !!employeesCurrentTasks ? employeesCurrentTasks : [];
-        console.log({employeesTasks});
         if (employeesTasks && employeesTasks.length) {
             const sortedTasks = _.sortBy(employeesTasks, [
                 sort.status && 'status',
