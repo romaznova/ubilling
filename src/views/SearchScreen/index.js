@@ -31,7 +31,7 @@ export class SearchScreen extends React.Component {
 
     _renderSearchResults(result) {
         const { state } = this.props;
-        const renderLength = 20;
+        const renderLength = 10;
         const array = result.slice(0, renderLength * this.state.renderResults);
         return _.map(array, (element, index) => {
             const { state } = this.props;
@@ -45,12 +45,12 @@ export class SearchScreen extends React.Component {
         const { state } = this.props;
         const data = {searchquery: `${param}`};
         this.setState({isOnSearching: true});
-        axios.post(`${state.user.urlMethod}${state.user.url}/?module=android&action=usersearch`, qs.stringify(data), {timeout: requestTimeout})
+        let array = [];
+        return axios.post(`${state.user.urlMethod}${state.user.url}/?module=android&action=usersearch`, qs.stringify(data), {timeout: requestTimeout})
             .then(res => {
-                let array = [];
-                _.map(res.data.data, element => array.push(element));
-                array = array.filter(function (el) {
-                    return el != null;
+                _.forIn(res.data.data, element => {
+                    array.push(res.data.data[element.login]);
+                    array = array.filter(element => element != null);
                 });
                 this.setState({searchResults: array, isOnSearching: false});
             })
@@ -61,25 +61,37 @@ export class SearchScreen extends React.Component {
     }
 
     render() {
+        const { state } = this.props;
         return(
             <View style={[styles.fullSpace, {backgroundColor: '#F5FCFF'}]}>
                 <Header openDrawer={this.props.navigation.openDrawer}/>
                 <View style={[styles.fullSpace]}>
                     <View style={[styles.fullSpace]}>
-                        <View>
-                            <Title style={{textAlign: 'center'}}>Поиск абонента</Title>
-                            <Searchbar style={styles.regularMargin} value={this.state.searchParams} label='Введите параметры поиска' onChangeText={text => {this.setState({searchParams: text});}}/>
-                            {this.state.searchParams && this.state.searchParams.length >= 3
-                                ?
-                                (
-                                    <TouchableOpacity>
-                                        <Button style={styles.regularMargin} onPress={() => {this._search(this.state.searchParams);}} disabled={this.state.isOnSearching} loading={this.state.isOnSearching} mode='contained' dark={true}>
-                                            {!this.state.isOnSearching && 'Найти'}
-                                        </Button>
-                                    </TouchableOpacity>
-                                )
-                                : (<Text style={[styles.regularFontSize, styles.regularMargin, {textAlign: 'center'}]}>Введите минимум 3 символа для поиска</Text>)}
-                        </View>
+                        {state.rights.USERSEARCH && state.rights.USERSEARCH.rights
+                        ?
+                            <View>
+                                <Title style={{textAlign: 'center'}}>Поиск абонента</Title>
+                                <Searchbar style={styles.regularMargin} value={this.state.searchParams} label='Введите параметры поиска' onChangeText={text => {this.setState({searchParams: text});}}/>
+                                {this.state.searchParams && this.state.searchParams.length >= 3
+                                    ?
+                                    (
+                                        <TouchableOpacity>
+                                            <Button style={styles.regularMargin} onPress={() => {this._search(this.state.searchParams);}} disabled={this.state.isOnSearching} loading={this.state.isOnSearching} mode='contained' dark={true}>
+                                                {!this.state.isOnSearching && 'Найти'}
+                                            </Button>
+                                        </TouchableOpacity>
+                                    )
+                                    : (<Text style={[styles.regularFontSize, styles.regularMargin, {textAlign: 'center'}]}>Введите минимум 3 символа для поиска</Text>)}
+                            </View>
+                        :
+                            <View  style={styles.fullSpace}>
+                                <Title style={{textAlign: 'center'}}>У Вас недостаточно прав</Title>
+                                <View style={[styles.fullSpace, {justifyContent: 'center'}]}>
+                                    <Logo/>
+                                </View>
+                            </View>
+                        }
+
                         {!!(this.state.searchResults && this.state.searchResults.length) && (
                             <Text style={styles.regularMargin}>
                                 Всего результатов: <Text style={styles.accentFont}>{this.state.searchResults.length}</Text>

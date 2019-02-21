@@ -320,10 +320,11 @@ export class MainScreen extends React.Component {
                                             jobtypes={state.jobTypes}
                                             login={state.user.login}
                                             mainUrl={`${state.user.urlMethod}${state.user.url}`}
-                                            rights={state.rights.TASKMAN && state.rights.TASKMAN.rights}
-                                            rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
-                                            rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
-                                            rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
+                                            rights={state.rights}
+                                            // rights={state.rights.TASKMAN && state.rights.TASKMAN.rights}
+                                            // rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
+                                            // rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
+                                            // rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
                                             activeSlideIndex={this.state.activeSlideIndex}
                                         />
                                     </GestureRecognizer>

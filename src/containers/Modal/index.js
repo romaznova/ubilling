@@ -25,7 +25,7 @@ export class ModalCard extends React.Component {
     }
 
     render() {
-        const { visible, closeModal, dhcpLogs, ping, getPing, getDhcpLogs, properties } = this.props;
+        const { visible, closeModal, dhcpLogs, ping, getPing, getDhcpLogs, properties, rights } = this.props;
         return (
             <Modal visible={visible} animationType='slide' onRequestClose={closeModal} style={{flex: 1}}>
                 <Card style={{flex: 1, padding: 5, position: 'relative', borderRadius: 0}}>
@@ -43,7 +43,7 @@ export class ModalCard extends React.Component {
                             {this._renderAllProperties()}
                         </ScrollView>
                         <List.Section>
-                            {dhcpLogs && (
+                            {(dhcpLogs && rights.PLDHCP && rights.PLDHCP.rights) && (
                                 <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть DHCP логи'>
                                     <ScrollView style={{height: 170}}>
                                         <TouchableOpacity onPress={() => getDhcpLogs(properties.login)}>
@@ -53,7 +53,7 @@ export class ModalCard extends React.Component {
                                     </ScrollView>
                                 </List.Accordion>
                             )}
-                            {ping && (
+                            {(ping && rights.PLPINGER && rights.PLPINGER.rights) && (
                                 <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть пинг'>
                                     <ScrollView style={{height: 170}}>
                                         <TouchableOpacity onPress={() => getPing(properties.login)}>
@@ -79,5 +79,6 @@ ModalCard.propTypes = {
     closeModal: PropTypes.func,
     getDhcpLogs: PropTypes.func,
     getPhoneNumber: PropTypes.func,
-    getPing: PropTypes.func
+    getPing: PropTypes.func,
+    rights: PropTypes.object
 };

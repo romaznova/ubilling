@@ -95,7 +95,7 @@ export class UserTaskModalUpdate extends React.Component {
     }
 
     render() {
-        const { element, visible, staff, getPhoneNumber, getStatus, setModalVisibility, changeTask, jobtypes, mainUrl, rightsChangeDate} = this.props;
+        const { element, visible, staff, getPhoneNumber, getStatus, setModalVisibility, changeTask, jobtypes, mainUrl, rights } = this.props;
         return (
             <Modal style={{flex: 1}} visible={visible} animationType='slide' onRequestClose={() => {this._disableEditTask(); setModalVisibility();}}>
                 <Card style={{flex: 1, padding: 5, borderRadius: 0}}>
@@ -154,7 +154,7 @@ export class UserTaskModalUpdate extends React.Component {
                                     <View style={{flex: 2}}>
                                         <Text style={{flex: 1}}>Выполнить нужно:</Text>
                                         <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-                                            {rightsChangeDate && (
+                                            {(rights.TASKMANDATE && rights.TASKMANDATE.rights) && (
                                                 <DatePicker style={{padding: 0, width: 30}}
                                                     mode="date"
                                                     date={this.state.element.startdate}
@@ -287,7 +287,7 @@ export class UserTaskModalUpdate extends React.Component {
                     </Card.Content>
                 </Card>
                 {!!element.login && (
-                    <ModalCardDetailsUser visible={this.state.showUserDetails} closeModal={this._closeUserDetails.bind(this)} mainUrl={mainUrl} userLogin={element.login}/>
+                    <ModalCardDetailsUser visible={this.state.showUserDetails} rights={rights} closeModal={this._closeUserDetails.bind(this)} mainUrl={mainUrl} userLogin={element.login}/>
                 )}
             </Modal>
         );
@@ -299,6 +299,7 @@ UserTaskModalUpdate.propTypes = {
     jobtypes: PropTypes.object,
     mainUrl: PropTypes.string,
     rightsChangeDate: PropTypes.bool,
+    rights: PropTypes.object,
     staff: PropTypes.object,
     visible: PropTypes.bool,
     changeTask: PropTypes.func,

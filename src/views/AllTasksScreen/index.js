@@ -304,9 +304,7 @@ export class AllTasksScreen extends React.Component {
                                             jobtypes={state.jobTypes}
                                             login={state.user.login}
                                             mainUrl={`${state.user.urlMethod}${state.user.url}`}
-                                            rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
-                                            rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
-                                            rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
+                                            rights={state.rights}
                                             activeSlideIndex={this.state.activeSlideIndex}
                                         />
                                     </GestureRecognizer>

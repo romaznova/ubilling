@@ -75,7 +75,7 @@ export class UserTask extends React.Component {
     }
 
     render() {
-        const { element, index, changeTask, changeTaskStatus, staff, jobtypes, login, tasksDate, employee, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
+        const { element, index, changeTask, changeTaskStatus, staff, jobtypes, login, tasksDate, employee, mainUrl, rights, activeSlideIndex, setTaskComment } = this.props;
         return (
             <TouchableOpacity style={{flexDirection: 'row', alignItems: 'stretch', backgroundColor: 'rgba(255, 255, 255, 1)', margin: 5, padding: 2, shadowColor: '#000',
                 shadowOffset: { width: 1, height: 3 },
@@ -142,7 +142,7 @@ export class UserTask extends React.Component {
                                      setModalVisibility={this.setModalUpdateVisibility.bind(this)}
                                      changeTask={element => {changeTask(element); this.setModalUpdateVisibility();}}
                                      mainUrl={mainUrl}
-                                     rightsChangeDate={rightsChangeDate}
+                                     rights={rights}
                 />
                 <UserTaskModalStatus element={element}
                                      staff={staff}
@@ -151,8 +151,7 @@ export class UserTask extends React.Component {
                                      setModalVisibility={this.setModalStatusVisibility.bind(this)}
                                      changeTask={data => {changeTaskStatus(data); this.setModalStatusVisibility();}}
                                      login={login}
-                                     rightsChangeTaskStatus={rightsChangeTaskStatus}
-                                     rightsChangeTaskStatusDoneDate={rightsChangeTaskStatusDoneDate}
+                                     rights={rights}
                 />
                 <UserTaskModalComments element={element}
                                        staff={staff}
@@ -172,9 +171,7 @@ UserTask.propTypes = {
     jobtypes: PropTypes.objectOf(PropTypes.string),
     login: PropTypes.string,
     mainUrl: PropTypes.string,
-    rightsChangeTaskStatusDoneDate: PropTypes.bool,
-    rightsChangeDate: PropTypes.bool,
-    rightsChangeTaskStatus: PropTypes.bool,
+    rights: PropTypes.object,
     staff: PropTypes.object,
     tasksDate: PropTypes.string,
     activeSlideIndex: PropTypes.number,

@@ -73,7 +73,7 @@ export class UserTask extends React.Component {
     }
 
     render() {
-        const { element, index, changeTask, changeTaskStatus, staff, jobtypes, login, tasksDate, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
+        const { element, index, changeTask, changeTaskStatus, staff, jobtypes, login, tasksDate, mainUrl, rights, activeSlideIndex, setTaskComment } = this.props;
         return (
             <TouchableOpacity style={styles.card}
             onPress={() => {this.setState({isModalUpdateOpen: true});}}
@@ -130,7 +130,7 @@ export class UserTask extends React.Component {
                                      setModalVisibility={this.setModalUpdateVisibility.bind(this)}
                                      changeTask={element => {changeTask(element); this.setModalUpdateVisibility();}}
                                      mainUrl={mainUrl}
-                                     rightsChangeDate={rightsChangeDate}
+                                     rights={rights}
                 />
                 <UserTaskModalStatus element={element}
                                      staff={staff}
@@ -139,8 +139,7 @@ export class UserTask extends React.Component {
                                      setModalVisibility={this.setModalStatusVisibility.bind(this)}
                                      changeTask={data => {changeTaskStatus(data); this.setModalStatusVisibility();}}
                                      login={login}
-                                     rightsChangeTaskStatus={rightsChangeTaskStatus}
-                                     rightsChangeTaskStatusDoneDate={rightsChangeTaskStatusDoneDate}
+                                     rights={rights}
                 />
                 <UserTaskModalComments element={element}
                                        visible={this.state.isModalCommentsOpen}
@@ -210,9 +209,10 @@ UserTask.propTypes = {
     jobtypes: PropTypes.objectOf(PropTypes.string),
     login: PropTypes.string,
     mainUrl: PropTypes.string,
-    rightsChangeTaskStatusDoneDate: PropTypes.bool,
-    rightsChangeDate: PropTypes.bool,
-    rightsChangeTaskStatus: PropTypes.bool,
+    rights: PropTypes.object,
+    // rightsChangeTaskStatusDoneDate: PropTypes.bool,
+    // rightsChangeDate: PropTypes.bool,
+    // rightsChangeTaskStatus: PropTypes.bool,
     staff: PropTypes.object,
     tasksDate: PropTypes.string,
     activeSlideIndex: PropTypes.number,

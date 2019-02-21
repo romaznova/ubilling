@@ -71,7 +71,7 @@ export class UndoneUserTask extends React.Component {
     }
 
     render() {
-        const { element, jobtypes, mainUrl, login, staff, changeTaskStatus, changeTask, setTaskComment, getUndoneTask, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate } = this.props;
+        const { element, jobtypes, mainUrl, login, staff, changeTaskStatus, changeTask, setTaskComment, getUndoneTask, rights } = this.props;
         return (
             <Card elevation={2} style={styles.card}>
                 <Card.Content>
@@ -105,7 +105,7 @@ export class UndoneUserTask extends React.Component {
                             setModalVisibility={this.setModalUpdateVisibility.bind(this)}
                             changeTask={(element, callback) => {getUndoneTask(); changeTask(element, callback); this.setModalUpdateVisibility();}}
                             mainUrl={mainUrl}
-                            rightsChangeDate={rightsChangeDate}
+                            rights={rights}
                         />
                         <UserTaskModalStatus element={element}
                             staff={staff}
@@ -114,8 +114,7 @@ export class UndoneUserTask extends React.Component {
                             setModalVisibility={this.setModalStatusVisibility.bind(this)}
                             changeTask={data => {getUndoneTask(); changeTaskStatus(data); this.setModalStatusVisibility();}}
                             login={login}
-                            rightsChangeTaskStatus={rightsChangeTaskStatus}
-                            rightsChangeTaskStatusDoneDate={rightsChangeTaskStatusDoneDate}
+                            rights={rights}
                         />
                         <UserTaskModalComments element={element}
                             staff={staff}
@@ -177,9 +176,7 @@ UndoneUserTask.propTypes = {
     jobtypes: PropTypes.objectOf(PropTypes.string),
     login: PropTypes.string,
     mainUrl: PropTypes.string,
-    rightsChangeDate: PropTypes.bool,
-    rightsChangeTaskStatus: PropTypes.bool,
-    rightsChangeTaskStatusDoneDate: PropTypes.bool,
+    rights: PropTypes.object,
     staff: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)),
     changeTask: PropTypes.func,
     changeTaskStatus: PropTypes.func,
