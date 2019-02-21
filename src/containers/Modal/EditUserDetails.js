@@ -13,13 +13,7 @@ export class EditUserDetails extends React.Component {
     state = {
         snackbarVisible: false,
         responseMessage: '',
-        properties: {
-            editcondet: {
-                newseal: '',
-                newlength: '',
-                newprice: ''
-            }
-        }
+        properties: {}
     }
 
     _difference(object, base) {
@@ -34,22 +28,18 @@ export class EditUserDetails extends React.Component {
         return changes(object, base);
     }
 
-    _checkEditCondet(object) {
-        if (_.isObject(object.editcondet)) {
-            _.forIn(object.editcondet, (value) => {
-                if (!value) {
-                    delete object.editcondet;
-                }
-            });
-        }
+    _checkEditCondet() {
+        let newProperties;
+        if (!!this.state.properties.seal && !!this.state.properties.length && !!this.state.properties.price) {
+            newProperties = _.assign({}, this.state.properties, {editcondet: true});
 
-        return object;
+        } else newProperties = _.assign({}, this.state.properties, {editcondet: '', seal: '', length: '', price: ''});
+        this.setState({properties: newProperties}, this._setUserDetails.bind(this));
     }
 
     _setUserDetails() {
         const { mainUrl, search, properties } = this.props;
-        const difference = this._difference(properties, this.state.properties);
-        const data = this._checkEditCondet(difference);
+        const data = this._difference(properties, this.state.properties);
         const apiData = {};
 
         _.forIn(data, (value, prop) => {
@@ -78,8 +68,14 @@ export class EditUserDetails extends React.Component {
                 case 'notes':
                     _.assign(apiData, {newnotes: this.state.properties.notes});
                     break;
-                case 'reset':
-                    _.assign(apiData, {reset: this.state.properties.reset});
+                case 'seal':
+                    _.assign(apiData, {newseal: this.state.properties.seal});
+                    break;
+                case 'length':
+                    _.assign(apiData, {newlength: this.state.properties.length});
+                    break;
+                case 'price':
+                    _.assign(apiData, {newprice: this.state.properties.price});
                     break;
                 case 'editcondet':
                     _.assign(apiData, {editcondet: this.state.properties.editcondet});
@@ -93,11 +89,25 @@ export class EditUserDetails extends React.Component {
             return axios.post(`${mainUrl}/?module=android&action=useredit&username=${this.state.properties.login}`, qs.stringify(apiData), {timeout: requestTimeout})
                 .then(res => {
                     if (res.data && res.data.success) {
-                        this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Изменения сохранены'}, search);
-                    } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, search);
+                        this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Изменения сохранены'}, () => {search(this._checkProperties.bind(this))});
+                    } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, () => {search(this._checkProperties.bind(this))});
                 })
                 .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'});});
         } else this.setState({snackbarVisible: true, responseMessage: 'Вы не сделали никаких изменений'});
+    }
+
+    _setResetStatus() {
+        const { mainUrl, search, properties } = this.props;
+        const apiData = {reset: true};
+        if (qs.stringify(apiData) && qs.stringify(apiData).length) {
+            return axios.post(`${mainUrl}/?module=android&action=useredit&username=${this.state.properties.login}`, qs.stringify(apiData), {timeout: requestTimeout})
+                .then(res => {
+                    if (res.data && res.data.success) {
+                        this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Запрос отправлен'}, () => {search(this._checkProperties.bind(this))});
+                    } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, () => {search(this._checkProperties.bind(this))});
+                })
+                .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'});});
+        } else this.setState({snackbarVisible: true, responseMessage: 'Не удалось отправить запрос'});
     }
 
     _renderProperties() {
@@ -189,6 +199,14 @@ export class EditUserDetails extends React.Component {
                             </View>
                         );
                     } else return;
+                case 'mac':
+                    index = ++index;
+                    return (
+                        <View key={index} style={styles.editableArea}>
+                            <Text>{prop.toUpperCase()}:</Text>
+                            <TextInput value={this.state.properties.mac} onChangeText={newmac => this._changeMail(newmail)}/>
+                        </View>
+                    );
                 default:
                 return;
             }
@@ -235,19 +253,29 @@ export class EditUserDetails extends React.Component {
         this.setState({properties: newProperties});
     }
 
-    _changeReset(reset) {
-        const newProperties = _.assign({}, this.state.properties, {reset});
+    _changeMac(mac) {
+        const newProperties = _.assign({}, this.state.properties, {mac});
         this.setState({properties: newProperties});
     }
 
-    _changeEditCondet(editcondet) {
-        const newProperties = _.assign({}, this.state.properties, {editcondet});
+    _changeEditCondetSeal(seal) {
+        const newProperties = _.assign({}, this.state.properties, {seal});
+        this.setState({properties: newProperties});
+    }
+
+    _changeEditCondetLength(length) {
+        const newProperties = _.assign({}, this.state.properties, {length});
+        this.setState({properties: newProperties});
+    }
+
+    _changeEditCondetPrice(price) {
+        const newProperties = _.assign({}, this.state.properties, {price});
         this.setState({properties: newProperties});
     }
 
     _checkProperties() {
         const { properties } = this.props;
-        const newProperties = _.assign(properties, this.state.properties);
+        const newProperties = _.defaults({}, properties, this.state.properties);
         this.setState({properties: newProperties});
     }
 
@@ -258,6 +286,10 @@ export class EditUserDetails extends React.Component {
     componentWillReceiveProps() {
         this._checkProperties();
     }
+
+    // componentDidUpdate() {
+    //     console.log(this.state.properties);
+    // }
 
     render() {
         const { visible, closeModal, rights } = this.props;
@@ -273,6 +305,16 @@ export class EditUserDetails extends React.Component {
                             <Title style={{color: 'rgba(81, 138, 201, 1)'}}>Карточка абонента</Title>
                             <Icon name='user' size={35} color='rgba(81, 138, 201, 1)'/>
                         </View>
+                        {(rights.RESET && rights.RESET.rights) && (
+                            <View style={styles.editableArea}>
+                                <Text>RESET:</Text>
+                                <TouchableOpacity>
+                                    <Button mode='contained' dark onPress={this._setResetStatus.bind(this)}>
+                                        Reset
+                                    </Button>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                         <ScrollView style={[styles.fullSpace, {marginBottom: 5}]}>
                             {this._renderProperties()}
                             {(rights.NOTES && rights.NOTES.rights) && (
@@ -281,28 +323,20 @@ export class EditUserDetails extends React.Component {
                                     <TextInput value={this.state.properties.notes} onChangeText={newnotes => this._changeNotes(newnotes)}/>
                                 </View>
                             )}
-                            {(rights.RESET && rights.RESET.rights) && (
-                                <View style={styles.editableArea}>
-                                    <Text>RESET:</Text>
-                                    <Picker selectedValue={this.state.properties.reset} onValueChange={reset => this._changeReset(reset)}>
-                                        <Picker.Item label='НЕТ' value="0"/>
-                                        <Picker.Item label='ДА' value="1"/>
-                                    </Picker>
-                                </View>
-                            )}
                             {(rights.CONDET && rights.CONDET.rights) && (
                                 <View style={styles.editableArea}>
                                     <Text>EDITCONDET:</Text>
-                                    <TextInput label='Метка кабеля' value={this.state.properties.editcondet.newseal} onChangeText={newseal => this._changeEditCondet({newseal, newlength: this.state.properties.editcondet.newlength, newprice: this.state.properties.editcondet.newprice})}/>
+                                    <TextInput label='Метка кабеля' value={this.state.properties.seal} onChangeText={seal => this._changeEditCondetSeal(seal)}/>
                                     <View style={{flexDirection: 'row', marginTop: 5}}>
-                                        <TextInput style={{flex: 1, marginRight: 2}} label='Длина кабеля (м)' value={this.state.properties.editcondet.newlength} onChangeText={newlength => this._changeEditCondet({newseal: this.state.properties.editcondet.newseal, newlength, newprice: this.state.properties.editcondet.newprice})}/>
-                                        <TextInput style={{flex: 1, marginLeft: 2}} label='Стоимость подключения' value={this.state.properties.editcondet.newprice} onChangeText={newprice => this._changeEditCondet({newseal: this.state.properties.editcondet.newseal, newlength: this.state.properties.editcondet.newlength, newprice})}/>
+                                        <TextInput style={{flex: 1, marginRight: 2}} label='Длина кабеля (м)' value={this.state.properties.length} onChangeText={length => this._changeEditCondetLength(length)}/>
+                                        <TextInput style={{flex: 1, marginLeft: 2}} label='Стоимость подключения' value={this.state.properties.price} onChangeText={price => this._changeEditCondetPrice(price)}/>
                                     </View>
                                 </View>
                             )}
+
                         </ScrollView>
                         <TouchableOpacity>
-                            <Button dark onPress={this._setUserDetails.bind(this)} mode='contained'>Сохранить</Button>
+                            <Button dark onPress={this._checkEditCondet.bind(this)} mode='contained'>Сохранить</Button>
                         </TouchableOpacity>
                     </Card.Content>
                 </Card>
