@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 export class UserTasksList extends React.Component {
     _renderItems() {
-        const { tasks, sort, tasksDate, changeTask, changeTaskStatus, renderResults, staff, jobtypes, login, employee, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
+        const { tasks, sort, tasksDate, changeTask, changeTaskStatus, renderResults, staff, jobtypes, login, employee, mainUrl, rights, activeSlideIndex, setTaskComment } = this.props;
         const renderLength = 20;
         const employeesCurrentTasks = _.filter(tasks, _.matches({employee}));
         let employeesTasks;
@@ -35,9 +35,7 @@ export class UserTasksList extends React.Component {
                               tasksDate={tasksDate}
                               employee={employee}
                               mainUrl={mainUrl}
-                              rightsChangeDate={rightsChangeDate}
-                              rightsChangeTaskStatus={rightsChangeTaskStatus}
-                              rightsChangeTaskStatusDoneDate={rightsChangeTaskStatusDoneDate}
+                              rights={rights}
                               activeSlideIndex={activeSlideIndex}
                     />
                 );
@@ -51,35 +49,39 @@ export class UserTasksList extends React.Component {
     }
 
     render () {
-        const { tasks, employee, renderResults, setRenderCounter, activeSlideIndex } =  this.props;
+        const { tasks, employee, renderResults, setRenderCounter, activeSlideIndex, rights } =  this.props;
         const employeesTasks = !employee ? tasks : _.filter(tasks, _.matches({employee}));
-        return (
-            <View style={{flex: 1}}>
-                {(!!tasks && !!tasks.length) && (
-                    <View style={{backgroundColor: 'rgba(255,255,255,1)', marginLeft: 5, marginRight: 5, marginBottom: 5, shadowColor: '#000',
-                        shadowOffset: { width: 1, height: 3 },
-                        shadowOpacity: 0.8,
-                        shadowRadius: 4,
-                        elevation: 2}}>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 5}}>
-                            <View style={{flexDirection: 'row'}}>
-                                <Text style={{fontSize: 14}}>Всего заявок: </Text>
-                                <Text style={{fontSize: 16, fontWeight: '500', color: 'rgba(81, 138, 201, 1)'}}>{employeesTasks.length}</Text>
+        return rights.TASKMAN && rights.TASKMAN.rights
+            ?
+                <View style={{flex: 1}}>
+                    {(!!employeesTasks && !!employeesTasks.length) && (
+                        <View style={{backgroundColor: 'rgba(255,255,255,1)', marginLeft: 5, marginRight: 5, marginBottom: 5, shadowColor: '#000',
+                            shadowOffset: { width: 1, height: 3 },
+                            shadowOpacity: 0.8,
+                            shadowRadius: 4,
+                            elevation: 2}}>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 5}}>
+                                <View style={{flexDirection: 'row'}}>
+                                    <Text style={{fontSize: 14}}>Всего заявок: </Text>
+                                    <Text style={{fontSize: 16, fontWeight: '500', color: 'rgba(81, 138, 201, 1)'}}>{employeesTasks.length}</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                )}
-                <ScrollView style={{flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.9)'}} overScrollMode='always'>
-                    {this._renderItems()}
-                    {(!!(employeesTasks && employeesTasks.length && employeesTasks.length > renderResults * 20)
-                        || (!!activeSlideIndex && tasks.length > renderResults * 20)) && (
-                        <TouchableOpacity onPress={setRenderCounter}>
-                            <Button dark={true} mode='contained' style={{margin: 5}}>Показать ещё</Button>
-                        </TouchableOpacity>
                     )}
-                </ScrollView>
-            </View>
-        );
+                    <ScrollView style={{flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.9)'}} overScrollMode='always'>
+                        {this._renderItems()}
+                        {(!!(employeesTasks && employeesTasks.length && employeesTasks.length > renderResults * 20)
+                            || (!!activeSlideIndex && tasks.length > renderResults * 20)) && (
+                            <TouchableOpacity onPress={setRenderCounter}>
+                                <Button dark={true} mode='contained' style={{margin: 5}}>Показать ещё</Button>
+                            </TouchableOpacity>
+                        )}
+                    </ScrollView>
+                </View>
+            :
+                <View style={{flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.9)', justifyContent: 'center'}}>
+                    <Text style={{fontSize: 16, textAlign: 'center', margin: 40}}>У Вас нет прав для просмтора контента. Обратитесь к Вашему системному администратору</Text>
+                </View>
     }
 }
 
@@ -88,9 +90,7 @@ UserTasksList.propTypes = {
     jobtypes: PropTypes.objectOf(PropTypes.string),
     login: PropTypes.string,
     mainUrl: PropTypes.string,
-    rightsChangeTaskStatusDoneDate: PropTypes.bool,
-    rightsChangeDate: PropTypes.bool,
-    rightsChangeTaskStatus: PropTypes.bool,
+    rights: PropTypes.object,
     sort: PropTypes.objectOf(PropTypes.bool),
     staff: PropTypes.object,
     tasks: PropTypes.array,

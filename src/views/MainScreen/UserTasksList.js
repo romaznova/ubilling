@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 export class UserTasksList extends React.Component {
 
     _renderItems(tasks) {
-        const { tasksDate, sort, changeTask, changeTaskStatus, staff, jobtypes, login, mainUrl, rightsChangeDate, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate, activeSlideIndex, setTaskComment } = this.props;
+        const { tasksDate, sort, changeTask, changeTaskStatus, staff, jobtypes, login, mainUrl, rights, activeSlideIndex, setTaskComment } = this.props;
         if (tasks && tasks.length) {
             const sortedTasks = _.sortBy(tasks, [
                 sort.status && 'status',
@@ -29,9 +29,7 @@ export class UserTasksList extends React.Component {
                         login={login}
                         tasksDate={tasksDate}
                         mainUrl={mainUrl}
-                        rightsChangeDate={rightsChangeDate}
-                        rightsChangeTaskStatus={rightsChangeTaskStatus}
-                        rightsChangeTaskStatusDoneDate={rightsChangeTaskStatusDoneDate}
+                        rights={rights}
                         activeSlideIndex={activeSlideIndex}
                     />
                 );
@@ -46,7 +44,7 @@ export class UserTasksList extends React.Component {
 
     render () {
         const { tasks, rights } =  this.props;
-        return rights
+        return rights.TASKMAN && rights.TASKMAN.rights
             ?
             (
                 <View style={{flex: 1}}>
@@ -83,10 +81,7 @@ UserTasksList.propTypes = {
     jobtypes: PropTypes.objectOf(PropTypes.string),
     login: PropTypes.string,
     mainUrl: PropTypes.string,
-    rights: PropTypes.bool,
-    rightsChangeTaskStatusDoneDate: PropTypes.bool,
-    rightsChangeDate: PropTypes.bool,
-    rightsChangeTaskStatus: PropTypes.bool,
+    rights: PropTypes.object,
     sort: PropTypes.objectOf(PropTypes.bool),
     staff: PropTypes.object,
     tasks: PropTypes.array,

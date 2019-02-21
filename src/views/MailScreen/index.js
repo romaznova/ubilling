@@ -58,9 +58,10 @@ export class MailScreen extends React.Component {
                 changeTask={this.changeTask.bind(this)}
                 getUndoneTask={this.getUndoneTask.bind(this)}
                 setTaskComment={this.setTaskComment.bind(this)}
-                rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
-                rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
-                rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
+                rights={state.rights}
+                // rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
+                // rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
+                // rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
             />);
         });
     }

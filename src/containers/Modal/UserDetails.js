@@ -20,13 +20,17 @@ export class ModalCardDetailsUser extends React.Component {
     }
 
     _getUserDetails() {
-        const { mainUrl, userLogin } = this.props;
+        const { mainUrl, userLogin, rights } = this.props;
         return axios.get(`${mainUrl}/?module=android&action=userprofile&username=${userLogin}`, {timeout: requestTimeout})
             .then(res => {
                 if (res.data && res.data.data && res.data.data[userLogin]) {
                     this.setState({properties: res.data.data[userLogin], isFetching: false});
-                    this.getDhcpLogs(userLogin);
-                    this.getPing(userLogin);
+                    if (rights.PLPINGER && rights.PLPINGER.rights) {
+                        this.getPing(userLogin);
+                    }
+                    if (rights.PLDHCP && rights.PLDHCP.rights) {
+                        this.getDhcpLogs(userLogin);
+                    }
                 } else this.setState({properties: {'Ошибка':'Не удалось загрузить данные'}, isFetching: false});
             })
             .catch((err) => {this.setState({properties: {'Ошибка':'Ошибка сети'}, isFetching: false});console.log({pingError: err});});
@@ -96,7 +100,7 @@ export class ModalCardDetailsUser extends React.Component {
     }
 
     render() {
-        const { visible, closeModal, userLogin } = this.props;
+        const { visible, closeModal, userLogin, rights } = this.props;
         return (
             <Modal visible={visible} animationType='slide' onRequestClose={closeModal} style={{flex: 1}}>
                 <Card style={{flex: 1, padding: 5, position: 'relative', borderRadius: 0}}>
@@ -118,7 +122,7 @@ export class ModalCardDetailsUser extends React.Component {
                                 {this._renderAllProperties()}
                             </ScrollView>)}
                         <List.Section>
-                            {this.state.dhcpLogs && (
+                            {(this.state.dhcpLogs && rights.PLDHCP && rights.PLDHCP.rights) && (
                                 <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть DHCP логи'>
                                     <TouchableOpacity style={{margin: 5}} onPress={() => this.getDhcpLogs(userLogin)}>
                                         <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && 'Запрос'}</Button>
@@ -128,7 +132,7 @@ export class ModalCardDetailsUser extends React.Component {
                                     </ScrollView>
                                 </List.Accordion>
                             )}
-                            {this.state.ping && (
+                            {(this.state.ping && rights.PLPINGER && rights.PLPINGER.rights) && (
                                 <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть пинг'>
                                     <TouchableOpacity style={{margin: 5}} onPress={() => this.getPing(userLogin)}>
                                         <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && 'Запрос'}</Button>
@@ -151,5 +155,6 @@ ModalCardDetailsUser.propTypes = {
     mainUrl: PropTypes.string,
     userLogin: PropTypes.string,
     visible: PropTypes.bool,
-    closeModal: PropTypes.func
+    closeModal: PropTypes.func,
+    rights: PropTypes.object
 };

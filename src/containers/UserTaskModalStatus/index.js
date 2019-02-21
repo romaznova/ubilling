@@ -43,7 +43,7 @@ export class UserTaskModalStatus extends React.Component {
     }
 
     render() {
-        const { element, visible, staff, setModalVisibility, changeTask, jobtypes, rightsChangeTaskStatus, rightsChangeTaskStatusDoneDate } = this.props;
+        const { element, visible, staff, setModalVisibility, changeTask, jobtypes, rights } = this.props;
         return (
             <Modal style={{flex: 1}} visible={visible} animationType='slide' onRequestClose={() => {setModalVisibility();}}>
                 <Card style={{flex: 1, padding: 5, position: 'relative', borderRadius: 0}}>
@@ -69,7 +69,7 @@ export class UserTaskModalStatus extends React.Component {
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
                                 <Text>Дата закрытия:</Text>
                                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
-                                    {!rightsChangeTaskStatusDoneDate &&
+                                    {!(rights.TASKMANNODONDATE && rights.TASKMANNODONDATE.rights) &&
                                     (
                                         <DatePicker style={{marginRight: 10, padding: 0, width: 30}}
                                             mode="date"
@@ -131,7 +131,7 @@ export class UserTaskModalStatus extends React.Component {
                                 <Text style={{flex: 1, fontSize: 16, fontWeight: '500', textAlign: 'right'}}>{Number(element.status) ? staff.admins[element.change_admin] : staff.admins[this.state.change_admin]}</Text>
                             </View>
                         </ScrollView>
-                        {rightsChangeTaskStatus ?
+                        {(rights.TASKMANDONE && rights.TASKMANDONE.rights) ?
                             !Number(element.status)
                                 ?
                                 (<View>
@@ -170,9 +170,7 @@ UserTaskModalStatus.propTypes = {
     element: PropTypes.object,
     jobtypes: PropTypes.object,
     mainUrl: PropTypes.string,
-    rightsChangeDate: PropTypes.bool,
-    rightsChangeTaskStatus: PropTypes.bool,
-    rightsChangeTaskStatusDoneDate: PropTypes.bool,
+    rights: PropTypes.object,
     staff: PropTypes.object,
     visible: PropTypes.bool,
     login: PropTypes.string,

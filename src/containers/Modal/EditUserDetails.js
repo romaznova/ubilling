@@ -48,7 +48,7 @@ export class EditUserDetails extends React.Component {
 
     _setUserDetails() {
         const { mainUrl, search, properties } = this.props;
-        const difference = this._difference(this.state.properties, properties);
+        const difference = this._difference(properties, this.state.properties);
         const data = this._checkEditCondet(difference);
         const apiData = {};
 
@@ -96,7 +96,7 @@ export class EditUserDetails extends React.Component {
                         this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Изменения сохранены'}, search);
                     } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, search);
                 })
-                .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'}, search);});
+                .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'});});
         } else this.setState({snackbarVisible: true, responseMessage: 'Вы не сделали никаких изменений'});
     }
 
@@ -245,10 +245,18 @@ export class EditUserDetails extends React.Component {
         this.setState({properties: newProperties});
     }
 
-    componentDidMount() {
+    _checkProperties() {
         const { properties } = this.props;
-        const newProperties = _.assign({}, this.state.properties, properties);
+        const newProperties = _.assign(properties, this.state.properties);
         this.setState({properties: newProperties});
+    }
+
+    componentDidMount() {
+        this._checkProperties();
+    }
+
+    componentWillReceiveProps() {
+        this._checkProperties();
     }
 
     render() {
@@ -270,7 +278,7 @@ export class EditUserDetails extends React.Component {
                             {(rights.NOTES && rights.NOTES.rights) && (
                                 <View style={styles.editableArea}>
                                     <Text>NEWNOTES:</Text>
-                                    <TextInput value={this.state.properties.newnotes} onChangeText={newnotes => this._changeNotes(newnotes)}/>
+                                    <TextInput value={this.state.properties.notes} onChangeText={newnotes => this._changeNotes(newnotes)}/>
                                 </View>
                             )}
                             {(rights.RESET && rights.RESET.rights) && (
