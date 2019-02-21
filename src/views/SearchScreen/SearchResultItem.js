@@ -106,7 +106,7 @@ export class SearchResultItem extends React.Component {
             .catch(() => {this.setState({snackbarVisible: true, addCashMessage: 'Ошибка сети', newcash: ''});});
     }
 
-    _getUserDetails() {
+    _getUserDetails(callback) {
         const { mainUrl, element } = this.props;
         const userLogin = element.login;
         return axios.get(`${mainUrl}/?module=android&action=userprofile&username=${userLogin}`, {timeout: requestTimeout})
@@ -114,10 +114,16 @@ export class SearchResultItem extends React.Component {
                 if (res.data && res.data.data && res.data.data[userLogin]) {
                     this.setState({properties: res.data.data[userLogin], isFetching: false});
                 } else this.setState({properties: {'Ошибка':'Не удалось загрузить данные'}, isFetching: false});
+                if (callback) {
+                    callback();
+                }
             })
             .catch((err) => {
                 this.setState({properties: {'Ошибка':'Ошибка сети'}, isFetching: false});
                 console.log({pingError: err});
+                if (callback) {
+                    callback();
+                }
             });
     }
 
@@ -135,7 +141,7 @@ export class SearchResultItem extends React.Component {
 
     render () {
         const { element, index, mainUrl, search, rights } = this.props;
-        const editableProperties = _.pick(this.state.properties, ['login', 'Password', 'realname', 'phone', 'mobile', 'email', 'Down', 'Passive', 'notes', 'reset', 'editcondet']);
+        const editableProperties = _.pick(this.state.properties, ['login', 'Password', 'realname', 'phone', 'mobile', 'email', 'mac', 'Down', 'Passive', 'notes', 'seal', 'length', 'price']);
         return (
             <View style={{margin: 4}}>
                 <TouchableOpacity onPress={this._toggleModalVisibility.bind(this)}>
