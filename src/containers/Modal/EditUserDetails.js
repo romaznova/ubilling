@@ -68,6 +68,11 @@ export class EditUserDetails extends React.Component {
                 case 'notes':
                     _.assign(apiData, {newnotes: this.state.properties.notes});
                     break;
+                case 'mac':
+                    if (/^[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}$/.test(this.state.properties.mac)) {
+                        _.assign(apiData, {newmac: this.state.properties.mac});
+                    }
+                    break;
                 case 'seal':
                     _.assign(apiData, {newseal: this.state.properties.seal});
                     break;
@@ -93,7 +98,7 @@ export class EditUserDetails extends React.Component {
                     } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, () => {search(this._checkProperties.bind(this))});
                 })
                 .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'});});
-        } else this.setState({snackbarVisible: true, responseMessage: 'Вы не сделали никаких изменений'});
+        } else this.setState({snackbarVisible: true, responseMessage: 'Вы не сделали никаких изменений'}, () => {search(this._checkProperties.bind(this))});
     }
 
     _setResetStatus() {
@@ -200,13 +205,15 @@ export class EditUserDetails extends React.Component {
                         );
                     } else return;
                 case 'mac':
-                    index = ++index;
-                    return (
-                        <View key={index} style={styles.editableArea}>
-                            <Text>{prop.toUpperCase()}:</Text>
-                            <TextInput value={this.state.properties.mac} onChangeText={newmac => this._changeMail(newmail)}/>
-                        </View>
-                    );
+                    if (rights.MAC && rights.MAC.rights) {
+                        index = ++index;
+                        return (
+                            <View key={index} style={styles.editableArea}>
+                                <Text>{prop.toUpperCase()}:</Text>
+                                <TextInput error={!/^[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}$/.test(this.state.properties.mac)} value={this.state.properties.mac} onChangeText={newmac => this._changeMac(newmac)}/>
+                            </View>
+                        );
+                    } else return;
                 default:
                 return;
             }
@@ -286,10 +293,6 @@ export class EditUserDetails extends React.Component {
     componentWillReceiveProps() {
         this._checkProperties();
     }
-
-    // componentDidUpdate() {
-    //     console.log(this.state.properties);
-    // }
 
     render() {
         const { visible, closeModal, rights } = this.props;
