@@ -33,7 +33,7 @@ export class EditUserDetails extends React.Component {
         if (!!this.state.properties.seal && !!this.state.properties.length && !!this.state.properties.price) {
             newProperties = _.assign({}, this.state.properties, {editcondet: true});
 
-        } else newProperties = _.assign({}, this.state.properties, {editcondet: '', seal: '', length: '', price: ''});
+        } else newProperties = _.assign({}, this.state.properties, {editcondet: false, seal: '', length: '', price: ''});
         this.setState({properties: newProperties}, this._setUserDetails.bind(this));
     }
 
@@ -74,16 +74,13 @@ export class EditUserDetails extends React.Component {
                     }
                     break;
                 case 'seal':
-                    _.assign(apiData, {newseal: this.state.properties.seal});
+                    _.assign(apiData, {newseal: this.state.properties.seal, editcondet: this.state.properties.editcondet});
                     break;
                 case 'length':
-                    _.assign(apiData, {newlength: this.state.properties.length});
+                    _.assign(apiData, {newlength: this.state.properties.length, editcondet: this.state.properties.editcondet});
                     break;
                 case 'price':
-                    _.assign(apiData, {newprice: this.state.properties.price});
-                    break;
-                case 'editcondet':
-                    _.assign(apiData, {editcondet: this.state.properties.editcondet});
+                    _.assign(apiData, {newprice: this.state.properties.price, editcondet: this.state.properties.editcondet});
                     break;
                 default:
                     break;
