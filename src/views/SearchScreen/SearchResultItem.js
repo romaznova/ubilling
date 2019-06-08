@@ -184,7 +184,7 @@ export class SearchResultItem extends React.Component {
                         <View style={{flex: 1, justifyContent: 'center', marginLeft: 10, marginRight: 10}}>
                             <Text style={{paddingBottom: 5, fontSize: 16, fontWeight: '500'}}>{element.fulladress}</Text>
                             <Text style={{paddingBottom: 5, fontSize: 14}}>{element.realname}</Text>
-                            <Text style={{paddingBottom: 5, fontSize: 14}}>Баланс: {this.state.properties.Cash ? `₴ ${this.state.properties.Cash}` : i18n.t('updating') } </Text>
+                            <Text style={{paddingBottom: 5, fontSize: 14}}>{i18n.t('cash')}: {this.state.properties.Cash ? `₴ ${this.state.properties.Cash}` : i18n.t('updating') } </Text>
                         </View>
                         <View>
                             {(rights && rights.USEREDIT && rights.USEREDIT.rights) &&
