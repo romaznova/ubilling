@@ -9,6 +9,7 @@ import { ModalCardDetailsUser } from '../Modal/UserDetails';
 import { EditableField } from './EditableField';
 import { ModalMainButton } from './ModalMainButton';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
 export class UserTaskModalUpdate extends React.Component {
     state = {
@@ -106,31 +107,31 @@ export class UserTaskModalUpdate extends React.Component {
                             >
                                 <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                             </TouchableOpacity>
-                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>Информация о заявке</Title>
+                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>{i18n.t('modal.info')}</Title>
                             <Icon name='info' size={35} color='rgba(81, 138, 201, 1)'/>
                         </View>
                         <ScrollView style={{flex: 1}}>
                             {(!!element.admin && !this.state.isModalEditable) && (
                                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                    <Text>Создал(а): </Text>
+                                    <Text>{i18n.t('modal.create')}: </Text>
                                     <Text style={{textAlign: 'right', fontSize: 16, fontWeight: '500', flex: 1}}>{staff.admins[element.admin]}</Text>
                                 </View>
                             )}
                             {(!!element.date && !this.state.isModalEditable) && (
                                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                    <Text>Дата создания: </Text>
+                                    <Text>{i18n.t('modal.createDate')}: </Text>
                                     <Text style={{textAlign: 'right', fontSize: 16, fontWeight: '500', flex: 1}}>{moment(element.date).format('DD MMMM YYYY в hh:mm')}</Text>
                                 </View>
                             )}
                             {(!!element.login && !this.state.isModalEditable) && (
                                 <TouchableOpacity style={{marginBottom: 2}} onPress={() => {this.setState({showUserDetails: true});}}>
-                                    <Button mode='contained' dark={true}>Карточка абонента</Button>
+                                    <Button mode='contained' dark={true}>{i18n.t('modal.customer')}</Button>
                                 </TouchableOpacity>
                             )}
                             {!!element.employee && (
                                 <View style={{backgroundColor: 'rgba(81, 138, 201, 0.1)', marginBottom: 2, padding: 5}}>
                                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                        <Text style={{marginRight: 10}}>Мастер:</Text>
+                                        <Text style={{marginRight: 10}}>{i18n.t('modal.user')}: </Text>
                                         {this.state.isModalEditable
                                             ?
                                             (<Picker
@@ -152,7 +153,7 @@ export class UserTaskModalUpdate extends React.Component {
                             <View style={{flexDirection: 'row', justifyContent: 'space-around', backgroundColor: 'rgba(81, 138, 201, 0.1)', padding: 5, marginBottom: 2}}>
                                 {!!element.startdate && (
                                     <View style={{flex: 2}}>
-                                        <Text style={{flex: 1}}>Выполнить нужно:</Text>
+                                        <Text style={{flex: 1}}>{i18n.t('modal.shouldDo')}: </Text>
                                         <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
                                             {(rights.TASKMANDATE && rights.TASKMANDATE.rights) && (
                                                 <DatePicker style={{padding: 0, width: 30}}
@@ -176,7 +177,7 @@ export class UserTaskModalUpdate extends React.Component {
                                 )}
                                 {!!element.starttime && (
                                     <View style={{flex: 1}}>
-                                        <Text style={{flex: 1}}>Время:</Text>
+                                        <Text style={{flex: 1}}>{i18n.t('modal.time')}:</Text>
                                         <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                                             <DatePicker style={{width: 30, margin: 0, padding: 0}}
                                                 mode="time"
@@ -199,12 +200,12 @@ export class UserTaskModalUpdate extends React.Component {
                                 )}
                             </View>
                             {!!element.address && (
-                                <EditableField label='Адрес:' value={this.state.element.address} editable={this.state.isModalEditable} _changeElement={this._changeElementAddress.bind(this)}/>
+                                <EditableField label={`${i18n.t('modal.address')}: `} value={this.state.element.address} editable={this.state.isModalEditable} _changeElement={this._changeElementAddress.bind(this)}/>
                             )}
                             {!!element.jobtype && (
                                 <View style={{backgroundColor: 'rgba(81, 138, 201, 0.1)', marginBottom: 2, padding: 5}}>
                                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                        <Text style={{marginRight: 10}}>Тип заявки:</Text>
+                                        <Text style={{marginRight: 10}}>{i18n.t('modal.type')}: </Text>
                                         {this.state.isModalEditable
                                             ?
                                             (<Picker selectedValue={this.state.element.jobtype}
@@ -223,14 +224,14 @@ export class UserTaskModalUpdate extends React.Component {
                                 </View>
                             )}
                             {!!element.jobnote && (
-                                <EditableField label='Примечание:' value={this.state.element.jobnote} editable={this.state.isModalEditable} _changeElement={this._changeElementDescription.bind(this)}/>
+                                <EditableField label={`${i18n.t('modal.note')}: `} value={this.state.element.jobnote} editable={this.state.isModalEditable} _changeElement={this._changeElementDescription.bind(this)}/>
                             )}
                             {!!(element.phone && element.phone.length > 2) && this.state.isModalEditable
                                 ?
                                 (<View style={{marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
                                     <TextInput value={this.state.element.phone}
                                         style={{backgroundColor: 'rgba(81, 138, 201, 0.1)'}}
-                                        label='Номер телефона:'
+                                        label={`${i18n.t('modal.phone')}: `}
                                         multiline={true}
                                         onChangeText={text => {this._changeElementPhone(text);}}
                                     />
@@ -243,7 +244,7 @@ export class UserTaskModalUpdate extends React.Component {
                             }
                             {(!!element.status && !this.state.isModalEditable) && (
                                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                    <Text>Статус: </Text>
+                                    <Text>{i18n.t('modal.status')}: </Text>
                                     <View style={{flex: 1, alignItems: 'flex-end'}}>
                                         <TouchableOpacity style={{backgroundColor: 'rgba(81, 138, 201, 0.3)', alignItems: 'center', justifyContent: 'center', height: 40, borderRadius: 4}}>
                                             {getStatus(element.status)}
@@ -253,13 +254,13 @@ export class UserTaskModalUpdate extends React.Component {
                             )}
                             {(!!element.enddate && !this.state.isModalEditable) && (
                                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                    <Text>Дата закрытия: </Text>
+                                    <Text>{i18n.t('modal.closeDate')}: </Text>
                                     <Text style={{textAlign: 'right', fontSize: 16, fontWeight: '500', flex: 1}}>{moment(element.enddate).format('DD MMMM YYYY')}</Text>
                                 </View>
                             )}
                             {(!!element.donenote && !this.state.isModalEditable) && (
                                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                    <Text>Комментарий: </Text>
+                                    <Text>{i18n.t('modal.comment')}: </Text>
                                     <Text style={{textAlign: 'right', fontSize: 16, fontWeight: '500', flex: 1}}>{element.donenote}</Text>
                                 </View>
                             )}
@@ -278,7 +279,7 @@ export class UserTaskModalUpdate extends React.Component {
                                 <View>
                                     <View style={{flexDirection: 'row'}}>
                                         <TouchableOpacity  style={{flex: 1, marginLeft: 2}} onPress={() => {setModalVisibility();}}>
-                                            <Button mode='contained' dark={true} style={{backgroundColor: '#ed6f5b'}}>Закрыть</Button>
+                                            <Button mode='contained' dark={true} style={{backgroundColor: '#ed6f5b'}}>{i18n.t('modal.close')}</Button>
                                         </TouchableOpacity>
                                     </View>
                                 </View>

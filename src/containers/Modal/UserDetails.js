@@ -7,8 +7,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import call from 'react-native-phone-call';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
-const requestTimeout = 10000;
+const requestTimeout = 5000;
 
 export class ModalCardDetailsUser extends React.Component {
     state = {
@@ -31,9 +32,9 @@ export class ModalCardDetailsUser extends React.Component {
                     if (rights.PLDHCP && rights.PLDHCP.rights) {
                         this.getDhcpLogs(userLogin);
                     }
-                } else this.setState({properties: {'Ошибка':'Не удалось загрузить данные'}, isFetching: false});
+                } else this.setState({properties: {error: i18n.t('downloadError')}, isFetching: false});
             })
-            .catch((err) => {this.setState({properties: {'Ошибка':'Ошибка сети'}, isFetching: false});console.log({pingError: err});});
+            .catch((err) => {this.setState({properties: {error: i18n.t('errorNetwork')}, isFetching: false});console.log({pingError: err});});
     }
 
     getDhcpLogs(userLogin) {
@@ -43,24 +44,24 @@ export class ModalCardDetailsUser extends React.Component {
             .then(res => {
                 if (res.data.data && res.data.data[userLogin] && res.data.data[userLogin].dhcp) {
                     this.setState({dhcpLogs: res.data.data[userLogin].dhcp, isFetching: false});
-                } else this.setState({dhcpLogs: 'Логов нет'});
+                } else this.setState({dhcpLogs: i18n.t('noLogs')});
             })
             .catch(dhcpError => {
                 console.log({dhcpError});
-                this.setState({dhcpLogs: 'Ошибка при загрузке данных ....'});
+                this.setState({dhcpLogs: i18n.t('errorNetwork')});
             });
     }
 
     getPing(userLogin) {
         const { mainUrl } =  this.props;
         this.setState({isFetching: true});
-        return axios.get(`${mainUrl}/?module=android&&action=pl_pinger&username=${userLogin}`, {timeout: 5000})
+        return axios.get(`${mainUrl}/?module=android&&action=pl_pinger&username=${userLogin}`, {timeout: requestTimeout})
             .then(res => {
                 if (res.data.data && res.data.data[userLogin] && res.data.data[userLogin].ping) {
                     this.setState({ping: res.data.data[userLogin].ping, isFetching: false});
-                } this.setState({ping: 'Не удалось получить данные'});
+                } this.setState({ping: i18n.t('downloadError')});
             })
-            .catch(pingErr => {console.log({pingErr});this.setState({dhcpLogs: 'Ошибка при загрузке данных ...',isFetching: false});});
+            .catch(pingErr => {console.log({pingErr});this.setState({dhcpLogs: i18n.t('errorNetwork'), isFetching: false});});
     }
 
     getPhoneNumber(number) {
@@ -111,7 +112,7 @@ export class ModalCardDetailsUser extends React.Component {
                             >
                                 <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                             </TouchableOpacity>
-                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>Карточка абонента</Title>
+                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>{i18n.t('modal.customer')}</Title>
                             <TouchableOpacity onPress={() => this.setState({isModalCashVisible: true})}>
                                 <Icon name='user' size={35} color='rgba(81, 138, 201, 1)'/>
                             </TouchableOpacity>
@@ -123,9 +124,9 @@ export class ModalCardDetailsUser extends React.Component {
                             </ScrollView>)}
                         <List.Section>
                             {(this.state.dhcpLogs && rights.PLDHCP && rights.PLDHCP.rights) && (
-                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть DHCP логи'>
+                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title={i18n.t('seeDhcp')}>
                                     <TouchableOpacity style={{margin: 5}} onPress={() => this.getDhcpLogs(userLogin)}>
-                                        <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && 'Запрос'}</Button>
+                                        <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && i18n.t('get')}</Button>
                                     </TouchableOpacity>
                                     <ScrollView style={{height: 170}}>
                                         <Text selectable>{this.state.dhcpLogs}</Text>
@@ -133,9 +134,9 @@ export class ModalCardDetailsUser extends React.Component {
                                 </List.Accordion>
                             )}
                             {(this.state.ping && rights.PLPINGER && rights.PLPINGER.rights) && (
-                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть пинг'>
+                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title={i18n.t('seePing')}>
                                     <TouchableOpacity style={{margin: 5}} onPress={() => this.getPing(userLogin)}>
-                                        <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && 'Запрос'}</Button>
+                                        <Button loading={this.state.isFetching} disabled={this.state.isFetching} mode='contained' dark={true} style={{height: 35, alignItems: 'center', justifyContent: 'center'}}>{!this.state.isFetching && i18n.t('get')}</Button>
                                     </TouchableOpacity>
                                     <ScrollView style={{height: 170}}>
                                         <Text selectable>{this.state.ping}</Text>

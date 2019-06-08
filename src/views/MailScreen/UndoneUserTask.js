@@ -9,12 +9,17 @@ import call from 'react-native-phone-call';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PropTypes from 'prop-types';
 import { UserTaskModalComments } from '../../containers/UserTaskModalComments';
+import i18n from '../../services/i18n';
 
 export class UndoneUserTask extends React.Component {
     state = {
         isModalUpdateOpen: false,
         isModalStatusOpen: false,
         isModalCommentsOpen: false
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !_.isEqual(nextState, this.state) || !_.isEqual(this.props.element, nextProps.element);
     }
 
     setModalUpdateVisibility() {
@@ -50,21 +55,21 @@ export class UndoneUserTask extends React.Component {
             return (
                 <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'space-between', backgroundColor:'#ed6f5b', padding: 5, margin: 4, borderRadius: 18}}>
                     <Icon name='minus-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={{fontSize: 13, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>Не выполнена</Text>
+                    <Text style={{fontSize: 13, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>{i18n.t('task.undone')}</Text>
                 </View>
             );
         case 1:
             return (
                 <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'space-between', backgroundColor:'#00a600', padding: 5, margin: 4, borderRadius: 18}}>
                     <Icon name='check-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={{fontSize: 13, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>Выполнена</Text>
+                    <Text style={{fontSize: 13, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>{i18n.t('task.done')}</Text>
                 </View>
             );
         default:
             return (
                 <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'space-between', backgroundColor:'#ed6f5b', padding: 5, margin: 4, borderRadius: 18}}>
                     <Icon name='minus-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={{fontSize: 13, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>Не выполнена</Text>
+                    <Text style={{fontSize: 13, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>{i18n.t('task.undone')}</Text>
                 </View>
             );
         }
@@ -76,7 +81,7 @@ export class UndoneUserTask extends React.Component {
             <Card elevation={2} style={styles.card}>
                 <Card.Content>
                     <View style={[styles.fullSpace, {flexDirection: 'row'}]}>
-                        <Text style={[styles.fullSpace, styles.accentFont]}>У Вас не закрыта задача {element.startdate ? `за ${moment(element.startdate).format('D MMMM YYYY')}` : ''}</Text>
+                        <Text style={[styles.fullSpace, styles.accentFont]}>{i18n.t('task.undoneMessage')} {element.startdate ? ` ${moment(element.startdate).format('D MMMM YYYY')}` : ''}</Text>
                         <TouchableOpacity onPress={() => {this.setState({isModalCommentsOpen: true});}} style={styles.commentsButton}>
                             <Icon name='comments-o' size={35} color='rgba(255, 255, 255, 1)'/>
                             {!!element.comments.length && (
@@ -84,15 +89,15 @@ export class UndoneUserTask extends React.Component {
                             )}
                         </TouchableOpacity>
                     </View>
-                    {!!element.address && (<Text style={[styles.regularFontSize, {fontWeight: '500'}]}><Text style={{fontWeight: '400'}}>Адрес: </Text>{element.address}</Text>)}
-                    {!!element.jobtype && (<Text style={styles.regularFontSize}><Text>Тип: </Text>{jobtypes[element.jobtype]}</Text>)}
-                    {!!element.startdate && (<Text style={styles.regularFontSize}>Закрыть нужно было {moment(element.startdate).fromNow()}</Text>)}
+                    {!!element.address && (<Text style={[styles.regularFontSize, {fontWeight: '500'}]}><Text style={{fontWeight: '400'}}>{i18n.t('modal.address')}: </Text>{element.address}</Text>)}
+                    {!!element.jobtype && (<Text style={styles.regularFontSize}><Text>{i18n.t('modal.type')}: </Text>{jobtypes[element.jobtype]}</Text>)}
+                    {!!element.startdate && (<Text style={styles.regularFontSize}>{i18n.t('task.undoneMessage')} {moment(element.startdate).fromNow()}</Text>)}
                     <View style={styles.buttonsContainer}>
                         <TouchableOpacity style={[styles.fullSpace, {marginRight: 2}]} onPress={() => {this.setState({isModalUpdateOpen: false, isModalStatusOpen: true});}}>
-                            <Button mode='contained' dark={true} style={{backgroundColor: '#00a600'}}>Закрыть</Button>
+                            <Button mode='contained' dark={true} style={{backgroundColor: '#00a600'}}>{i18n.t('confirm')}</Button>
                         </TouchableOpacity>
                         <TouchableOpacity  style={[styles.fullSpace, {marginLeft: 2}]} onPress={() => {this.setState({isModalUpdateOpen: true, isModalStatusOpen: false});}}>
-                            <Button mode='contained' dark={true} style={{backgroundColor: 'rgba(81, 138, 201, 1)'}}>Редактировать</Button>
+                            <Button mode='contained' dark={true} style={{backgroundColor: 'rgba(81, 138, 201, 1)'}}>{i18n.t('edit')}</Button>
                         </TouchableOpacity>
                     </View>
                     <Portal>

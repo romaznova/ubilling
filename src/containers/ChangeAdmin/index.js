@@ -4,6 +4,7 @@ import { TouchableOpacity, View, Modal } from 'react-native';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Logo} from '../Logo';
+import i18n from '../../services/i18n';
 
 export class ChangeAdmin extends React.Component {
 
@@ -26,13 +27,13 @@ export class ChangeAdmin extends React.Component {
                         <Card style={{margin: 10}}>
                             <Card.Content>
                                 <Logo/>
-                                <Title style={{textAlign: 'center', marginBottom: 20}}>Вы уверены что хотите сменить пользователя?</Title>
+                                <Title style={{textAlign: 'center', marginBottom: 20}}>{i18n.t('changeUserMessage')}</Title>
                                 <View style={{flexDirection: 'row'}}>
                                     <TouchableOpacity style={{flex: 1, marginRight: 2}} onPress={() => {_logOut();}}>
-                                        <Button mode='contained' dark={true} style={{backgroundColor: '#00a600'}}>Да, хочу!</Button>
+                                        <Button mode='contained' dark={true} style={{backgroundColor: '#00a600'}}>{i18n.t('yes')}</Button>
                                     </TouchableOpacity>
                                     <TouchableOpacity  style={{flex: 1, marginLeft: 2}} onPress={this._closeModal.bind(this)}>
-                                        <Button mode='contained' dark={true} style={{backgroundColor: '#ed6f5b'}}>Нет, я ошибся</Button>
+                                        <Button mode='contained' dark={true} style={{backgroundColor: '#ed6f5b'}}>{i18n.t('no')}</Button>
                                     </TouchableOpacity>
                                 </View>
                             </Card.Content>

@@ -4,6 +4,7 @@ import { Portal, Text, Card, Title, List, Button } from 'react-native-paper';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
 export class ModalCard extends React.Component {
 
@@ -36,7 +37,7 @@ export class ModalCard extends React.Component {
                             >
                                 <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                             </TouchableOpacity>
-                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>Карточка абонента</Title>
+                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>{i18n.t('modal.customer')}</Title>
                             <Icon name='user' size={35} color='rgba(81, 138, 201, 1)'/>
                         </View>
                         <ScrollView style={{flex: 1}}>
@@ -44,20 +45,20 @@ export class ModalCard extends React.Component {
                         </ScrollView>
                         <List.Section>
                             {(dhcpLogs && rights.PLDHCP && rights.PLDHCP.rights) && (
-                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть DHCP логи'>
+                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title={i18n.t('seeDhcp')}>
                                     <ScrollView style={{height: 170}}>
                                         <TouchableOpacity onPress={() => getDhcpLogs(properties.login)}>
-                                            <Button mode='contained' dark={true} style={{margin: 2}}>Запрос</Button>
+                                            <Button mode='contained' dark={true} style={{margin: 2}}>{i18n.t('get')}</Button>
                                         </TouchableOpacity>
                                         <Text selectable>{dhcpLogs}</Text>
                                     </ScrollView>
                                 </List.Accordion>
                             )}
                             {(ping && rights.PLPINGER && rights.PLPINGER.rights) && (
-                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title='Посмотреть пинг'>
+                                <List.Accordion style={{borderBottomWidth: 2, borderColor: 'rgba(81, 138, 201, 1)'}} title={i18n.t('seePing')}>
                                     <ScrollView style={{height: 170}}>
                                         <TouchableOpacity onPress={() => getPing(properties.login)}>
-                                            <Button mode='contained' dark={true} style={{margin: 2}}>Запрос</Button>
+                                            <Button mode='contained' dark={true} style={{margin: 2}}>{i18n.t('get')}</Button>
                                         </TouchableOpacity>
                                         <Text selectable>{ping}</Text>
                                     </ScrollView>

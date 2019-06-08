@@ -31,6 +31,7 @@ import { Header } from '../../components/Header';
 import { Sort } from '../../containers/Sort';
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
 const gestureConfig = {
     velocityThreshold: 0.3,
@@ -43,34 +44,13 @@ export class MainScreen extends React.Component {
         drawerIcon: (
             <Icon name='user' size={26} color='rgba(81, 138, 201, 1)'/>
         ),
-        title: 'МОИ ЗАЯВКИ'
+        title: 'drawer.userTasks'
     };
 
     state = {
         date: moment().format('YYYY-MM-DD'),
         activeSlideIndex: 0
     };
-
-    _getAllEmployees() {
-        const { state, dispatch } = this.props;
-        if (!_.keys(state.staff.employees).length) {
-            dispatch(setEmployees(state));
-        }
-    }
-
-    _getAllAdmins() {
-        const { state, dispatch } = this.props;
-        if (!_.keys(state.staff.admins).length) {
-            dispatch(setAdmins(state));
-        }
-    }
-
-    _getAllJobTypes() {
-        const { state, dispatch } = this.props;
-        if (!_.keys(state.jobtypes).length) {
-            dispatch(setAllJobTypes(state, dispatch));
-        }
-    }
 
     _getTasks(date) {
         const { state, dispatch } = this.props;
@@ -174,14 +154,6 @@ export class MainScreen extends React.Component {
         }
     }
 
-    _getTodayTasks() {
-        const { state } = this.props;
-        const currentTasks = _.find(state.userTasks.tasksByDate, {date: this.state.date});
-        if (currentTasks && currentTasks.data) {
-            return currentTasks.data;
-        }
-    }
-
     _getNextDayTasks() {
         const { state } = this.props;
         const initialDate = moment(state.userTasks.date).add(1, 'days').format('YYYY-MM-DD');
@@ -195,17 +167,7 @@ export class MainScreen extends React.Component {
     }
 
     componentDidMount() {
-        const { state } = this.props;
         this._getUndoneTasks();
-        if (!(state.staff && state.staff.employees && state.staff.employees.length)) {
-            this._getAllEmployees();
-        }
-        if (!(state.staff && state.staff.admins && state.staff.admins.length)) {
-            this._getAllAdmins();
-        }
-        if (!(state.jobTypes && state.jobTypes.length)) {
-            this._getAllJobTypes();
-        }
         this._getTasks(this.state.date);
     }
 
@@ -221,7 +183,7 @@ export class MainScreen extends React.Component {
                             <Swiper showsPagination={false} onIndexChanged={this._onChangeSlide.bind(this)}>
                                 <View style={[styles.flexRow, styles.swiperRow, {justifyContent: 'space-between'}]}>
                                     <View style={styles.flexRow}>
-                                        <Text style={[styles.regularFontSize, {marginLeft: 5}]}>Заявки на </Text>
+                                        <Text style={[styles.regularFontSize, {marginLeft: 5}]}>{i18n.t('tasksFor')} </Text>
                                         <View>
                                             <View style={[styles.flexRow, {position: 'relative'}]}>
                                                 <Text style={[styles.regularFontSize, {marginRight: 5}]}>{this.state.date ? moment(this.state.date).format('DD MMMM YYYY') : moment().format('DD MMMM YYYY')}</Text>
@@ -254,7 +216,7 @@ export class MainScreen extends React.Component {
                                 </View>
                                 <View>
                                     <View style={[styles.backgroundOpacity, styles.flexRow, styles.swiperRow]}>
-                                        <Text style={[styles.regularFontSize, {marginLeft: 5}]}>Заявки c </Text>
+                                        <Text style={[styles.regularFontSize, {marginLeft: 5}]}>{i18n.t('tasksFrom')} </Text>
                                         <View>
                                             <View style={[styles.flexRow, {flexWrap: 'wrap', position: 'relative'}]}>
                                                 <Text style={[styles.regularFontSize, styles.datePickerText]}>{state.userTasks.dateInterval.start ? moment(state.userTasks.dateInterval.start).format('DD.MM.YY') : '__.__.__'}</Text>
@@ -272,7 +234,7 @@ export class MainScreen extends React.Component {
                                                         this._getTasksByDateInterval();
                                                     }}
                                                 />
-                                                <Text style={[styles.regularFontSize, styles.datePickerText]}>по {state.userTasks.dateInterval.end ? moment(state.userTasks.dateInterval.end).format('DD.MM.YY') : '__.__.__'}</Text>
+                                                <Text style={[styles.regularFontSize, styles.datePickerText]}>{i18n.t('to')} {state.userTasks.dateInterval.end ? moment(state.userTasks.dateInterval.end).format('DD.MM.YY') : '__.__.__'}</Text>
                                                 <DatePicker style={styles.datePicker}
                                                     mode="date"
                                                     date={moment(state.userTasks.dateInterval.end).format('YYYY-MM-DD')}
@@ -298,12 +260,10 @@ export class MainScreen extends React.Component {
                                 ?
                                     <View style={[styles.fullSpace, {justifyContent: 'center'}]}>
                                         <Logo/>
-                                        <Preloader text='Идёт поиск заявок'/>
+                                        <Preloader text={i18n.t('preloader')}/>
                                     </View>
                                 :
                                     <GestureRecognizer style={[styles.fullSpace]}
-                                                       onSwipeLeft={this._getNextDayTasks.bind(this)}
-                                                       onSwipeRight={this._getPrevDayTasks.bind(this)}
                                                        config={gestureConfig}
                                     >
                                         <UserTasksList tasks={this.state.activeSlideIndex === 0 ? userTasks && userTasks.data ? userTasks.data : [] : state.userTasks.tasksByDateInterval}
@@ -321,10 +281,6 @@ export class MainScreen extends React.Component {
                                             login={state.user.login}
                                             mainUrl={`${state.user.urlMethod}${state.user.url}`}
                                             rights={state.rights}
-                                            // rights={state.rights.TASKMAN && state.rights.TASKMAN.rights}
-                                            // rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
-                                            // rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
-                                            // rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
                                             activeSlideIndex={this.state.activeSlideIndex}
                                         />
                                     </GestureRecognizer>

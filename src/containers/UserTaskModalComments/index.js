@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import _ from 'lodash';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
 export class UserTaskModalComments extends React.Component {
     state = {
@@ -36,7 +37,7 @@ export class UserTaskModalComments extends React.Component {
                     </View>
                 );
             });
-        } else return (<Text style={{fontSize: 18}}>Комментариев нет</Text>);
+        } else return (<Text style={{fontSize: 18}}>{i18n.t('modal.noComments')}</Text>);
     }
 
     render() {
@@ -52,7 +53,7 @@ export class UserTaskModalComments extends React.Component {
                             >
                                 <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                             </TouchableOpacity>
-                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>Комментарии к заявке</Title>
+                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>{i18n.t('modal.comment')}</Title>
                             <Icon name='comments-o' size={35} color='rgba(81, 138, 201, 1)'/>
                         </View>
                         <ScrollView style={{flex: 1, marginBottom: 2}}>
@@ -64,7 +65,7 @@ export class UserTaskModalComments extends React.Component {
                                 setTaskComment(element.id, this.state.comment);
                                 this.setState({comment: ''});
                             }}>
-                                <Button mode='contained' dark={true}>Отправить</Button>
+                                <Button mode='contained' dark={true}>{i18n.t('send')}</Button>
                             </TouchableOpacity>
                         </View>
                     </Card.Content>

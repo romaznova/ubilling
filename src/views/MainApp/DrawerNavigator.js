@@ -8,6 +8,18 @@ import {Image, ImageBackground, ScrollView, StyleSheet, View} from 'react-native
 import { ExitButton } from '../../containers/ExitButton';
 import React from 'react';
 import connect from 'react-redux/es/connect/connect';
+import i18n from '../../services/i18n';
+import _ from 'lodash';
+
+const updateNavigationLocalization = items => _.forEach(items, element => {
+    if (element.options && element.options.locale === i18n.locale) return;
+    if (!element.options.localized) {
+        element.options.i18nTitle = element.options.title;
+        element.options.localized = true;
+    }
+    element.options.title = i18n.t(element.options.i18nTitle);
+    element.options.locale = i18n.locale;
+});
 
 export let DrawerNavigator = createDrawerNavigator({
     UserTasks: {
@@ -28,6 +40,7 @@ export let DrawerNavigator = createDrawerNavigator({
 }, {
     contentComponent: props =>
     {
+        updateNavigationLocalization(props.descriptors);
         return (
             <View style={styles.fullSpace}>
                 <ImageBackground resizeMode='cover'

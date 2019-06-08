@@ -4,6 +4,7 @@ import { Button, TextInput, Text } from 'react-native-paper';
 import { setLogInUrl } from '../../actions/login';
 import React from 'react';
 import connect from 'react-redux/es/connect/connect';
+import i18n from '../../services/i18n';
 
 export class UrlForm extends React.Component {
     render() {
@@ -26,7 +27,7 @@ export class UrlForm extends React.Component {
                 </View>
                 <View>
                     <TextInput value={state.user.url}
-                        label='ВВЕДИИТЕ URL'
+                        label={i18n.t('login.url')}
                         mode='outlined'
                         onChangeText={e => { dispatch(setLogInUrl(e)); }}
                         style={[styles.input, styles.background]}
@@ -37,7 +38,7 @@ export class UrlForm extends React.Component {
                             dark={true}
                             loading={isFetching}
                         >
-                            {!isFetching && 'ПОДТВЕРДИТЬ'}
+                            {!isFetching && i18n.t('confirm')}
                         </Button>
                     </TouchableOpacity>
                 </View>

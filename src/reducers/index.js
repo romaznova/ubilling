@@ -1,4 +1,3 @@
-
 import { combineReducers } from 'redux';
 
 import { SET_LOGIN_URL, DEBUG_MODE, CONFIRM_LOGIN_URL, SET_LOGIN_NAME, SET_LOGIN_PASSWORD, SET_USER_NAME, START_AUTO_LOADING, FINISH_AUTO_LOADING, SET_URL_METHOD } from '../actions/login';
@@ -10,6 +9,8 @@ import { GET_ALL_JOB_TYPES } from '../actions/jobtypes';
 import { REQUEST_UNDONE_TASKS, RESPONSE_UNDONE_TASKS, SET_UNDONE_TASKS } from '../actions/messages';
 import { ADD_RIGHTS } from '../actions/rights';
 import { SET_CASH_TYPES } from '../actions/cashtypes';
+import { SET_LANG } from '../actions/localization';
+import {setLang} from '../services/i18n';
 
 const InitialLoginState = {
     url: '',
@@ -46,6 +47,9 @@ function user(state = InitialLoginState, action) {
         return Object.assign({}, state, {debugMode: !state.debugMode});
     case FETCH_LOGGED_IN:
         return Object.assign({}, state, {loggedIn: action.loggedIn, urlConfirmed: true});
+    case SET_LANG:
+        setLang(action.payload);
+        return Object.assign({}, state, {language: action.payload});
     default:
         return state;
     }

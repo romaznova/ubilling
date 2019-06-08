@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import {modifyTask, modifyTaskStatus, setTaskComment} from '../../actions/tasks';
 import { Sort } from '../../containers/Sort';
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+import i18n from '../../services/i18n';
 
 const gestureConfig = {
     velocityThreshold: 0.3,
@@ -32,7 +33,7 @@ export class AllTasksScreen extends React.Component {
         drawerIcon: (
             <Icon name='users' size={22} color='rgba(81, 138, 201, 1)'/>
         ),
-        title: 'ВСЕ ЗАЯВКИ'
+        title: 'drawer.allTasks'
     }
 
     state = {
@@ -187,7 +188,7 @@ export class AllTasksScreen extends React.Component {
                             <Swiper showsPagination={false} onIndexChanged={this._onChangeSlide.bind(this)}>
                                 <View style={[styles.flexRow, styles.swiperRow, {justifyContent: 'space-between'}]}>
                                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                        <Text style={[styles.regularFontSize, {marginLeft: 5}]}>Заявки на </Text>
+                                        <Text style={[styles.regularFontSize, {marginLeft: 5}]}>{i18n.t('tasksFor')} </Text>
                                         <View>
                                             <View style={{flexDirection: 'row', alignItems: 'center', position: 'relative'}}>
                                                 <Text style={{fontSize: 14, marginRight: 5}}>{this.state.date ? moment(this.state.date).format('DD MMMM YYYY') : moment().format('DD MMMM YYYY')}</Text>
@@ -220,7 +221,7 @@ export class AllTasksScreen extends React.Component {
                                 </View>
                                 <View>
                                     <View style={[styles.flexRow, styles.swiperRow, {justifyContent: 'space-between'}]}>
-                                        <Text style={[styles.regularFontSize, {marginLeft: 5}]}>Заявки c </Text>
+                                        <Text style={[styles.regularFontSize, {marginLeft: 5}]}>{i18n.t('tasksFrom')} </Text>
                                         <View>
                                             <View style={{flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', position: 'relative'}}>
                                                 <Text style={[styles.regularFontSize, {marginRight: 5, fontSize: 13}]}>{state.allTasks.dateInterval.start ? moment(state.allTasks.dateInterval.start).format('DD.MM.YY') : '__.__.__'}</Text>
@@ -238,7 +239,7 @@ export class AllTasksScreen extends React.Component {
                                                         this._getTasksByDateInterval(this.state.employee);
                                                     }}
                                                 />
-                                                <Text style={[styles.regularFontSize, {marginRight: 5, fontSize: 13}]}>по {state.allTasks.dateInterval.end ? moment(state.allTasks.dateInterval.end).format('DD.MM.YY') : '__.__.__'}</Text>
+                                                <Text style={[styles.regularFontSize, {marginRight: 5, fontSize: 13}]}>{i18n.t('to')} {state.allTasks.dateInterval.end ? moment(state.allTasks.dateInterval.end).format('DD.MM.YY') : '__.__.__'}</Text>
                                                 <DatePicker style={{margin: 5, width: 40}}
                                                     mode="date"
                                                     date={moment(state.allTasks.dateInterval.end).format('YYYY-MM-DD')}
@@ -271,7 +272,7 @@ export class AllTasksScreen extends React.Component {
                                             this._getTasksByDateInterval(this.state.employee);
                                         });
                                 }}>
-                                <Picker.Item label='Все заявки' value={0} />
+                                <Picker.Item label={i18n.t('allTasksPicker')} value={0} />
                                 {this._renderEmployeesList()}
                             </Picker>
                         </View>
@@ -280,12 +281,10 @@ export class AllTasksScreen extends React.Component {
                                 ?
                                     <View style={{flex: 1, justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.9)'}}>
                                         <Logo/>
-                                        <Preloader text='Идёт поиск заявок'/>
+                                        <Preloader text={i18n.t('preloader')}/>
                                     </View>
                                 :
                                     <GestureRecognizer style={[{flex: 2}]}
-                                                       onSwipeLeft={this._getNextDayTasks.bind(this)}
-                                                       onSwipeRight={this._getPrevDayTasks.bind(this)}
                                                        config={gestureConfig}
                                     >
                                         <UserTasksList tasks={this.state.activeSlideIndex === 0 ? allTasks && allTasks.data ? allTasks.data : [] : state.allTasks.tasksByDateInterval}

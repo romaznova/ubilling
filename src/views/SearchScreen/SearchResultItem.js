@@ -9,6 +9,7 @@ import call from 'react-native-phone-call';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import qs from 'qs';
+import i18n from '../../services/i18n';
 
 const requestTimeout = 10000;
 
@@ -17,16 +18,20 @@ export class SearchResultItem extends React.Component {
         isModalVisible: false,
         isModalCashVisible: false,
         isModalEditUserVisible: false,
-        dhcpLogs: 'Нет данных ...',
-        ping: 'Нет данных ...',
+        dhcpLogs: i18n.t('noData'),
+        ping: i18n.t('noData'),
         cashtype: '0',
         newcash: '',
         newpaymentnote: '',
         snackbarVisible: false,
-        addCashMessage: 'Счёт успешно пополнен',
+        addCashMessage: i18n.t('addCashSuccess'),
         properties: {},
         isFetching: false
     };
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !_.isEqual(nextState, this.state) || !_.isEqual(this.props, nextProps);
+    }
 
     _toggleModalVisibility() {
         this.setState({isModalVisible: !this.state.isModalVisible});
@@ -61,11 +66,11 @@ export class SearchResultItem extends React.Component {
             .then(res => {
                 if (res.data.data && res.data.data[userLogin] && res.data.data[userLogin].dhcp) {
                     this.setState({dhcpLogs: res.data.data[userLogin].dhcp});
-                } else  this.setState({dhcpLogs: 'Логов нет'});
+                } else  this.setState({dhcpLogs: i18n.t('noPing')});
             })
             .catch(err => {
                 console.log({dhcpError: err});
-                this.setState({dhcpLogs: 'Не удалось получить данные'});
+                this.setState({dhcpLogs: i18n.t('downloadError')});
             });
     }
 
@@ -75,7 +80,7 @@ export class SearchResultItem extends React.Component {
             .then(res => {
                 this.setState({ping: res.data.data[userLogin].ping});
             })
-            .catch(err => {console.log(err);this.setState({ping: 'Не удалось получить данные'});});
+            .catch(err => {console.log(err);this.setState({ping: i18n.t('downloadError')});});
     }
 
     _renderCashTypesList() {
@@ -101,9 +106,9 @@ export class SearchResultItem extends React.Component {
                     this.setState({snackbarVisible: true, newcash: ''}, this._getUserDetails.bind(this));
                 } else if (res.data && res.data.message) {
                     this.setState({snackbarVisible: true, addCashMessage: res.data.message, newcash: ''}, this._getUserDetails.bind(this));
-                } else this.setState({snackbarVisible: true, addCashMessage: 'Не удалось пополнить счёт', newcash: ''});
+                } else this.setState({snackbarVisible: true, addCashMessage: i18n.t('addCashError'), newcash: ''});
             })
-            .catch(() => {this.setState({snackbarVisible: true, addCashMessage: 'Ошибка сети', newcash: ''});});
+            .catch(() => {this.setState({snackbarVisible: true, addCashMessage: i18n.t('networkError'), newcash: ''});});
     }
 
     _getUserDetails(callback) {
@@ -113,18 +118,44 @@ export class SearchResultItem extends React.Component {
             .then(res => {
                 if (res.data && res.data.data && res.data.data[userLogin]) {
                     this.setState({properties: res.data.data[userLogin], isFetching: false});
-                } else this.setState({properties: {'Ошибка':'Не удалось загрузить данные'}, isFetching: false});
+                } else this.setState({properties: {'error': i18n.t('downloadError')}, isFetching: false});
                 if (callback) {
                     callback();
                 }
             })
             .catch((err) => {
-                this.setState({properties: {'Ошибка':'Ошибка сети'}, isFetching: false});
+                this.setState({properties: {'error': i18n.t('networkError')}, isFetching: false});
                 console.log({pingError: err});
                 if (callback) {
                     callback();
                 }
             });
+    }
+
+    _renderSeachResultString() {
+        const { searchParams, element } = this.props;
+        const regexp = new RegExp(searchParams || '', 'i');
+        const objectKey = _.findKey(element, prop => prop.match(regexp));
+        const array = element[objectKey] && element[objectKey].length ? element[objectKey].replace(searchParams, '___').split('___') : null;
+        return array && objectKey && (
+            <View style={[{padding: 2, margin: 2}, {flexDirection: 'row', alignItems: 'center'}]}>
+                <Icon name='eye' size={12} color='rgba(81, 138, 201, 1)'/>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text style={{fontSize: 12, margin: 5}}>
+                        {objectKey}:
+                    </Text>
+                    <Text style={{fontSize: 12}}>
+                        {array[0]}
+                    </Text>
+                    <Text style={{fontSize: 12, padding: 2, color: '#0e698b', borderRadius: 3, margin: 2, backgroundColor: '#e1e2da'}}>
+                        {searchParams}
+                    </Text>
+                    <Text style={{fontSize: 12}}>
+                        {array[1]}
+                    </Text>
+                </View>
+            </View>
+        )
     }
 
     componentDidMount() {
@@ -144,15 +175,16 @@ export class SearchResultItem extends React.Component {
         const editableProperties = _.pick(this.state.properties, ['login', 'Password', 'realname', 'phone', 'mobile', 'email', 'mac', 'Down', 'Passive', 'notes', 'seal', 'length', 'price']);
         return (
             <View style={{margin: 4}}>
+                {this._renderSeachResultString()}
                 <TouchableOpacity onPress={this._toggleModalVisibility.bind(this)}>
                     <View style={[styles.fullSpace, styles.card]}>
-                        <View style={{justifyContent: 'center', alignItems: 'center', width: 30, height: 100, backgroundColor: 'rgba(81, 138, 201, 1)'}}>
+                        <View style={{justifyContent: 'center', alignItems: 'center', width: 30, height: 100, flexGrow: 0, backgroundColor: 'rgba(81, 138, 201, 1)'}}>
                             <Text style={{fontWeight: '500', color: 'rgba(255,255,255,0.9)'}}>{index + 1}</Text>
                         </View>
                         <View style={{flex: 1, justifyContent: 'center', marginLeft: 10, marginRight: 10}}>
                             <Text style={{paddingBottom: 5, fontSize: 16, fontWeight: '500'}}>{element.fulladress}</Text>
                             <Text style={{paddingBottom: 5, fontSize: 14}}>{element.realname}</Text>
-                            <Text style={{paddingBottom: 5, fontSize: 14}}>Баланс: {this.state.properties.Cash ? `₴ ${parseInt(this.state.properties.Cash)}` : 'Обновляется...' } </Text>
+                            <Text style={{paddingBottom: 5, fontSize: 14}}>Баланс: {this.state.properties.Cash ? `₴ ${this.state.properties.Cash}` : i18n.t('updating') } </Text>
                         </View>
                         <View>
                             {(rights && rights.USEREDIT && rights.USEREDIT.rights) &&
@@ -181,10 +213,10 @@ export class SearchResultItem extends React.Component {
                                 }}>
                                 {this._renderCashTypesList()}
                             </Picker>
-                            <TextInput style={styles.input} placeholder='Введите сумму' value={this.state.newcash} onChangeText={value => this.setState({newcash: value.replace(/\D/g, '')})}/>
-                            <TextInput style={styles.input} placeholder='Введите комментарий' value={this.state.newpaymentnote} onChangeText={value => this.setState({newpaymentnote: value})}/>
+                            <TextInput style={styles.input} placeholder={i18n.t('addCashValue')} value={this.state.newcash} onChangeText={value => this.setState({newcash: value.replace(/\D/g, '')})}/>
+                            <TextInput style={styles.input} placeholder={i18n.t('addCashComment')} value={this.state.newpaymentnote} onChangeText={value => this.setState({newpaymentnote: value})}/>
                             <TouchableOpacity>
-                                <Button mode='contained' onPress={() => this.setUserBalance(element.login)} disabled={!~~this.state.newcash} dark={true}>ПОПОЛНИТЬ</Button>
+                                <Button mode='contained' onPress={() => this.setUserBalance(element.login)} disabled={!~~this.state.newcash} dark={true}>{i18n.t('addCash')}</Button>
                             </TouchableOpacity>
                             <Snackbar visible={this.state.snackbarVisible}
                                       onDismiss={() => this.setState({snackbarVisible: false})}
@@ -229,5 +261,6 @@ SearchResultItem.propTypes = {
     element: PropTypes.object,
     cashTypes: PropTypes.object,
     index: PropTypes.number,
-    rights: PropTypes.object
+    rights: PropTypes.object,
+    searchParams: PropTypes.string
 };

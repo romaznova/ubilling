@@ -11,10 +11,11 @@ import qs from 'qs';
 import _ from 'lodash';
 import {Header} from '../../components/Header';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
 const requestTimeout = 10000;
 
-export class SearchScreen extends React.Component {
+export class SearchScreen extends React.PureComponent {
     state = {
         isOnSearching: false,
         searchParams: '',
@@ -26,7 +27,7 @@ export class SearchScreen extends React.Component {
         drawerIcon: (
             <Icon name='search' size={22} color='rgba(81, 138, 201, 1)'/>
         ),
-        title: 'ПОИСК АБОНЕНТА'
+        title: 'drawer.search'
     }
 
     _renderSearchResults(result) {
@@ -36,7 +37,7 @@ export class SearchScreen extends React.Component {
         return _.map(array, (element, index) => {
             const { state } = this.props;
             return (
-                <SearchResultItem key={element.login} rights={state.rights} search={() => {this._search(this.state.searchParams)}} element={element} index={index} mainUrl={`${state.user.urlMethod}${state.user.url}`} cashTypes={state.cashTypes}/>
+                <SearchResultItem key={element.login} rights={state.rights} searchParams={this.state.searchParams} search={() => {this._search(this.state.searchParams)}} element={element} index={index} mainUrl={`${state.user.urlMethod}${state.user.url}`} cashTypes={state.cashTypes}/>
             );
         });
     }
@@ -70,22 +71,22 @@ export class SearchScreen extends React.Component {
                         {state.rights.USERSEARCH && state.rights.USERSEARCH.rights
                         ?
                             <View>
-                                <Title style={{textAlign: 'center'}}>Поиск абонента</Title>
-                                <Searchbar style={styles.regularMargin} value={this.state.searchParams} label='Введите параметры поиска' onChangeText={text => {this.setState({searchParams: text});}}/>
+                                <Title style={{textAlign: 'center'}}>{i18n.t('searchCustomer')}</Title>
+                                <Searchbar style={styles.regularMargin} value={this.state.searchParams.replace('___')} label={i18n.t('searchEnter')} onChangeText={text => {this.setState({searchParams: text});}}/>
                                 {this.state.searchParams && this.state.searchParams.length >= 3
                                     ?
                                     (
                                         <TouchableOpacity>
                                             <Button style={styles.regularMargin} onPress={() => {this._search(this.state.searchParams);}} disabled={this.state.isOnSearching} loading={this.state.isOnSearching} mode='contained' dark={true}>
-                                                {!this.state.isOnSearching && 'Найти'}
+                                                {!this.state.isOnSearching && i18n.t('search')}
                                             </Button>
                                         </TouchableOpacity>
                                     )
-                                    : (<Text style={[styles.regularFontSize, styles.regularMargin, {textAlign: 'center'}]}>Введите минимум 3 символа для поиска</Text>)}
+                                    : (<Text style={[styles.regularFontSize, styles.regularMargin, {textAlign: 'center'}]}>{i18n.t('searchCriteria')}</Text>)}
                             </View>
                         :
                             <View  style={styles.fullSpace}>
-                                <Title style={{textAlign: 'center'}}>У Вас недостаточно прав</Title>
+                                <Title style={{textAlign: 'center'}}>{i18n.t('noRightsMessage')}</Title>
                                 <View style={[styles.fullSpace, {justifyContent: 'center'}]}>
                                     <Logo/>
                                 </View>
@@ -101,7 +102,7 @@ export class SearchScreen extends React.Component {
                             ?
                                 <View>
                                     <Logo/>
-                                    <Preloader text='Идёт поиск ...'/>
+                                    <Preloader text={i18n.t('searching')}/>
                                 </View>
                             :
                                 <ScrollView style={styles.fullSpace} overScrollMode='always'>
@@ -111,7 +112,7 @@ export class SearchScreen extends React.Component {
                                             <Button dark={true}
                                                     onPress={() => this.setState({renderResults: this.state.renderResults + 1})}
                                                     mode='contained'
-                                                    style={styles.regularMargin}>Показать ещё</Button>
+                                                    style={styles.regularMargin}>{i18n.t('showMore')}</Button>
                                         </TouchableOpacity>
                                     )}
                                 </ScrollView>

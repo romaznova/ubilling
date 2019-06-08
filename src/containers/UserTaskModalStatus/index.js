@@ -6,6 +6,7 @@ import _ from 'lodash';
 import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
 export class UserTaskModalStatus extends React.Component {
     state = {
@@ -54,20 +55,20 @@ export class UserTaskModalStatus extends React.Component {
                             >
                                 <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                             </TouchableOpacity>
-                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>{!Number(element.status) ? 'Закрыть заявку' : 'Заявка закрыта'}</Title>
+                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>{!Number(element.status) ? i18n.t('modal.taskClose') : i18n.t('modal.taskClosed')}</Title>
                             <Icon name={!Number(element.status) ? 'pencil-square' : 'check-square'} size={35} color='rgba(81, 138, 201, 1)'/>
                         </View>
                         <ScrollView style={{flex: 1}}>
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                <Text style={{marginRight: 5}}>Адрес: </Text>
+                                <Text style={{marginRight: 5}}>{i18n.t('modal.address')}: </Text>
                                 <Text style={{flex: 1, fontSize: 16, fontWeight: '500', textAlign: 'right'}}>{element.address}</Text>
                             </View>
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                <Text style={{marginRight: 5}}>Тип заявки: </Text>
+                                <Text style={{marginRight: 5}}>{i18n.t('modal.type')}: </Text>
                                 <Text style={{flex: 1, fontSize: 16, fontWeight: '500', textAlign: 'right'}}>{jobtypes[element.jobtype]}</Text>
                             </View>
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                <Text>Дата закрытия:</Text>
+                                <Text>{i18n.t('modal.closeDate')}: </Text>
                                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
                                     {!(rights.TASKMANNODONDATE && rights.TASKMANNODONDATE.rights) &&
                                     (
@@ -93,14 +94,14 @@ export class UserTaskModalStatus extends React.Component {
                                 {!Number(element.status)
                                     ?
                                     (<TextInput value={this.state.editdonenote}
-                                        label='Комментарий к заявке:'
+                                        label={i18n.t('modal.comment')}
                                         multiline={true}
                                         onChangeText={text => {this.setState({editdonenote: text});}}
                                     />)
                                     :
                                     (<View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                        <Text style={{marginRight: 5}}>Комментарий: </Text>
-                                        <Text style={{flex: 1, fontSize: 16, fontWeight: '500', textAlign: 'right'}}>{this.state.editdonenote || 'Комментариев нет'}</Text>
+                                        <Text style={{marginRight: 5}}>{i18n.t('modal.comment')}: </Text>
+                                        <Text style={{flex: 1, fontSize: 16, fontWeight: '500', textAlign: 'right'}}>{this.state.editdonenote || i18n.t('modal.comment')}</Text>
                                     </View>)
                                 }
                             </View>
@@ -108,7 +109,7 @@ export class UserTaskModalStatus extends React.Component {
                                 {!Number(element.status)
                                     ?
                                     (<View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                        <Text style={{marginRight: 5}}>Выполнил: </Text>
+                                        <Text style={{marginRight: 5}}>{i18n.t('modal.done')}: </Text>
                                         <Picker
                                             selectedValue={this.state.editemployeedone}
                                             style={{flex: 1, height: 40}}
@@ -122,12 +123,12 @@ export class UserTaskModalStatus extends React.Component {
                                     </View>)
                                     :
                                     (<View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                        <Text style={{marginRight: 5}}>Выполнил: </Text>
+                                        <Text style={{marginRight: 5}}>{i18n.t('modal.done')}: </Text>
                                         <Text style={{flex: 1, fontSize: 16, fontWeight: '500', textAlign: 'right'}}>{staff.employees[element.employeedone] || staff.employees[this.state.editemployeedone]}</Text>
                                     </View>)}
                             </View>
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2, padding: 5, backgroundColor: 'rgba(81, 138, 201, 0.1)'}}>
-                                <Text style={{marginRight: 5}}>Закрыл: </Text>
+                                <Text style={{marginRight: 5}}>{i18n.t('modal.closed')}: </Text>
                                 <Text style={{flex: 1, fontSize: 16, fontWeight: '500', textAlign: 'right'}}>{Number(element.status) ? staff.admins[element.change_admin] : staff.admins[this.state.change_admin]}</Text>
                             </View>
                         </ScrollView>
@@ -140,10 +141,10 @@ export class UserTaskModalStatus extends React.Component {
                                             <Button mode='contained'
                                                 dark={true}
                                                 disabled={!(this.state.editdonenote && this.state.editdonenote.length > 3)}
-                                                style={{backgroundColor: '#00a600'}}>Подтвердить</Button>
+                                                style={{backgroundColor: '#00a600'}}>{i18n.t('confirm')}</Button>
                                         </TouchableOpacity>
                                         <TouchableOpacity  style={{flex: 1, marginLeft: 2}} onPress={() => {this._resetElementStateToDefault();}}>
-                                            <Button mode='contained' dark={true} style={{backgroundColor: '#ed6f5b'}}>Отмена</Button>
+                                            <Button mode='contained' dark={true} style={{backgroundColor: '#ed6f5b'}}>{i18n.t('cancel')}</Button>
                                         </TouchableOpacity>
                                     </View>
                                 </View>)
@@ -151,13 +152,13 @@ export class UserTaskModalStatus extends React.Component {
                                 (<View>
                                     <View style={{flexDirection: 'row'}}>
                                         <TouchableOpacity  style={{flex: 1, marginLeft: 2}} onPress={() => {setModalVisibility();}}>
-                                            <Button mode='contained' dark={true} style={{backgroundColor: '#ed6f5b'}}>Закрыть</Button>
+                                            <Button mode='contained' dark={true} style={{backgroundColor: '#ed6f5b'}}>{i18n.t('close')}</Button>
                                         </TouchableOpacity>
                                     </View>
                                 </View>)
                             :
                             (<View style={{flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.9)', justifyContent: 'center'}}>
-                                <Text style={{fontSize: 16, textAlign: 'center', margin: 40}}>У Вас нет прав для закрытия задания. Обратитесь к Вашему системному администратору</Text>
+                                <Text style={{fontSize: 16, textAlign: 'center', margin: 40}}>{i18n.t('noRightsMessage')}</Text>
                             </View>)}
                     </Card.Content>
                 </Card>

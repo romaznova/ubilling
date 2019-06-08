@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, Image, AsyncStorage, StyleSheet} from 'react-native';
+import {FAB, Portal} from 'react-native-paper';
 import { connect } from 'react-redux';
 import {setUserName, setLogInName, finishAutoLoading, confirmLogInUrl, setUrlMethod} from '../../actions/login';
 import { loggedIn } from '../../actions/fetchLoggedIn';
@@ -11,18 +12,22 @@ import axios from 'axios';
 import _ from 'lodash';
 import qs from 'qs';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {setLang} from '../../actions/localization';
 
-const storage = '@MyAppStorage2';
+const storage = '@UbillingStorage';
 const requestTimeout = 10000;
 
 export class UserLogInForm extends React.Component {
     state = {
-        isFetching: false
+        isFetching: false,
+        open: false
     }
 
     setUrlMethod(e) {
         const { dispatch } = this.props;
-        AsyncStorage.setItem(storage, JSON.stringify({urlMethod: e}), err => {
+        AsyncStorage.setItem(`${storage}:urlMethod`, JSON.stringify({urlMethod: e}), err => {
             if (!err) {
                 dispatch(setUrlMethod(e));
             }
@@ -32,7 +37,7 @@ export class UserLogInForm extends React.Component {
 
     _getUrlMethod() {
         const { dispatch } = this.props;
-        AsyncStorage.getItem(storage, (err, result) => {
+        AsyncStorage.getItem(`${storage}:urlMethod`, (err, result) => {
             result =  JSON.parse(result);
             if (result.urlMethod && result.urlMethod.length) {
                 dispatch(setUrlMethod(result.urlMethod));
@@ -45,7 +50,7 @@ export class UserLogInForm extends React.Component {
         this.setState({isFetching: true});
         axios.get(`${state.user.urlMethod}${state.user.url || url}/?module=android`, {timeout: requestTimeout})
             .then(res => {
-                AsyncStorage.setItem(storage, JSON.stringify({url: state.user.url}));
+                AsyncStorage.setItem(`${storage}:url`, JSON.stringify({url: state.user.url}));
                 if (res.data && res.data.logged_in) {
                     dispatch(setUserName(res.data.admin_name));
                     dispatch(setLogInName(res.data.admin));
@@ -66,7 +71,7 @@ export class UserLogInForm extends React.Component {
                 if (this.state.isFetching) {
                     this.setState({isFetching: false});
                 }
-                alert('Ууупс, что-то пошло не так! Проверьте URL и подключение к интернету');
+                alert(i18n.t('login.err'));
             });
     }
 
@@ -82,7 +87,7 @@ export class UserLogInForm extends React.Component {
                     dispatch(setLogInName(res.data.admin));
                     dispatch(loggedIn(res.data.logged_in));
                     dispatch(addRights(res.data.rights));
-                } else alert(res.data.message || 'Вы не правильно ввели логин или пароль!');
+                } else alert(res.data.message || i18n.t('login.warn'));
                 if (this.state.isFetching) {
                     this.setState({isFetching: false});
                 }
@@ -92,8 +97,17 @@ export class UserLogInForm extends React.Component {
                 if (this.state.isFetching) {
                     this.setState({isFetching: false});
                 }
-                alert('Ууупс, что-то пошло не так! Проверьте подключение к интернету');
+                alert(i18n.t('login.err'));
             });
+    }
+
+    _setLang(language) {
+        const { dispatch } = this.props;
+        AsyncStorage.setItem(`${storage}:language`, JSON.stringify({language}), err => {
+            if (!err) {
+                dispatch(setLang(language));
+            }
+        });
     }
 
     render() {
@@ -107,6 +121,19 @@ export class UserLogInForm extends React.Component {
 
         return (
             <View style={[styles.fullSpace, styles.background]}>
+                <Portal>
+                    <FAB.Group
+                        open={this.state.open}
+                        icon='language'
+                        actions={[
+                            { icon: 'check', label: 'English', onPress: () => this._setLang('en')},
+                            { icon: 'check', label: 'Русский', onPress: () => this._setLang('ru') },
+                            { icon: 'check', label: 'Українська', onPress: () => this._setLang('uk') },
+                        ]}
+                        onStateChange={({ open }) => this.setState({ open })}
+                        onPress={() => {}}
+                    />
+                </Portal>
                 <View style={[styles.fullSpace, styles.center]}>
                     {LogIn}
                 </View>
@@ -125,6 +152,12 @@ const styles = StyleSheet.create({
     },
     background: {
         backgroundColor: '#F5FCFF'
+    },
+    fab: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
     }
 });
 

@@ -5,6 +5,7 @@ import React from 'react';
 import connect from 'react-redux/es/connect/connect';
 import {toggleDebugMode, setLogInName, setLogInPassword, confirmLogInUrl} from '../../actions/login';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import i18n from '../../services/i18n';
 
 export class LogInForm extends React.Component {
 
@@ -18,13 +19,13 @@ export class LogInForm extends React.Component {
             <View style={styles.container}>
                 <Logo/>
                 <View>
-                    <TextInput label='ВВЕДИТЕ ЛОГИН'
+                    <TextInput label={i18n.t('login.login')}
                         mode='outlined'
                         value={state.user.login}
                         onChangeText={e => { dispatch(setLogInName(e)); }}
                         style={[styles.input, styles.background]}
                     />
-                    <TextInput label='ВВЕДИТЕ ПАРОЛЬ'
+                    <TextInput label={i18n.t('login.password')}
                         mode='outlined'
                         value={state.user.password}
                         secureTextEntry={true}
@@ -39,14 +40,14 @@ export class LogInForm extends React.Component {
                             disabled={!(!!state.user.login && !!state.user.password) || isFetching}
                             loading={isFetching}
                         >
-                            {!isFetching && 'ВОЙТИ'}
+                            {!isFetching && i18n.t('confirm')}
                         </Button>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => { dispatch(confirmLogInUrl(false)); }}>
-                        <Button mode='contained' dark>Назад</Button>
+                        <Button mode='contained' dark>{i18n.t('back')}</Button>
                     </TouchableOpacity>
                     <View style={styles.debug}>
-                        <Text>РЕЖИМ ОТЛАДКИ</Text>
+                        <Text>{i18n.t('debugMode')}</Text>
                         <Switch value={state.user.debugMode}
                             onValueChange={() => { dispatch(toggleDebugMode(!state.payload)); }}
                             theme={{colors: {accent: '#518AC9'}}}

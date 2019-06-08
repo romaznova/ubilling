@@ -12,6 +12,7 @@ import { Preloader } from '../../containers/Preloader';
 import { Header } from '../../components/Header';
 import PropTypes from 'prop-types';
 import { modifyTask, modifyTaskStatus, setTaskComment } from '../../actions/tasks';
+import i18n from '../../services/i18n';
 
 export class MailScreen extends React.Component {
 
@@ -23,7 +24,7 @@ export class MailScreen extends React.Component {
         drawerIcon: (
             <Icon name='comment' size={22} color='rgba(81, 138, 201, 1)'/>
         ),
-        title: 'ОПОВЕЩЕНИЯ'
+        title: 'drawer.messages'
     }
 
     getUndoneTask() {
@@ -59,9 +60,6 @@ export class MailScreen extends React.Component {
                 getUndoneTask={this.getUndoneTask.bind(this)}
                 setTaskComment={this.setTaskComment.bind(this)}
                 rights={state.rights}
-                // rightsChangeDate={state.rights.TASKMANDATE && state.rights.TASKMANDATE.rights}
-                // rightsChangeTaskStatus={state.rights.TASKMANDONE && state.rights.TASKMANDONE.rights}
-                // rightsChangeTaskStatusDoneDate={state.rights.TASKMANNODONDATE && state.rights.TASKMANNODONDATE.rights}
             />);
         });
     }
@@ -85,7 +83,7 @@ export class MailScreen extends React.Component {
                     <View style={styles.fullSpace}>
                         <View style={styles.card}>
                             <Text style={styles.regularFontSize}>
-                                Всего оповещений: <Text style={styles.accentFont}>{state.messages.undoneTasks.length || 0}</Text>
+                                {i18n.t('allMessages')}: <Text style={styles.accentFont}>{state.messages.undoneTasks.length || 0}</Text>
                             </Text>
                             <TouchableOpacity style={{marginRight: 10}} onPress={() => {this.getUndoneTask();}}>
                                 {state.messages.isFetching && (state.messages.undoneTasks && state.messages.undoneTasks.length)
@@ -100,7 +98,7 @@ export class MailScreen extends React.Component {
                             ?
                                 <View style={{flex: 1, justifyContent: 'center'}}>
                                     <Logo/>
-                                    <Preloader text='Идёт поиск заявок'/>
+                                    <Preloader text={i18n.t('preloader')}/>
                                 </View>
                             :
                                 <ScrollView style={{flex: 1}}>

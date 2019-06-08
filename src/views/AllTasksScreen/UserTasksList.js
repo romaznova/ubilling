@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import _ from 'lodash';
 import { UserTask } from './UserTask';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
 export class UserTasksList extends React.Component {
     _renderItems() {
@@ -43,7 +44,7 @@ export class UserTasksList extends React.Component {
         } else return (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 <Icon name='bath' size={120} color='rgba(81, 138, 201, 0.1)' style={{margin: 30}}/>
-                <Text style={{textAlign: 'center', color: 'rgba(81, 138, 201, 1)', margin: 15}}>Не удалось найти ни одной заявки. Попробуйте использовать другие критерии для поиска</Text>
+                <Text style={{textAlign: 'center', color: 'rgba(81, 138, 201, 1)', margin: 15}}>{i18n.t('notFoundTaskMessage')}</Text>
             </View>
         );
     }
@@ -62,7 +63,7 @@ export class UserTasksList extends React.Component {
                             elevation: 2}}>
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 5}}>
                                 <View style={{flexDirection: 'row'}}>
-                                    <Text style={{fontSize: 14}}>Всего заявок: </Text>
+                                    <Text style={{fontSize: 14}}>{i18n.t('allTasks')}: </Text>
                                     <Text style={{fontSize: 16, fontWeight: '500', color: 'rgba(81, 138, 201, 1)'}}>{employeesTasks.length}</Text>
                                 </View>
                             </View>
@@ -73,14 +74,14 @@ export class UserTasksList extends React.Component {
                         {(!!(employeesTasks && employeesTasks.length && employeesTasks.length > renderResults * 20)
                             || (!!activeSlideIndex && tasks.length > renderResults * 20)) && (
                             <TouchableOpacity onPress={setRenderCounter}>
-                                <Button dark={true} mode='contained' style={{margin: 5}}>Показать ещё</Button>
+                                <Button dark={true} mode='contained' style={{margin: 5}}>{i18n.t('showMore')}</Button>
                             </TouchableOpacity>
                         )}
                     </ScrollView>
                 </View>
             :
                 <View style={{flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.9)', justifyContent: 'center'}}>
-                    <Text style={{fontSize: 16, textAlign: 'center', margin: 40}}>У Вас нет прав для просмтора контента. Обратитесь к Вашему системному администратору</Text>
+                    <Text style={{fontSize: 16, textAlign: 'center', margin: 40}}>{i18n.t('noRightsMessage')}</Text>
                 </View>
     }
 }

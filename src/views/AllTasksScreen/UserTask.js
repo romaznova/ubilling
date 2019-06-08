@@ -8,7 +8,8 @@ import _ from 'lodash';
 import moment from 'moment';
 import call from 'react-native-phone-call';
 import PropTypes from 'prop-types';
-import {UserTaskModalComments} from '../../containers/UserTaskModalComments';
+import { UserTaskModalComments } from '../../containers/UserTaskModalComments';
+import i18n from '../../services/i18n';
 
 export class UserTask extends React.Component {
     state = {
@@ -17,6 +18,10 @@ export class UserTask extends React.Component {
         isModalCommentsOpen: false,
         open: false
     };
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !_.isEqual(nextState, this.state) || !_.isEqual(this.props.element, nextProps.element);
+    }
 
     getPhoneNumber(number) {
         let collection;
@@ -42,21 +47,21 @@ export class UserTask extends React.Component {
             return (
                 <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', backgroundColor:'#ed6f5b', padding: 5, margin: 4, borderRadius: 4}}>
                     <Icon name='minus-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={{fontSize: 12, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>Не выполнена</Text>
+                    <Text style={{fontSize: 12, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>{i18n.t('task.undone')}</Text>
                 </View>
             );
         case 1:
             return (
                 <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', backgroundColor:'#00a600', padding: 5, margin: 4, borderRadius: 4}}>
                     <Icon name='check-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={{fontSize: 12, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>Выполнена</Text>
+                    <Text style={{fontSize: 12, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>{i18n.t('task.done')}</Text>
                 </View>
             );
         default:
             return (
                 <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', backgroundColor:'#ed6f5b', padding: 5, margin: 4, borderRadius: 4}}>
                     <Icon name='minus-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={{fontSize: 12, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>Не выполнена</Text>
+                    <Text style={{fontSize: 12, fontWeight: '500', textAlign: 'right', color: 'rgba(255,255,255,0.9)', marginLeft: 10}}>{i18n.t('task.undone')}</Text>
                 </View>
             );
         }
@@ -76,6 +81,7 @@ export class UserTask extends React.Component {
 
     render() {
         const { element, index, changeTask, changeTaskStatus, staff, jobtypes, login, tasksDate, employee, mainUrl, rights, activeSlideIndex, setTaskComment } = this.props;
+        console.log('render - all');
         return (
             <TouchableOpacity style={{flexDirection: 'row', alignItems: 'stretch', backgroundColor: 'rgba(255, 255, 255, 1)', margin: 5, padding: 2, shadowColor: '#000',
                 shadowOffset: { width: 1, height: 3 },
@@ -93,7 +99,7 @@ export class UserTask extends React.Component {
                     </View>
                     {Number(employee) === 0 && (
                         <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(81, 138, 201, 0.1)', padding: 5}}>
-                            <Text>Назначен: </Text>
+                            <Text>{i18n.t('modal.user')}: </Text>
                             <Text style={{flex: 1}}>{staff.employees[element.employee]}</Text>
                         </View>
                     )}
@@ -123,12 +129,12 @@ export class UserTask extends React.Component {
                                 )}
                             </View>
                             {(!(!Number(element.status) && tasksDate === moment().format('YYYY-MM-DD')) && activeSlideIndex === 0) && (
-                                <Text style={{marginLeft: 10, fontSize: 14, color: 'rgba(81, 138, 201, 1)'}}>Написать комментарий</Text>
+                                <Text style={{marginLeft: 10, fontSize: 14, color: 'rgba(81, 138, 201, 1)'}}>{i18n.t('task.addComment')}</Text>
                             )}
                         </TouchableOpacity>
                         {((!Number(element.status) && tasksDate === moment().format('YYYY-MM-DD')) && activeSlideIndex === 0) && (
                             <View style={{flex: 4, padding: 5, margin: 1, backgroundColor: 'rgba(81, 138, 201, 0.1)', alignItems: 'flex-start', justifyContent: 'center'}}>
-                                <Text style={{fontSize: 14}}>Начать нужно {element.starttime ? moment(element.starttime, 'HH:mm:ss').fromNow() : moment(element.startdate).format('DD MMMM')}</Text>
+                                <Text style={{fontSize: 14}}>{i18n.t('task.start')} {element.starttime ? moment(element.starttime, 'HH:mm:ss').fromNow() : moment(element.startdate).format('DD MMMM')}</Text>
                             </View>
                         )}
                     </View>

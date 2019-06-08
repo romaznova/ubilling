@@ -4,6 +4,7 @@ import { AsyncStorage, Text, View } from 'react-native';
 import connect from 'react-redux/es/connect/connect';
 import { Logo } from '../../containers/Logo';
 import { Preloader } from '../../containers/Preloader';
+import i18n from '../../services/i18n';
 
 export class AutoLoading extends React.Component {
 
@@ -36,7 +37,7 @@ export class AutoLoading extends React.Component {
         return (
             <View style={{justifyContent: 'center'}}>
                 <Logo/>
-                <Preloader text='Идёт загрузка'/>
+                <Preloader text={i18n.t('preloader')}/>
             </View>
         );
     }

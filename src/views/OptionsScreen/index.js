@@ -7,6 +7,7 @@ import connect from 'react-redux/es/connect/connect';
 import { Rights } from './Rights';
 import { Header } from '../../components/Header';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
 export class OptionsScreen extends React.Component {
 
@@ -14,7 +15,7 @@ export class OptionsScreen extends React.Component {
         drawerIcon: (
             <Icon name='sliders' size={22} color='rgba(81, 138, 201, 1)'/>
         ),
-        title: 'НАСТРОЙКИ'
+        title: 'drawer.settings'
     }
 
     render() {
@@ -24,7 +25,7 @@ export class OptionsScreen extends React.Component {
                 <Header openDrawer={this.props.navigation.openDrawer}/>
                 <View style={[styles.fullSpace]}>
                     <View style={[styles.fullSpace]}>
-                        <Title style={styles.centerText}>Настройки</Title>
+                        <Title style={styles.centerText}>{i18n.t('settings')}</Title>
                         <ScrollView style={styles.fullSpace}>
                             <UrlOptions/>
                             {/*<Rights rights={state.rights}/>*/}

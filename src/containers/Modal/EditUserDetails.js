@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import qs from 'qs';
+import i18n from '../../services/i18n';
 
 const requestTimeout = 10000;
 
@@ -91,11 +92,11 @@ export class EditUserDetails extends React.Component {
             return axios.post(`${mainUrl}/?module=android&action=useredit&username=${this.state.properties.login}`, qs.stringify(apiData), {timeout: requestTimeout})
                 .then(res => {
                     if (res.data && res.data.success) {
-                        this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Изменения сохранены'}, () => {search(this._checkProperties.bind(this))});
-                    } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, () => {search(this._checkProperties.bind(this))});
+                        this.setState({snackbarVisible: true, responseMessage: res.data.message || i18n.t('changesSaved')}, () => {search(this._checkProperties.bind(this))});
+                    } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || i18n.t('changesWasntSave')}, () => {search(this._checkProperties.bind(this))});
                 })
-                .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'});});
-        } else this.setState({snackbarVisible: true, responseMessage: 'Вы не сделали никаких изменений'}, () => {search(this._checkProperties.bind(this))});
+                .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: i18n.t('netwotkError')});});
+        } else this.setState({snackbarVisible: true, responseMessage: i18n.t('noChangesMade')}, () => {search(this._checkProperties.bind(this))});
     }
 
     _setResetStatus() {
@@ -105,11 +106,11 @@ export class EditUserDetails extends React.Component {
             return axios.post(`${mainUrl}/?module=android&action=useredit&username=${this.state.properties.login}`, qs.stringify(apiData), {timeout: requestTimeout})
                 .then(res => {
                     if (res.data && res.data.success) {
-                        this.setState({snackbarVisible: true, responseMessage: res.data.message || 'Запрос отправлен'}, () => {search(this._checkProperties.bind(this))});
-                    } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || 'Не удалось изменить параметры'}, () => {search(this._checkProperties.bind(this))});
+                        this.setState({snackbarVisible: true, responseMessage: res.data.message || i18n.t('requestSend')}, () => {search(this._checkProperties.bind(this))});
+                    } else this.setState({properties, snackbarVisible: true, responseMessage: res.data.message || i18n.t('changesWasntSave')}, () => {search(this._checkProperties.bind(this))});
                 })
-                .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: 'Ошибка сети'});});
-        } else this.setState({snackbarVisible: true, responseMessage: 'Не удалось отправить запрос'});
+                .catch(() => {this.setState({properties, snackbarVisible: true, responseMessage: i18n.t('networkError')});});
+        } else this.setState({snackbarVisible: true, responseMessage: i18n.t('requestNotSend')});
     }
 
     _renderProperties() {
@@ -142,8 +143,8 @@ export class EditUserDetails extends React.Component {
                             <View key={index} style={styles.editableArea}>
                                 <Text>{prop.toUpperCase()}:</Text>
                                 <Picker selectedValue={this.state.properties.Passive} onValueChange={newpassive => this._changePassiveStatus(newpassive)}>
-                                    <Picker.Item label='НЕТ' value="0"/>
-                                    <Picker.Item label='ДА' value="1"/>
+                                    <Picker.Item label={i18n.t('no')} value="0"/>
+                                    <Picker.Item label={i18n.t('yes')} value="1"/>
                                 </Picker>
                             </View>
                         );
@@ -155,8 +156,8 @@ export class EditUserDetails extends React.Component {
                             <View key={index} style={styles.editableArea}>
                                 <Text>{prop.toUpperCase()}:</Text>
                                 <Picker selectedValue={this.state.properties.Down} onValueChange={newdown => this._changeDownStatus(newdown)}>
-                                    <Picker.Item label='НЕТ' value="0"/>
-                                    <Picker.Item label='ДА' value="1"/>
+                                    <Picker.Item label={i18n.t('no')} value="0"/>
+                                    <Picker.Item label={i18n.t('yes')} value="1"/>
                                 </Picker>
                             </View>
                         );
@@ -302,7 +303,7 @@ export class EditUserDetails extends React.Component {
                             <TouchableOpacity style={{width: 22}} onPress={closeModal}>
                                 <Icon name='reply' size={22} color='rgba(81, 138, 201, 1)'/>
                             </TouchableOpacity>
-                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>Карточка абонента</Title>
+                            <Title style={{color: 'rgba(81, 138, 201, 1)'}}>{i18n.t('modal.customer')}</Title>
                             <Icon name='user' size={35} color='rgba(81, 138, 201, 1)'/>
                         </View>
                         {(rights.RESET && rights.RESET.rights) && (
@@ -326,17 +327,17 @@ export class EditUserDetails extends React.Component {
                             {(rights.CONDET && rights.CONDET.rights) && (
                                 <View style={styles.editableArea}>
                                     <Text>EDITCONDET:</Text>
-                                    <TextInput label='Метка кабеля' value={this.state.properties.seal} onChangeText={seal => this._changeEditCondetSeal(seal)}/>
+                                    <TextInput label={i18n.t('editCondet.label')} value={this.state.properties.seal} onChangeText={seal => this._changeEditCondetSeal(seal)}/>
                                     <View style={{flexDirection: 'row', marginTop: 5}}>
-                                        <TextInput style={{flex: 1, marginRight: 2}} label='Длина кабеля (м)' value={this.state.properties.length} onChangeText={length => this._changeEditCondetLength(length)}/>
-                                        <TextInput style={{flex: 1, marginLeft: 2}} label='Стоимость подключения' value={this.state.properties.price} onChangeText={price => this._changeEditCondetPrice(price)}/>
+                                        <TextInput style={{flex: 1, marginRight: 2}} label={i18n.t('editCondet.length')} value={this.state.properties.length} onChangeText={length => this._changeEditCondetLength(length)}/>
+                                        <TextInput style={{flex: 1, marginLeft: 2}} label={i18n.t('editCondet.cost')} value={this.state.properties.price} onChangeText={price => this._changeEditCondetPrice(price)}/>
                                     </View>
                                 </View>
                             )}
 
                         </ScrollView>
                         <TouchableOpacity>
-                            <Button dark onPress={this._checkEditCondet.bind(this)} mode='contained'>Сохранить</Button>
+                            <Button dark onPress={this._checkEditCondet.bind(this)} mode='contained'>{i18n.t('save')}</Button>
                         </TouchableOpacity>
                     </Card.Content>
                 </Card>

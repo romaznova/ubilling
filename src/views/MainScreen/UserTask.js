@@ -9,6 +9,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import call from 'react-native-phone-call';
 import PropTypes from 'prop-types';
+import i18n from '../../services/i18n';
 
 export class UserTask extends React.Component {
     state = {
@@ -17,6 +18,10 @@ export class UserTask extends React.Component {
         isModalCommentsOpen: false,
         open: false
     };
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !_.isEqual(nextState, this.state) || !_.isEqual(this.props.element, nextProps.element);
+    }
 
     getPhoneNumber(number) {
         if (number && number.length > 2) {
@@ -40,21 +45,21 @@ export class UserTask extends React.Component {
             return (
                 <View style={[styles.status, {backgroundColor:'#ed6f5b'}]}>
                     <Icon name='minus-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={styles.statusFont}>Не выполнена</Text>
+                    <Text style={styles.statusFont}>{i18n.t('task.undone')}</Text>
                 </View>
             );
         case 1:
             return (
                 <View style={[styles.status, {backgroundColor:'#00a600'}]}>
                     <Icon name='check-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={styles.statusFont}>Выполнена</Text>
+                    <Text style={styles.statusFont}>{i18n.t('task.done')}</Text>
                 </View>
             );
         default:
             return (
                 <View style={[styles.status, {backgroundColor:'#ed6f5b'}]}>
                     <Icon name='minus-circle' size={20} color='rgba(255,255,255,0.9)'/>
-                    <Text style={styles.statusFont}>Не выполнена</Text>
+                    <Text style={styles.statusFont}>{i18n.t('task.undone')}</Text>
                 </View>
             );
         }
@@ -111,12 +116,12 @@ export class UserTask extends React.Component {
                                 )}
                             </View>
                             {!(!Number(element.status) && tasksDate === moment().format('YYYY-MM-DD') && activeSlideIndex === 0) && (
-                                <Text style={{marginLeft: 10, fontSize: 15, color: 'rgba(81, 138, 201, 1)'}}>Написать комментарий</Text>
+                                <Text style={{marginLeft: 10, fontSize: 15, color: 'rgba(81, 138, 201, 1)'}}>{i18n.t('task.addComment')}</Text>
                             )}
                         </TouchableOpacity>
                         {(!Number(element.status) && tasksDate === moment().format('YYYY-MM-DD') && activeSlideIndex === 0) && (
                             <View style={{flex: 4, padding: 5, margin: 1, backgroundColor: 'rgba(81, 138, 201, 0.1)', alignItems: 'flex-start', justifyContent: 'center'}}>
-                                <Text style={styles.regularFontSize}>Начать нужно {element.starttime ? moment(element.starttime, 'HH:mm:ss').fromNow() : moment(element.startdate).format('DD MMMM')}</Text>
+                                <Text style={styles.regularFontSize}>{i18n.t('task.start')} {element.starttime ? moment(element.starttime, 'HH:mm:ss').fromNow() : moment(element.startdate).format('DD MMMM')}</Text>
                             </View>
                         )}
                     </View>
@@ -210,9 +215,6 @@ UserTask.propTypes = {
     login: PropTypes.string,
     mainUrl: PropTypes.string,
     rights: PropTypes.object,
-    // rightsChangeTaskStatusDoneDate: PropTypes.bool,
-    // rightsChangeDate: PropTypes.bool,
-    // rightsChangeTaskStatus: PropTypes.bool,
     staff: PropTypes.object,
     tasksDate: PropTypes.string,
     activeSlideIndex: PropTypes.number,
