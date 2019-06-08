@@ -40,7 +40,7 @@
   "allTasksPicker": "All applications",
   "preloader": "Searching for applications",
   "updating": "Updating",
-  "addCash": "Top up",
+  "addCash": "Add cash",
   "addCashError": "Could not deposit account",
   "addCashSuccess": "Account has been successfully credited",
   "addCashValue": "Enter the amount",
@@ -55,6 +55,7 @@
   "settings": "Settings",
   "attention": "Warning! Changing these parameters may affect the operation of the application!",
   "debugMode": "DEBUG MODE",
+  "cash": "Cash",
   "modal": {
     "create": "Created (a)",
     "createDate": "Date created",
